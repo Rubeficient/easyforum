@@ -3,88 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightweight Community Board</title>
-    <!-- Tailwind CSS for clean, zero-build styling -->
+    <title>Lightweight Edge Community</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans" x-data="communityApp()">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans" x-data="communityApp()">
 
     <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-950/50 sticky top-0 z-10 backdrop-blur">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                💬 <span class="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">CommunityBoard</span>
+    <header class="border-b border-slate-800/80 bg-slate-900/40 sticky top-0 z-20 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                ⚡ <span class="bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">EdgeBoard</span>
             </h1>
-            <nav class="flex gap-4 text-sm font-medium">
-                <button @click="currentTab = 'forum'" :class="currentTab === 'forum' ? 'text-blue-400 border-b-2 border-blue-400 pb-1' : 'text-slate-400 hover:text-white'">Forums</button>
-                <button @click="currentTab = 'chat'" :class="currentTab === 'chat' ? 'text-blue-400 border-b-2 border-blue-400 pb-1' : 'text-slate-400 hover:text-white'">Live Chat</button>
+            <nav class="flex gap-6 text-sm font-medium">
+                <button @click="currentView = 'forum'" :class="currentView === 'forum' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Discussions</button>
+                <button @click="currentView = 'chat'" :class="currentView === 'chat' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Live Chat</button>
+                <button @click="currentView = 'profile'" :class="currentView === 'profile' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Profile & Sig</button>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
+    <main class="max-w-4xl mx-auto px-4 py-6">
         
-        <!-- FORUM SECTION -->
-        <div x-show="currentTab === 'forum'">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold">Discussions</h2>
-                <button @click="showNewThreadModal = true" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">New Topic</button>
-            </div>
-
-            <!-- Thread List -->
-            <div class="space-y-3">
-                <template x-for="thread in threads" :key="thread.id">
-                    <div class="bg-slate-800/50 border border-slate-700/60 p-4 rounded-xl hover:border-slate-600 transition flex justify-between items-center">
-                        <div>
-                            <h3 class="font-medium text-lg text-white hover:text-blue-400 cursor-pointer" x-text="thread.title"></h3>
-                            <p class="text-xs text-slate-400 mt-1">Posted by <span class="text-slate-300 font-medium" x-text="thread.author"></span> • <span x-text="thread.date"></span></p>
-                        </div>
-                        <span class="text-xs bg-slate-700/80 px-2.5 py-1 rounded-full text-slate-300">General</span>
-                    </div>
-                </template>
-            </div>
-
-            <!-- New Thread Form Modal / Box -->
-            <div x-show="showNewThreadModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4">
-                    <h3 class="text-xl font-bold">Create New Topic</h3>
+        <!-- FORUM VIEW: THREAD LIST OR ACTIVE THREAD -->
+        <div x-show="currentView === 'forum'">
+            
+            <!-- Thread List Mode -->
+            <div x-show="!activeThreadId">
+                <div class="flex justify-between items-center mb-6">
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Your Name / Handle</label>
-                        <input type="text" x-model="newThread.author" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                        <h2 class="text-xl font-bold">All Discussions</h2>
+                        <p class="text-xs text-slate-400">Blazing fast community board powered by edge architecture.</p>
                     </div>
+                    <button @click="showNewThreadModal = true" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-teal-900/20">Start Discussion</button>
+                </div>
+
+                <!-- Threads -->
+                <div class="space-y-3">
+                    <template x-for="thread in threads" :key="thread.id">
+                        <div @click="openThread(thread.id)" class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl hover:border-slate-700 cursor-pointer transition flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <img :src="thread.avatar" class="w-10 h-10 rounded-full bg-slate-800 object-cover border border-slate-700">
+                                <div>
+                                    <h3 class="font-semibold text-white group-hover:text-teal-400 transition" x-text="thread.title"></h3>
+                                    <p class="text-xs text-slate-400 mt-0.5">Started by <span class="text-slate-300" x-text="thread.author"></span> • <span x-text="thread.repliesCount"></span> replies</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700/50" x-text="thread.category"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Active Thread Detail Mode -->
+            <div x-show="activeThreadId">
+                <button @click="activeThreadId = null" class="text-xs text-teal-400 hover:underline mb-4 flex items-center gap-1">← Back to all discussions</button>
+                
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-white mb-2" x-text="getCurrentThread().title"></h2>
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+                        <img :src="getCurrentThread().avatar" class="w-9 h-9 rounded-full bg-slate-800 object-cover">
+                        <div>
+                            <p class="text-sm font-medium text-slate-200" x-text="getCurrentThread().author"></p>
+                            <p class="text-xs text-slate-500" x-text="getCurrentThread().date"></p>
+                        </div>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed" x-text="getCurrentThread().content"></p>
+                    <div class="mt-4 pt-3 border-t border-slate-800/50 text-xs text-slate-500 italic" x-text="getCurrentThread().signature"></div>
+                </div>
+
+                <!-- Replies list -->
+                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Replies</h3>
+                <div class="space-y-4 mb-6">
+                    <template x-for="reply in getCurrentThread().replies" :key="reply.id">
+                        <div class="bg-slate-900/40 border border-slate-800/80 p-4 rounded-xl">
+                            <div class="flex items-center gap-2 mb-2">
+                                <img :src="reply.avatar" class="w-7 h-7 rounded-full bg-slate-800 object-cover">
+                                <span class="text-sm font-medium text-slate-200" x-text="reply.author"></span>
+                                <span class="text-[10px] text-slate-500" x-text="reply.time"></span>
+                            </div>
+                            <p class="text-sm text-slate-300 ml-9" x-text="reply.text"></p>
+                            <p class="text-xs text-slate-500 italic ml-9 mt-2 pt-2 border-t border-slate-800/40" x-text="reply.signature"></p>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Reply Input Box -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <textarea x-model="newReplyText" rows="3" placeholder="Write a reply..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-teal-500 resize-none"></textarea>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-slate-500">Posting as <span class="text-slate-300 font-medium" x-text="userProfile.name"></span></span>
+                        <button @click="postReply" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Post Reply</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Thread Modal -->
+            <div x-show="showNewThreadModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+                    <h3 class="text-lg font-bold text-white">Create New Discussion</h3>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Topic Title</label>
-                        <input type="text" x-model="newThread.title" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                        <input type="text" x-model="newThreadForm.title" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Category</label>
+                        <select x-model="newThreadForm.category" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                            <option value="General">General</option>
+                            <option value="Development">Development</option>
+                            <option value="Feedback">Feedback</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">First Post Content</label>
+                        <textarea x-model="newThreadForm.content" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-teal-500 resize-none"></textarea>
                     </div>
                     <div class="flex justify-end gap-3 pt-2">
                         <button @click="showNewThreadModal = false" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white">Cancel</button>
-                        <button @click="createThread" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium">Post Topic</button>
+                        <button @click="createThread" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium">Publish</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CHAT SECTION -->
-        <div x-show="currentTab === 'chat'" class="grid grid-rows-[1fr_auto] h-[75vh] bg-slate-800/40 border border-slate-700/60 rounded-2xl overflow-hidden">
-            <!-- Messages Stream -->
+        <!-- LIVE CHAT VIEW -->
+        <div x-show="currentView === 'chat'" class="grid grid-rows-[1fr_auto] h-[75vh] bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
             <div class="p-4 overflow-y-auto space-y-4 flex flex-col-reverse">
                 <template x-for="msg in chatMessages.slice().reverse()" :key="msg.id">
-                    <div class="flex flex-col">
-                        <div class="flex items-baseline gap-2">
-                            <span class="font-semibold text-blue-400 text-sm" x-text="msg.user"></span>
-                            <span class="text-[10px] text-slate-500" x-text="msg.time"></span>
+                    <div class="flex items-start gap-3">
+                        <img :src="msg.avatar" class="w-8 h-8 rounded-full bg-slate-800 object-cover mt-0.5">
+                        <div class="flex-1 bg-slate-900 border border-slate-800/80 p-3 rounded-xl">
+                            <div class="flex justify-between items-baseline mb-1">
+                                <span class="font-semibold text-teal-400 text-xs" x-text="msg.user"></span>
+                                <span class="text-[10px] text-slate-500" x-text="msg.time"></span>
+                            </div>
+                            <p class="text-sm text-slate-200" x-text="msg.text"></p>
+                            <p class="text-[10px] text-slate-500 italic mt-1.5 pt-1 border-t border-slate-800/50" x-text="msg.signature"></p>
                         </div>
-                        <p class="text-sm text-slate-200 mt-0.5 bg-slate-800/80 p-3 rounded-xl border border-slate-700/40 inline-block max-w-xl" x-text="msg.text"></p>
                     </div>
                 </template>
             </div>
+            <div class="p-3 bg-slate-900 border-t border-slate-800 flex gap-3 items-center">
+                <input type="text" x-model="chatInput" @keyup.enter="sendChatMessage" placeholder="Type a message..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                <button @click="sendChatMessage" class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition">Send</button>
+            </div>
+        </div>
 
-            <!-- Chat Input Bar -->
-            <div class="p-3 bg-slate-900 border-t border-slate-800 flex gap-3">
-                <input type="text" x-model="chatUser" placeholder="Name..." class="w-32 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                <input type="text" x-model="chatInput" @keyup.enter="sendChatMessage" placeholder="Type a message..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                <button @click="sendChatMessage" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition">Send</button>
+        <!-- PROFILE & SIGNATURE CONFIGURATION VIEW -->
+        <div x-show="currentView === 'profile'" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <h2 class="text-xl font-bold text-white">User Profile & Signature</h2>
+            <p class="text-xs text-slate-400">Customize how you appear across discussions and chat rooms.</p>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Display Name</label>
+                <input type="text" x-model="userProfile.name" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Avatar Image URL</label>
+                <input type="text" x-model="userProfile.avatar" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Custom Signature Text</label>
+                <textarea x-model="userProfile.signature" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-teal-500 resize-none"></textarea>
+            </div>
+            <div class="pt-2 flex items-center justify-between">
+                <span class="text-xs text-teal-400" x-show="savedNotification">Settings saved locally!</span>
+                <button @click="saveProfile" class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-lg text-sm font-medium ml-auto">Save Changes</button>
             </div>
         </div>
 
@@ -93,37 +176,90 @@
     <script>
         function communityApp() {
             return {
-                currentTab: 'forum',
+                currentView: 'forum',
+                activeThreadId: null,
                 showNewThreadModal: false,
-                chatUser: 'Anonymous',
+                savedNotification: false,
                 chatInput: '',
+                newReplyText: '',
+                userProfile: {
+                    name: 'BuilderOne',
+                    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=BuilderOne',
+                    signature: '— Building things on the edge with Cloudflare & SpacetimeDB.'
+                },
+                newThreadForm: { title: '', category: 'General', content: '' },
                 threads: [
-                    { id: 1, title: 'Welcome to your new lightweight community!', author: 'Admin', date: 'Just now' }
+                    {
+                        id: 1,
+                        title: 'Welcome to EdgeBoard: Fast, Lightweight Community Architecture',
+                        author: 'SystemAdmin',
+                        avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=SystemAdmin',
+                        category: 'Announcement',
+                        content: 'This platform is built for speed and efficiency. No heavy backend overhead—just clean edge routing and instant responsiveness.',
+                        signature: '— Official Community System Account',
+                        date: 'Today, 12:00 PM',
+                        repliesCount: 1,
+                        replies: [
+                            { id: 101, author: 'DevUser', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=DevUser', text: 'Love how clean and snappy this feels compared to traditional bloated forums.', signature: '— Code & Coffee', time: '12:15 PM' }
+                        ]
+                    }
                 ],
                 chatMessages: [
-                    { id: 1, user: 'System', text: 'Welcome to the live chat room!', time: '12:00 PM' }
+                    { id: 1, user: 'System', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=System', text: 'Welcome to the live edge chat stream!', signature: '— System Bot', time: '12:00 PM' }
                 ],
+                openThread(id) {
+                    this.activeThreadId = id;
+                },
+                getCurrentThread() {
+                    return this.threads.find(t => t.id === this.activeThreadId) || this.threads[0];
+                },
                 createThread() {
-                    if(!this.newThread.title) return;
+                    if(!this.newThreadForm.title || !this.newThreadForm.content) return;
                     this.threads.unshift({
                         id: Date.now(),
-                        title: this.newThread.title,
-                        author: this.newThread.author || 'Anonymous',
-                        date: 'Just now'
+                        title: this.newThreadForm.title,
+                        category: this.newThreadForm.category,
+                        content: this.newThreadForm.content,
+                        author: this.userProfile.name,
+                        avatar: this.userProfile.avatar,
+                        signature: this.userProfile.signature,
+                        date: 'Just now',
+                        repliesCount: 0,
+                        replies: []
                     });
-                    this.newThread.title = '';
+                    this.newThreadForm.title = '';
+                    this.newThreadForm.content = '';
                     this.showNewThreadModal = false;
                 },
-                newThread: { title: '', author: '' },
+                postReply() {
+                    if(!this.newReplyText.trim()) return;
+                    const thread = this.getCurrentThread();
+                    thread.replies.push({
+                        id: Date.now(),
+                        author: this.userProfile.name,
+                        avatar: this.userProfile.avatar,
+                        text: this.newReplyText,
+                        signature: this.userProfile.signature,
+                        time: 'Just now'
+                    });
+                    thread.repliesCount = thread.replies.length;
+                    this.newReplyText = '';
+                },
                 sendChatMessage() {
                     if(!this.chatInput.trim()) return;
                     this.chatMessages.push({
                         id: Date.now(),
-                        user: this.chatUser || 'Anonymous',
+                        user: this.userProfile.name,
+                        avatar: this.userProfile.avatar,
                         text: this.chatInput,
+                        signature: this.userProfile.signature,
                         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     });
                     this.chatInput = '';
+                },
+                saveProfile() {
+                    this.savedNotification = true;
+                    setTimeout(() => this.savedNotification = false, 2500);
                 }
             }
         }
