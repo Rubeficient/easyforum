@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightweight Community Board</title>
+    <!-- Tailwind CSS for clean, zero-build styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans" x-data="communityApp()">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-950/50 sticky top-0 z-10 backdrop-blur">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                💬 <span class="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">CommunityBoard</span>
+            </h1>
+            <nav class="flex gap-4 text-sm font-medium">
+                <button @click="currentTab = 'forum'" :class="currentTab === 'forum' ? 'text-blue-400 border-b-2 border-blue-400 pb-1' : 'text-slate-400 hover:text-white'">Forums</button>
+                <button @click="currentTab = 'chat'" :class="currentTab === 'chat' ? 'text-blue-400 border-b-2 border-blue-400 pb-1' : 'text-slate-400 hover:text-white'">Live Chat</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- FORUM SECTION -->
+        <div x-show="currentTab === 'forum'">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Discussions</h2>
+                <button @click="showNewThreadModal = true" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">New Topic</button>
+            </div>
+
+            <!-- Thread List -->
+            <div class="space-y-3">
+                <template x-for="thread in threads" :key="thread.id">
+                    <div class="bg-slate-800/50 border border-slate-700/60 p-4 rounded-xl hover:border-slate-600 transition flex justify-between items-center">
+                        <div>
+                            <h3 class="font-medium text-lg text-white hover:text-blue-400 cursor-pointer" x-text="thread.title"></h3>
+                            <p class="text-xs text-slate-400 mt-1">Posted by <span class="text-slate-300 font-medium" x-text="thread.author"></span> • <span x-text="thread.date"></span></p>
+                        </div>
+                        <span class="text-xs bg-slate-700/80 px-2.5 py-1 rounded-full text-slate-300">General</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- New Thread Form Modal / Box -->
+            <div x-show="showNewThreadModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4">
+                    <h3 class="text-xl font-bold">Create New Topic</h3>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Your Name / Handle</label>
+                        <input type="text" x-model="newThread.author" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Topic Title</label>
+                        <input type="text" x-model="newThread.title" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button @click="showNewThreadModal = false" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white">Cancel</button>
+                        <button @click="createThread" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium">Post Topic</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHAT SECTION -->
+        <div x-show="currentTab === 'chat'" class="grid grid-rows-[1fr_auto] h-[75vh] bg-slate-800/40 border border-slate-700/60 rounded-2xl overflow-hidden">
+            <!-- Messages Stream -->
+            <div class="p-4 overflow-y-auto space-y-4 flex flex-col-reverse">
+                <template x-for="msg in chatMessages.slice().reverse()" :key="msg.id">
+                    <div class="flex flex-col">
+                        <div class="flex items-baseline gap-2">
+                            <span class="font-semibold text-blue-400 text-sm" x-text="msg.user"></span>
+                            <span class="text-[10px] text-slate-500" x-text="msg.time"></span>
+                        </div>
+                        <p class="text-sm text-slate-200 mt-0.5 bg-slate-800/80 p-3 rounded-xl border border-slate-700/40 inline-block max-w-xl" x-text="msg.text"></p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Chat Input Bar -->
+            <div class="p-3 bg-slate-900 border-t border-slate-800 flex gap-3">
+                <input type="text" x-model="chatUser" placeholder="Name..." class="w-32 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <input type="text" x-model="chatInput" @keyup.enter="sendChatMessage" placeholder="Type a message..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <button @click="sendChatMessage" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition">Send</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function communityApp() {
+            return {
+                currentTab: 'forum',
+                showNewThreadModal: false,
+                chatUser: 'Anonymous',
+                chatInput: '',
+                threads: [
+                    { id: 1, title: 'Welcome to your new lightweight community!', author: 'Admin', date: 'Just now' }
+                ],
+                chatMessages: [
+                    { id: 1, user: 'System', text: 'Welcome to the live chat room!', time: '12:00 PM' }
+                ],
+                createThread() {
+                    if(!this.newThread.title) return;
+                    this.threads.unshift({
+                        id: Date.now(),
+                        title: this.newThread.title,
+                        author: this.newThread.author || 'Anonymous',
+                        date: 'Just now'
+                    });
+                    this.newThread.title = '';
+                    this.showNewThreadModal = false;
+                },
+                newThread: { title: '', author: '' },
+                sendChatMessage() {
+                    if(!this.chatInput.trim()) return;
+                    this.chatMessages.push({
+                        id: Date.now(),
+                        user: this.chatUser || 'Anonymous',
+                        text: this.chatInput,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    });
+                    this.chatInput = '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
