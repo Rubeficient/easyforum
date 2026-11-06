@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dodgers Community</title>
+    <title>Lightweight Edge Community</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -16,7 +16,7 @@
                 ⚡ <span class="bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">EdgeBoard</span>
             </h1>
             <nav class="flex gap-6 text-sm font-medium">
-                <button @click="currentView = 'forum'" :class="currentView === 'forum' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Discussions</button>
+                <button @click="currentView = 'forum'; activeThreadId = null;" :class="currentView === 'forum' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Discussions</button>
                 <button @click="currentView = 'chat'" :class="currentView === 'chat' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Live Chat</button>
                 <button @click="currentView = 'profile'" :class="currentView === 'profile' ? 'text-teal-400 border-b-2 border-teal-400 pb-0.5' : 'text-slate-400 hover:text-white'">Profile & Sig</button>
             </nav>
@@ -25,7 +25,7 @@
 
     <main class="max-w-4xl mx-auto px-4 py-6">
         
-        <!-- FORUM VIEW: THREAD LIST OR ACTIVE THREAD -->
+        <!-- FORUM VIEW -->
         <div x-show="currentView === 'forum'">
             
             <!-- Thread List Mode -->
@@ -33,7 +33,7 @@
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h2 class="text-xl font-bold">All Discussions</h2>
-                        <p class="text-xs text-slate-400">Blazing fast community board powered by edge architecture.</p>
+                        <p class="text-xs text-slate-400">Blazing fast community board with local storage persistence.</p>
                     </div>
                     <button @click="showNewThreadModal = true" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-teal-900/20">Start Discussion</button>
                 </div>
@@ -46,7 +46,7 @@
                                 <img :src="thread.avatar" class="w-10 h-10 rounded-full bg-slate-800 object-cover border border-slate-700">
                                 <div>
                                     <h3 class="font-semibold text-white group-hover:text-teal-400 transition" x-text="thread.title"></h3>
-                                    <p class="text-xs text-slate-400 mt-0.5">Started by <span class="text-slate-300" x-text="thread.author"></span> • <span x-text="thread.repliesCount"></span> replies</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">Started by <span class="text-slate-300" x-text="thread.author"></span> • <span x-text="thread.replies.length"></span> replies</p>
                                 </div>
                             </div>
                             <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700/50" x-text="thread.category"></span>
@@ -152,7 +152,7 @@
         <!-- PROFILE & SIGNATURE CONFIGURATION VIEW -->
         <div x-show="currentView === 'profile'" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
             <h2 class="text-xl font-bold text-white">User Profile & Signature</h2>
-            <p class="text-xs text-slate-400">Customize how you appear across discussions and chat rooms.</p>
+            <p class="text-xs text-slate-400">Customize your persistent identity across discussions and chat rooms.</p>
             <div>
                 <label class="block text-xs text-slate-400 mb-1">Display Name</label>
                 <input type="text" x-model="userProfile.name" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
@@ -166,8 +166,8 @@
                 <textarea x-model="userProfile.signature" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-teal-500 resize-none"></textarea>
             </div>
             <div class="pt-2 flex items-center justify-between">
-                <span class="text-xs text-teal-400" x-show="savedNotification">Settings saved locally!</span>
-                <button @click="saveProfile" class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-lg text-sm font-medium ml-auto">Save Changes</button>
+                <span class="text-xs text-teal-400" x-show="savedNotification">Profile saved successfully!</span>
+                <button @click="saveProfile" class="bg-teal-600 hover:bg-teal-500 text-white px-5 py-2 rounded-lg text-sm font-medium ml-auto">Save Profile</button>
             </div>
         </div>
 
@@ -182,37 +182,46 @@
                 savedNotification: false,
                 chatInput: '',
                 newReplyText: '',
-                userProfile: {
+                
+                // Initialize profile from localStorage or defaults
+                userProfile: JSON.parse(localStorage.getItem('edge_profile')) || {
                     name: 'BuilderOne',
                     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=BuilderOne',
-                    signature: '— Building things on the edge with Cloudflare & SpacetimeDB.'
+                    signature: '— Building things on the edge with Cloudflare.'
                 },
+                
                 newThreadForm: { title: '', category: 'General', content: '' },
-                threads: [
+                
+                // Initialize threads from localStorage or default
+                threads: JSON.parse(localStorage.getItem('edge_threads')) || [
                     {
                         id: 1,
-                        title: 'Welcome to EdgeBoard: Fast, Lightweight Community Architecture',
+                        title: 'Welcome to EdgeBoard: Persistent Local Storage Edition',
                         author: 'SystemAdmin',
                         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=SystemAdmin',
                         category: 'Announcement',
-                        content: 'This platform is built for speed and efficiency. No heavy backend overhead—just clean edge routing and instant responsiveness.',
+                        content: 'Your threads, replies, and chat messages will now persist locally in your browser storage!',
                         signature: '— Official Community System Account',
                         date: 'Today, 12:00 PM',
-                        repliesCount: 1,
                         replies: [
-                            { id: 101, author: 'DevUser', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=DevUser', text: 'Love how clean and snappy this feels compared to traditional bloated forums.', signature: '— Code & Coffee', time: '12:15 PM' }
+                            { id: 101, author: 'DevUser', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=DevUser', text: 'Awesome! Now nothing resets when I reload the page.', signature: '— Code & Coffee', time: '12:15 PM' }
                         ]
                     }
                 ],
-                chatMessages: [
-                    { id: 1, user: 'System', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=System', text: 'Welcome to the live edge chat stream!', signature: '— System Bot', time: '12:00 PM' }
+
+                // Initialize chat from localStorage or default
+                chatMessages: JSON.parse(localStorage.getItem('edge_chat')) || [
+                    { id: 1, user: 'System', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=System', text: 'Welcome to the live chat stream!', signature: '— System Bot', time: '12:00 PM' }
                 ],
+
                 openThread(id) {
                     this.activeThreadId = id;
                 },
+                
                 getCurrentThread() {
                     return this.threads.find(t => t.id === this.activeThreadId) || this.threads[0];
                 },
+                
                 createThread() {
                     if(!this.newThreadForm.title || !this.newThreadForm.content) return;
                     this.threads.unshift({
@@ -224,13 +233,14 @@
                         avatar: this.userProfile.avatar,
                         signature: this.userProfile.signature,
                         date: 'Just now',
-                        repliesCount: 0,
                         replies: []
                     });
+                    this.saveThreads();
                     this.newThreadForm.title = '';
                     this.newThreadForm.content = '';
                     this.showNewThreadModal = false;
                 },
+                
                 postReply() {
                     if(!this.newReplyText.trim()) return;
                     const thread = this.getCurrentThread();
@@ -242,9 +252,10 @@
                         signature: this.userProfile.signature,
                         time: 'Just now'
                     });
-                    thread.repliesCount = thread.replies.length;
+                    this.saveThreads();
                     this.newReplyText = '';
                 },
+                
                 sendChatMessage() {
                     if(!this.chatInput.trim()) return;
                     this.chatMessages.push({
@@ -255,11 +266,22 @@
                         signature: this.userProfile.signature,
                         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     });
+                    this.saveChat();
                     this.chatInput = '';
                 },
+                
                 saveProfile() {
+                    localStorage.setItem('edge_profile', JSON.stringify(this.userProfile));
                     this.savedNotification = true;
                     setTimeout(() => this.savedNotification = false, 2500);
+                },
+
+                saveThreads() {
+                    localStorage.setItem('edge_threads', JSON.stringify(this.threads));
+                },
+
+                saveChat() {
+                    localStorage.setItem('edge_chat', JSON.stringify(this.chatMessages));
                 }
             }
         }
