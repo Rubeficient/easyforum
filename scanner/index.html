@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salvie's Books - Barcode Scout & Intake</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-elevated: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Header & Branding */
+    header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      font-size: 1.1rem;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 1.25rem;
+      background: var(--bg-primary);
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .stat-pill .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .stat-pill .value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* Main Container Layout */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        grid-template-columns: 460px 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Scanner Wedge Bar */
+    .scan-wedge {
+      background-color: var(--bg-primary);
+      padding: 0.75rem;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .scan-wedge.focused {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .wedge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .scanner-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 6px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    .scan-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .scan-input-group input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      font-family: monospace;
+      color: #fff;
+      font-weight: 600;
+      outline: none;
+      letter-spacing: 0.05em;
+    }
+
+    .scan-input-group input::placeholder {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-family: var(--font-family);
+    }
+
+    .btn-action {
+      background-color: var(--accent);
+      color: #0f172a;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s ease;
+    }
+
+    .btn-action:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* Book Active Inspector Card */
+    .book-inspector {
+      display: flex;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border-radius: 10px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      min-height: 180px;
+    }
+
+    .book-cover {
+      width: 100px;
+      height: 145px;
+      background-color: var(--bg-surface-elevated);
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 0.25rem;
+    }
+
+    .book-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .book-details h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #fff;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .book-author {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .book-meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .meta-tag {
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+    }
+
+    /* Market Scout Links */
+    .scout-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .scout-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .scout-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .scout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem;
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      font-weight: 500;
+      border: 1px solid var(--border-color);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .scout-btn:hover {
+      background: #475569;
+      border-color: var(--accent);
+    }
+
+    .scout-btn.ebay {
+      border-left: 3px solid #f59e0b;
+    }
+    .scout-btn.bookfinder {
+      border-left: 3px solid #38bdf8;
+    }
+    .scout-btn.abebooks {
+      border-left: 3px solid #ef4444;
+    }
+    .scout-btn.amazon {
+      border-left: 3px solid #10b981;
+    }
+
+    /* Intake Form Inputs */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .form-field.full {
+      grid-column: span 2;
+    }
+
+    .form-field label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .form-field input, .form-field select {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-field input:focus, .form-field select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-save {
+      background-color: var(--success);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: opacity 0.2s;
+    }
+
+    .btn-save:hover {
+      opacity: 0.9;
+    }
+
+    .manual-toggle {
+      font-size: 0.75rem;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+      align-self: flex-start;
+    }
+
+    /* Inventory Table Panel */
+    .inventory-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow: hidden;
+    }
+
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .search-filter {
+      position: relative;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .search-filter input {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      color: #fff;
+      outline: none;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      border-radius: 6px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-height: calc(100vh - 280px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--bg-primary);
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    tr:hover td {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-condition {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      background: var(--bg-surface-elevated);
+      font-weight: 600;
+    }
+
+    .badge-price {
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .btn-table-delete {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .btn-table-delete:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Scan Flash Indicator Effect */
+    .flash-active {
+      animation: screenFlash 0.3s ease;
+    }
+
+    @keyframes screenFlash {
+      0% { box-shadow: 0 0 0 4px var(--success); }
+      100% { box-shadow: none; }
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation & Stats -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">S</div>
+      <div class="brand-text">
+        <h1>Salvie's Intake & Scout</h1>
+        <span>Eyoyo Scanner Companion &bull; salvies.com</span>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill">
+        <span class="label">Total Books</span>
+        <span class="value" id="stat-total-count">0</span>
+      </div>
+      <div class="stat-pill">
+        <span class="label">Total Retail Value</span>
+        <span class="value" id="stat-total-val">$0.00</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dual-Column Content -->
+  <main class="container">
+    
+    <!-- Left Column: Scanner Wedge & Intake Inspector -->
+    <section class="panel">
+      <!-- Eyoyo Keyboard Wedge Catcher -->
+      <div class="scan-wedge" id="wedge-container">
+        <div class="wedge-header">
+          <label for="isbn-input" style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">BARCODE WEDGE (EYOYO READY)</label>
+          <div class="scanner-status">
+            <span class="status-dot"></span>
+            <span id="scanner-status-text">Scanner Ready</span>
+          </div>
+        </div>
+        <form id="scan-form" class="scan-input-group" onsubmit="event.preventDefault(); handleScanLookup();">
+          <input 
+            type="text" 
+            id="isbn-input" 
+            placeholder="Scan ISBN barcode or hit Enter..." 
+            autocomplete="off" 
+            autofocus
+          >
+          <button type="submit" class="btn-action">Lookup</button>
+        </form>
+      </div>
+
+      <!-- Current Book Details & Artwork Card -->
+      <div class="book-inspector" id="inspector-card">
+        <div class="book-cover" id="display-cover">
+          <span>Cover Preview</span>
+        </div>
+        <div class="book-details">
+          <h3 id="display-title">Ready for scan...</h3>
+          <p class="book-author" id="display-author">Pull Eyoyo trigger on book barcode</p>
+          <div class="book-meta-tags" id="display-tags">
+            <span class="meta-tag" id="display-isbn">ISBN: ---</span>
+            <span class="meta-tag" id="display-year">Year: ---</span>
+            <span class="meta-tag" id="display-pages">Pages: ---</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Resale & Competitor Shortcuts -->
+      <div class="scout-group">
+        <span class="scout-label">Instant Market Comps</span>
+        <div class="scout-links">
+          <a href="#" id="link-ebay" target="_blank" rel="noopener noreferrer" class="scout-btn ebay">
+            eBay Sold Comps &rarr;
+          </a>
+          <a href="#" id="link-bookfinder" target="_blank" rel="noopener noreferrer" class="scout-btn bookfinder">
+            BookFinder &rarr;
+          </a>
+          <a href="#" id="link-abebooks" target="_blank" rel="noopener noreferrer" class="scout-btn abebooks">
+            AbeBooks &rarr;
+          </a>
+          <a href="#" id="link-amazon" target="_blank" rel="noopener noreferrer" class="scout-btn amazon">
+            Amazon Live &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Intake Workflow Form -->
+      <form id="intake-form" onsubmit="event.preventDefault(); saveBookToInventory();" class="form-grid">
+        <div class="form-field full" id="manual-fields-row" style="display:none;">
+          <label>Manual Title (For Pre-ISBN or Rare Books)</label>
+          <input type="text" id="manual-title" placeholder="Enter book title">
+        </div>
+        <div class="form-field" id="manual-author-field" style="display:none;">
+          <label>Manual Author</label>
+          <input type="text" id="manual-author" placeholder="Enter author name">
+        </div>
+        <div class="form-field" id="manual-year-field" style="display:none;">
+          <label>Manual Year</label>
+          <input type="text" id="manual-year" placeholder="e.g. 1954">
+        </div>
+
+        <div class="form-field">
+          <label for="input-price">Store Price ($ USD)</label>
+          <input type="number" id="input-price" step="0.25" min="0" placeholder="5.00" required>
+        </div>
+
+        <div class="form-field">
+          <label for="select-condition">Condition</label>
+          <select id="select-condition">
+            <option value="Very Good" selected>Very Good</option>
+            <option value="Like New">Like New</option>
+            <option value="Good">Good</option>
+            <option value="Acceptable">Acceptable</option>
+            <option value="Poor/Reading Copy">Poor / Reading Copy</option>
+            <option value="New">Brand New</option>
+          </select>
+        </div>
+
+        <div class="form-field full">
+          <label for="input-location">Store Shelf / Section / Bin</label>
+          <input type="text" id="input-location" placeholder="e.g. Sci-Fi Table, Vintage Cart, Bin A4" list="shelf-presets">
+          <datalist id="shelf-presets">
+            <option value="Front Table">
+            <option value="Fiction Wall">
+            <option value="Sci-Fi / Fantasy">
+            <option value="History & Biography">
+            <option value="Vintage / Rare Shelf">
+            <option value="Overflow Bin 1">
+            <option value="Online Listing Backroom">
+          </datalist>
+        </div>
+
+        <span class="manual-toggle" id="toggle-manual-btn" onclick="toggleManualMode()">+ Manual entry for pre-ISBN book</span>
+
+        <button type="submit" class="btn-save full" id="save-btn">
+          <span>&plus; Add to Store Inventory (Enter)</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- Right Column: Live Inventory Grid & CSV Management -->
+    <section class="panel inventory-panel">
+      <div class="table-controls">
+        <div class="search-filter">
+          <input type="text" id="inventory-search" placeholder="Search catalog by title, author, or ISBN..." oninput="renderTable()">
+        </div>
+        <div class="table-actions">
+          <button class="btn-secondary" onclick="exportToCSV()">Export CSV</button>
+          <button class="btn-danger" onclick="openClearModal()">Clear All</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="inventory-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Cover</th>
+              <th>Title & Author</th>
+              <th>ISBN</th>
+              <th>Condition</th>
+              <th>Location</th>
+              <th>Price</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-body">
+            <!-- Dynamically generated rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clear Confirmation Modal -->
+  <div class="modal-overlay" id="clear-modal">
+    <div class="modal">
+      <h3 style="color:#fff;">Clear Inventory Catalog?</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted);">
+        This will delete all scanned inventory records stored in this browser. Please ensure you have exported a CSV backup first.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeClearModal()">Cancel</button>
+        <button class="btn-danger" onclick="confirmClearInventory()">Confirm Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================================
+       Application State & Storage Keys
+       ===================================================================== */
+    const STORAGE_KEY = 'salvies_bookstore_inventory_v1';
+    let inventory = [];
+
+    // Current inspected book candidate
+    let currentBook = {
+      isbn: '',
+      title: '',
+      author: '',
+      year: '',
+      pages: '',
+      coverUrl: '',
+      categories: ''
+    };
+
+    let isManualMode = false;
+
+    // Audio beep synthesis using Web Audio API (No external sound files required)
+    function playBeep(freq = 880, type = 'sine', duration = 0.08) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (err) {
+        // AudioContext may be restricted before first gesture
+      }
+    }
+
+    /* =====================================================================
+       Barcode Wedge Catcher & Eyoyo Keep-Alive
+       ===================================================================== */
+    const isbnInput = document.getElementById('isbn-input');
+    const wedgeContainer = document.getElementById('wedge-container');
+    const scannerStatusText = document.getElementById('scanner-status-text');
+
+    // Keep the scanner wedge focused for smooth trigger scanning
+    isbnInput.addEventListener('focus', () => wedgeContainer.classList.add('focused'));
+    isbnInput.addEventListener('blur', () => wedgeContainer.classList.remove('focused'));
+
+    // If click anywhere on ambient space, restore focus to scan bar
+    document.addEventListener('click', (e) => {
+      const isInteractive = ['INPUT', 'SELECT', 'BUTTON', 'A', 'TEXTAREA'].includes(e.target.tagName);
+      if (!isInteractive && !isManualMode) {
+        isbnInput.focus();
+      }
+    });
+
+    /* =====================================================================
+       API Fetching: Google Books with Open Library Fallback
+       ===================================================================== */
+    async function handleScanLookup() {
+      const raw = isbnInput.value.trim();
+      const cleanISBN = raw.replace(/[^0-9X]/gi, '');
+
+      if (!cleanISBN) return;
+
+      scannerStatusText.textContent = 'Searching APIs...';
+      wedgeContainer.classList.add('flash-active');
+      setTimeout(() => wedgeContainer.classList.remove('flash-active'), 400);
+
+      try {
+        // 1. First attempt: Google Books API
+        const gResponse = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${cleanISBN}`);
+        const gData = await gResponse.json();
+
+        if (gData.items && gData.items.length > 0) {
+          const info = gData.items[0].volumeInfo;
+          currentBook = {
+            isbn: cleanISBN,
+            title: info.title || 'Untitled',
+            author: (info.authors && info.authors.join(', ')) || 'Unknown Author',
+            year: info.publishedDate ? info.publishedDate.substring(0, 4) : 'N/A',
+            pages: info.pageCount ? `${info.pageCount} pp` : 'N/A',
+            coverUrl: info.imageLinks ? (info.imageLinks.thumbnail || info.imageLinks.smallThumbnail) : '',
+            categories: info.categories ? info.categories.join(', ') : ''
+          };
+          applyBookToUI();
+          playBeep(980, 'sine', 0.1);
+          return;
+        }
+
+        // 2. Fallback attempt: Open Library API
+        const olResponse = await fetch(`https://openlibrary.org/isbn/${cleanISBN}.json`);
+        if (olResponse.ok) {
+          const olData = await olResponse.json();
+          currentBook = {
+            isbn: cleanISBN,
+            title: olData.title || 'Untitled',
+            author: 'Open Library Match',
+            year: olData.publish_date ? olData.publish_date : 'N/A',
+            pages: olData.number_of_pages ? `${olData.number_of_pages} pp` : 'N/A',
+            coverUrl: olData.covers && olData.covers.length ? `https://covers.openlibrary.org/b/id/${olData.covers[0]}-M.jpg` : '',
+            categories: ''
+          };
+          applyBookToUI();
+          playBeep(980, 'sine', 0.1);
+          return;
+        }
+
+        // If neither found metadata
+        fallbackUnknownISBN(cleanISBN);
+      } catch (err) {
+        console.warn('API lookup issue:', err);
+        fallbackUnknownISBN(cleanISBN);
+      }
+    }
+
+    function fallbackUnknownISBN(isbn) {
+      playBeep(320, 'sawtooth', 0.18);
+      currentBook = {
+        isbn: isbn,
+        title: 'ISBN Found (No Cloud Metadata)',
+        author: 'Enter author or inspect links',
+        year: 'N/A',
+        pages: 'N/A',
+        coverUrl: '',
+        categories: ''
+      };
+      applyBookToUI();
+      scannerStatusText.textContent = 'Check Scout Links';
+    }
+
+    /* =====================================================================
+       UI Updating & Market Links
+       ===================================================================== */
+    function applyBookToUI() {
+      scannerStatusText.textContent = 'Found!';
+      document.getElementById('display-title').textContent = currentBook.title;
+      document.getElementById('display-author').textContent = currentBook.author;
+      document.getElementById('display-isbn').textContent = `ISBN: ${currentBook.isbn || 'None'}`;
+      document.getElementById('display-year').textContent = `Year: ${currentBook.year}`;
+      document.getElementById('display-pages').textContent = `Pages: ${currentBook.pages}`;
+
+      const coverContainer = document.getElementById('display-cover');
+      if (currentBook.coverUrl) {
+        // Upgrade http links to https to avoid mixed-content blocks
+        const secureUrl = currentBook.coverUrl.replace(/^http:\/\//i, 'https://');
+        coverContainer.innerHTML = `<img src="${secureUrl}" alt="Cover" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" onerror="this.parentElement.innerHTML='<span>No Art</span>'">`;
+      } else {
+        coverContainer.innerHTML = `<span>No Artwork</span>`;
+      }
+
+      // Update external quick comp links
+      const isbnParam = encodeURIComponent(currentBook.isbn);
+      const titleParam = encodeURIComponent(currentBook.title);
+      const query = isbnParam || titleParam;
+
+      document.getElementById('link-ebay').href = `https://www.ebay.com/sch/i.html?_nkw=${query}&LH_Complete=1&LH_Sold=1`;
+      document.getElementById('link-bookfinder').href = `https://www.bookfinder.com/search/?isbn=${query}&mode=basic&st=sr&ac=qr`;
+      document.getElementById('link-abebooks').href = `https://www.abebooks.com/servlet/SearchResults?isbn=${query}`;
+      document.getElementById('link-amazon').href = `https://www.amazon.com/s?k=${query}`;
+
+      // Set focus to the price field so user can enter price right away
+      document.getElementById('input-price').focus();
+    }
+
+    /* =====================================================================
+       Manual Pre-ISBN Entry Support
+       ===================================================================== */
+    function toggleManualMode() {
+      isManualMode = !isManualMode;
+      const rowTitle = document.getElementById('manual-fields-row');
+      const rowAuthor = document.getElementById('manual-author-field');
+      const rowYear = document.getElementById('manual-year-field');
+      const toggleBtn = document.getElementById('toggle-manual-btn');
+
+      if (isManualMode) {
+        rowTitle.style.display = 'flex';
+        rowAuthor.style.display = 'flex';
+        rowYear.style.display = 'flex';
+        toggleBtn.textContent = '- Return to standard ISBN scanner mode';
+        document.getElementById('manual-title').focus();
+      } else {
+        rowTitle.style.display = 'none';
+        rowAuthor.style.display = 'none';
+        rowYear.style.display = 'none';
+        toggleBtn.textContent = '+ Manual entry for pre-ISBN book';
+        isbnInput.focus();
+      }
+    }
+
+    /* =====================================================================
+       Inventory Management (Save, Render, Stats, CSV)
+       ===================================================================== */
+    function saveBookToInventory() {
+      const priceVal = parseFloat(document.getElementById('input-price').value);
+      if (isNaN(priceVal) || priceVal < 0) {
+        alert("Please set a valid price.");
+        return;
+      }
+
+      let title = currentBook.title;
+      let author = currentBook.author;
+      let year = currentBook.year;
+      let isbn = currentBook.isbn;
+
+      if (isManualMode) {
+        const manTitle = document.getElementById('manual-title').value.trim();
+        const manAuthor = document.getElementById('manual-author').value.trim();
+        const manYear = document.getElementById('manual-year').value.trim();
+        if (manTitle) title = manTitle;
+        if (manAuthor) author = manAuthor;
+        if (manYear) year = manYear;
+        if (!isbn) isbn = 'PRE-ISBN';
+      }
+
+      if (!title || title === 'Ready for scan...') {
+        alert("Please scan a book or enter details before saving.");
+        return;
+      }
+
+      const item = {
+        id: 'bk_' + Date.now(),
+        dateScanned: new Date().toLocaleDateString(),
+        title: title,
+        author: author,
+        year: year,
+        isbn: isbn,
+        coverUrl: currentBook.coverUrl,
+        condition: document.getElementById('select-condition').value,
+        location: document.getElementById('input-location').value.trim() || 'Unassigned',
+        price: priceVal
+      };
+
+      inventory.unshift(item);
+      persistInventory();
+      renderTable();
+      updateStats();
+      playBeep(1200, 'triangle', 0.12);
+
+      // Reset entry forms for subsequent scan
+      document.getElementById('intake-form').reset();
+      document.getElementById('isbn-input').value = '';
+      currentBook = { isbn: '', title: '', author: '', year: '', pages: '', coverUrl: '', categories: '' };
+      
+      if (isManualMode) {
+        toggleManualMode();
+      }
+
+      document.getElementById('display-title').textContent = 'Ready for scan...';
+      document.getElementById('display-author').textContent = 'Pull Eyoyo trigger on book barcode';
+      document.getElementById('display-isbn').textContent = 'ISBN: ---';
+      document.getElementById('display-year').textContent = 'Year: ---';
+      document.getElementById('display-pages').textContent = 'Pages: ---';
+      document.getElementById('display-cover').innerHTML = '<span>Cover Preview</span>';
+      scannerStatusText.textContent = 'Scanner Ready';
+
+      // Re-focus scanner wedge immediately
+      isbnInput.focus();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('inventory-body');
+      const query = document.getElementById('inventory-search').value.toLowerCase().trim();
+      tbody.innerHTML = '';
+
+      const filtered = inventory.filter(item => {
+        return (
+          item.title.toLowerCase().includes(query) ||
+          item.author.toLowerCase().includes(query) ||
+          item.isbn.toLowerCase().includes(query) ||
+          item.location.toLowerCase().includes(query)
+        );
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:2rem;">No inventory logged matching criteria.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        const coverCell = item.coverUrl 
+          ? `<img src="${item.coverUrl}" alt="art" style="width:30px;height:42px;object-fit:cover;border-radius:3px;">`
+          : `<span style="font-size:0.65rem;color:var(--text-muted);">None</span>`;
+
+        tr.innerHTML = `
+          <td style="color:var(--text-muted); font-size:0.75rem;">${item.dateScanned}</td>
+          <td>${coverCell}</td>
+          <td>
+            <strong>${escapeHtml(item.title)}</strong><br>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(item.author)} (${item.year})</span>
+          </td>
+          <td style="font-family:monospace; font-size:0.8rem;">${item.isbn}</td>
+          <td><span class="badge-condition">${item.condition}</span></td>
+          <td><span style="font-size:0.8rem; color:var(--accent);">${escapeHtml(item.location)}</span></td>
+          <td class="badge-price">$${item.price.toFixed(2)}</td>
+          <td>
+            <button class="btn-table-delete" onclick="deleteItem('${item.id}')" title="Delete entry">&times;</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteItem(id) {
+      inventory = inventory.filter(b => b.id !== id);
+      persistInventory();
+      renderTable();
+      updateStats();
+    }
+
+    function updateStats() {
+      const count = inventory.length;
+      const totalVal = inventory.reduce((sum, item) => sum + (item.price || 0), 0);
+
+      document.getElementById('stat-total-count').textContent = count;
+      document.getElementById('stat-total-val').textContent = `$${totalVal.toFixed(2)}`;
+    }
+
+    function persistInventory() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
+    }
+
+    function loadInventory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          inventory = JSON.parse(raw);
+        }
+      } catch (e) {
+        inventory = [];
+      }
+      renderTable();
+      updateStats();
+    }
+
+    /* =====================================================================
+       CSV Export Utility
+       ===================================================================== */
+    function exportToCSV() {
+      if (inventory.length === 0) {
+        alert("Inventory is empty. Scan books before exporting.");
+        return;
+      }
+
+      const headers = ["Date Scanned", "ISBN", "Title", "Author", "Year", "Condition", "Location", "Price USD"];
+      const rows = inventory.map(i => [
+        `"${i.dateScanned}"`,
+        `"${i.isbn}"`,
+        `"${(i.title || '').replace(/"/g, '""')}"`,
+        `"${(i.author || '').replace(/"/g, '""')}"`,
+        `"${i.year}"`,
+        `"${i.condition}"`,
+        `"${(i.location || '').replace(/"/g, '""')}"`,
+        i.price.toFixed(2)
+      ]);
+
+      const csvContent = "data:text/csv;charset=utf-8," 
+        + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      const timestamp = new Date().toISOString().slice(0, 10);
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `salvies_books_inventory_${timestamp}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    /* =====================================================================
+       Modal Dialog Actions
+       ===================================================================== */
+    function openClearModal() {
+      document.getElementById('clear-modal').classList.add('open');
+    }
+
+    function closeClearModal() {
+      document.getElementById('clear-modal').classList.remove('open');
+    }
+
+    function confirmClearInventory() {
+      inventory = [];
+      persistInventory();
+      renderTable();
+      updateStats();
+      closeClearModal();
+    }
+
+    function escapeHtml(string) {
+      if (!string) return '';
+      return String(string)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Initialize application on window load
+    window.onload = function() {
+      loadInventory();
+      isbnInput.focus();
+    };
+  </script>
+</body>
+</html>
