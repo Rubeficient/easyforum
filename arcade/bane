@@ -1,1 +1,2270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Bane of Shadows - The Tree of Life (Build 0.3 - Zero-Dependency Live Multiplayer)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #c8a253;
+      --gold-bright: #f2d07e;
+      --gold-dark: #6e5322;
+      --stone-dark: #0e0e11;
+      --stone-panel: #16161c;
+      --crimson: #8b1e22;
+    }
+    body {
+      font-family: 'Crimson Pro', serif;
+      background-color: #090a0c;
+      color: #e2d9c8;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    .font-mono-code { font-family: 'JetBrains Mono', monospace; }
 
+    /* Gothic Stone & Tarnished Gold Borders */
+    .gothic-panel {
+      background: radial-gradient(circle at top, #1f1e26 0%, #121116 100%);
+      border: 2px solid #594423;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), inset 0 0 20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(235, 198, 117, 0.25);
+    }
+    .gothic-subpanel {
+      background: rgba(10, 10, 14, 0.78);
+      border: 1px solid #3c2f1b;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+    }
+    .gothic-btn {
+      background: linear-gradient(180deg, #3a2d1d 0%, #1e160d 100%);
+      border: 1px solid #8c6d36;
+      color: #edd7a4;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+      transition: all 0.15s ease;
+    }
+    .gothic-btn:hover:not(:disabled) {
+      background: linear-gradient(180deg, #523e26 0%, #2c2012 100%);
+      border-color: #dab365;
+      color: #fff3d6;
+      box-shadow: 0 0 12px rgba(200, 162, 83, 0.35);
+    }
+    .gothic-btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    .gothic-btn-active {
+      background: linear-gradient(180deg, #6b1d20 0%, #3b0d0f 100%) !important;
+      border-color: #e6b85c !important;
+      color: #fff6dc !important;
+      box-shadow: 0 0 14px rgba(180, 35, 35, 0.55), inset 0 0 8px rgba(255, 200, 110, 0.3);
+    }
+    .gothic-btn-primary {
+      background: linear-gradient(180deg, #8b1e22 0%, #4d0d10 100%);
+      border: 2px solid #d4af59;
+      color: #fff2d0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.95);
+      box-shadow: 0 4px 20px rgba(139, 30, 34, 0.6);
+    }
+    .gothic-btn-primary:hover {
+      background: linear-gradient(180deg, #aa252a 0%, #631216 100%);
+      border-color: #ffe299;
+      box-shadow: 0 0 24px rgba(212, 175, 89, 0.65);
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d11; }
+    ::-webkit-scrollbar-thumb { background: #594423; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #8c6d36; }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden relative">
+
+  <!-- ========================================================================= -->
+  <!-- 1. SHADOWBANE CHARACTER CREATION OVERLAY                                 -->
+  <!-- ========================================================================= -->
+  <div id="char-creation-screen" class="fixed inset-0 z-50 bg-stone-950 flex flex-col justify-between p-2 sm:p-4 overflow-y-auto"
+       style="background: radial-gradient(circle at 50% 25%, #1d261d 0%, #0d0d12 70%, #050507 100%);">
+
+    <!-- Top Banner -->
+    <div class="max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between border-b border-amber-900/50 pb-2 mb-2 gap-2">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-amber-950/90 border-2 border-amber-500/80 flex items-center justify-center shadow-lg">
+          <span class="font-cinzel font-black text-amber-300 text-lg">🌳</span>
+        </div>
+        <div>
+          <h1 class="font-cinzel font-bold text-lg sm:text-2xl tracking-widest text-amber-200 uppercase drop-shadow">
+            Bane of Shadows <span class="text-xs font-normal text-amber-500/90 tracking-normal ml-1">Build 0.2 • 100% Live Players</span>
+          </h1>
+          <p class="text-xs text-stone-400 italic -mt-1">Forge your vessel and awaken alongside real travelers beneath the Tree of Life</p>
+        </div>
+      </div>
+
+      <!-- Realm Shard Selector & Live Status -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex items-center gothic-subpanel rounded-lg px-2.5 py-1 border border-amber-800/60 gap-1.5">
+          <span class="font-cinzel text-[11px] uppercase tracking-wider text-amber-400">Shard:</span>
+          <input id="cc-shard-input" type="text" maxlength="24" value="TreeOfLife-Main"
+                 class="bg-transparent text-amber-100 font-mono-code text-xs w-32 focus:outline-none border-b border-amber-700/50 focus:border-amber-400" />
+        </div>
+        <button id="cc-copy-invite" class="gothic-btn px-3 py-1 rounded-lg text-xs font-cinzel font-bold flex items-center gap-1.5">
+          <span>🔗 Copy Friend Invite URL</span>
+        </button>
+        <span id="cc-online-badge" class="text-xs bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 px-3 py-1 rounded-full font-mono-code">
+          🟢 Realm Ready
+        </span>
+      </div>
+    </div>
+
+    <!-- Main 3-Column Character Builder Grid -->
+    <div class="max-w-7xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 my-auto overflow-visible lg:overflow-hidden">
+
+      <!-- LEFT COLUMN: Race & Base Class Selection (4 cols) -->
+      <div class="lg:col-span-4 gothic-panel rounded-xl p-3.5 flex flex-col justify-between overflow-y-auto max-h-[82vh]">
+        <div class="space-y-3">
+          <!-- Name Input -->
+          <div>
+            <label class="block font-cinzel text-xs uppercase tracking-wider text-amber-300/90 mb-1">Character Name</label>
+            <div class="flex gap-1.5">
+              <input id="cc-name-input" type="text" maxlength="16" placeholder="Enter thy name..."
+                     class="flex-1 gothic-subpanel px-3 py-1.5 rounded text-amber-100 text-base focus:outline-none focus:border-amber-500" />
+              <button id="cc-random-name" title="Generate Lore Name" class="gothic-btn px-3 py-1.5 rounded text-xs font-cinzel font-semibold">
+                🎲 Random
+              </button>
+            </div>
+          </div>
+
+          <!-- Race Selection -->
+          <div>
+            <div class="flex justify-between items-baseline mb-1">
+              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300/90">Select Race</label>
+              <span id="cc-race-tagline" class="text-xs italic text-amber-500/80">Empire Builders</span>
+            </div>
+            <div id="cc-race-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-1.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Base Class Selection -->
+          <div>
+            <div class="flex justify-between items-baseline mb-1">
+              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300/90">Base Calling (Class)</label>
+              <span id="cc-class-weapon-label" class="text-xs italic text-stone-400">Broadblade & Targe</span>
+            </div>
+            <div id="cc-class-grid" class="grid grid-cols-2 gap-1.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Lore Description Box -->
+          <div class="gothic-subpanel rounded-lg p-2.5 text-xs leading-relaxed text-stone-300 border border-amber-950/60">
+            <div id="cc-lore-title" class="font-cinzel font-bold text-amber-300 text-sm mb-0.5">Human Fighter</div>
+            <p id="cc-lore-desc" class="italic text-stone-300/90">
+              Adaptable and ambitious, Humans are the most numerous folk of the shattered realms.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER COLUMN: Live 2.5D Avatar Preview & Appearance Customizer (4 cols) -->
+      <div class="lg:col-span-4 gothic-panel rounded-xl p-3.5 flex flex-col justify-between items-center relative">
+        <div class="w-full flex justify-between items-center border-b border-amber-900/40 pb-1.5">
+          <span class="font-cinzel text-xs uppercase tracking-wider text-amber-300">Vessel Visage</span>
+          <span id="cc-summary-pill" class="text-xs font-semibold text-amber-200/90 bg-amber-950/60 px-2.5 py-0.5 rounded border border-amber-700/40">
+            Level 1 Human Fighter
+          </span>
+        </div>
+
+        <!-- Interactive Character Preview Canvas -->
+        <div class="relative w-full flex-1 min-h-[220px] flex items-center justify-center my-2 gothic-subpanel rounded-xl overflow-hidden">
+          <canvas id="cc-preview-canvas" width="300" height="250" class="w-[300px] h-[250px]"></canvas>
+          <div class="absolute bottom-2 inset-x-3 flex justify-between items-center text-[11px] text-stone-400 pointer-events-none">
+            <span> Sanctuary of First Roots</span>
+            <span class="text-amber-400/80">Click character to test swing</span>
+          </div>
+        </div>
+
+        <!-- Appearance Customization Controls -->
+        <div class="w-full space-y-2.5 pt-1">
+          <!-- Skin Tone -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-cinzel text-stone-300">Skin Complexion</span>
+            <div id="cc-skin-swatches" class="flex gap-1.5"></div>
+          </div>
+          <!-- Hair / Horn Color -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-cinzel text-stone-300">Hair / Horn Crest</span>
+            <div id="cc-hair-swatches" class="flex gap-1.5"></div>
+          </div>
+          <!-- Armor / Tunic Trim -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-cinzel text-stone-300">Heraldic Armor Dye</span>
+            <div id="cc-armor-swatches" class="flex gap-1.5"></div>
+          </div>
+          <!-- Hair/Feature Style Toggle -->
+          <div class="flex items-center justify-between pt-0.5">
+            <span class="text-xs font-cinzel text-stone-300">Head / Crest Style</span>
+            <div class="flex items-center gap-2">
+              <button id="cc-style-prev" class="gothic-btn px-2.5 py-0.5 rounded text-xs">◀</button>
+              <span id="cc-style-label" class="text-xs font-mono-code text-amber-200 w-24 text-center">Style 1</span>
+              <button id="cc-style-next" class="gothic-btn px-2.5 py-0.5 rounded text-xs">▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Attributes & Creation Runes (4 cols) -->
+      <div class="lg:col-span-4 gothic-panel rounded-xl p-3.5 flex flex-col justify-between overflow-y-auto max-h-[82vh]">
+        <div class="space-y-3">
+          <!-- Attribute Point Allocation -->
+          <div>
+            <div class="flex items-center justify-between border-b border-amber-900/40 pb-1 mb-2">
+              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300">Attribute Allocation</label>
+              <div class="text-xs">
+                <span class="text-stone-400">Points Remaining:</span>
+                <span id="cc-points-left" class="font-mono-code font-bold text-emerald-400 text-sm ml-1">25</span>
+              </div>
+            </div>
+
+            <div id="cc-stats-list" class="space-y-1.5">
+              <!-- Populated by JS: STR, DEX, CON, INT, SPI -->
+            </div>
+
+            <!-- Derived Vitals Preview -->
+            <div class="grid grid-cols-3 gap-1.5 mt-2.5 pt-2 border-t border-stone-800 text-center">
+              <div class="gothic-subpanel p-1.5 rounded">
+                <div class="text-[10px] uppercase text-stone-400">Health</div>
+                <div id="cc-derived-hp" class="font-mono-code text-xs font-bold text-red-400">180</div>
+              </div>
+              <div class="gothic-subpanel p-1.5 rounded">
+                <div class="text-[10px] uppercase text-stone-400">Mana</div>
+                <div id="cc-derived-mp" class="font-mono-code text-xs font-bold text-sky-400">110</div>
+              </div>
+              <div class="gothic-subpanel p-1.5 rounded">
+                <div class="text-[10px] uppercase text-stone-400">Stamina</div>
+                <div id="cc-derived-st" class="font-mono-code text-xs font-bold text-amber-300">140</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Creation Trait Runes (Pick up to 2) -->
+          <div>
+            <div class="flex items-center justify-between border-b border-amber-900/40 pb-1 mb-1.5">
+              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300">Creation Runes</label>
+              <span id="cc-rune-counter" class="text-xs text-amber-400/90 font-mono-code">Selected: 1 / 2</span>
+            </div>
+            <div id="cc-runes-list" class="space-y-1.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Spawn Button -->
+        <div class="pt-3 mt-2 border-t border-amber-900/50 space-y-1.5">
+          <div class="flex items-center justify-between text-[11px] text-stone-400 px-1">
+            <span id="cc-saved-status" class="italic text-emerald-400/90">Character auto-saved to browser</span>
+            <button id="cc-reset-char" class="text-amber-400/80 hover:text-amber-300 underline">Reset Defaults</button>
+          </div>
+          <button id="btn-spawn-tree" class="w-full gothic-btn-primary py-3 rounded-lg font-cinzel font-bold text-base tracking-widest uppercase flex items-center justify-center gap-2 cursor-pointer">
+            <span>✨ Awaken at the Tree of Life</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Banner -->
+  <div id="toast-banner" class="fixed top-16 left-1/2 -translate-x-1/2 z-[60] gothic-panel px-4 py-2 rounded-full border border-amber-400 text-amber-200 font-cinzel text-xs shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300">
+    Invite Link Copied!
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. OVERWORLD HUD & GAMEPLAY INTERFACE                                     -->
+  <!-- ========================================================================= -->
+
+  <!-- Top Left: Player Self Portrait & Status Bars -->
+  <div id="hud-top-left" class="fixed top-3 left-3 z-20 flex items-center gap-3 pointer-events-auto hidden">
+    <div class="gothic-panel rounded-xl p-2.5 flex items-center gap-3 min-w-[250px]">
+      <div class="w-11 h-11 rounded-lg bg-stone-900 border border-amber-600/70 flex flex-col items-center justify-center text-center relative">
+        <span id="hud-self-icon" class="text-lg">⚔️</span>
+        <span class="text-[9px] font-mono-code bg-amber-900/90 text-amber-200 px-1 rounded -mt-1">Lv.1</span>
+      </div>
+      <div class="flex-1">
+        <div class="flex items-baseline justify-between">
+          <span id="hud-self-name" class="font-cinzel font-bold text-sm text-amber-200 truncate">Vaelen</span>
+          <span id="hud-self-raceclass" class="text-[11px] text-stone-400 italic">Human Fighter</span>
+        </div>
+        <!-- Health / Mana / Stamina Bars -->
+        <div class="space-y-1 mt-1">
+          <div class="w-full h-2 bg-stone-950 rounded overflow-hidden border border-stone-800">
+            <div id="hud-bar-hp" class="h-full bg-gradient-to-r from-red-800 to-red-500 w-full"></div>
+          </div>
+          <div class="w-full h-1.5 bg-stone-950 rounded overflow-hidden border border-stone-800">
+            <div id="hud-bar-mp" class="h-full bg-gradient-to-r from-blue-800 to-sky-400 w-full"></div>
+          </div>
+          <div class="w-full h-1.5 bg-stone-950 rounded overflow-hidden border border-stone-800">
+            <div id="hud-bar-st" class="h-full bg-gradient-to-r from-amber-700 to-yellow-400 w-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sanctuary Safe-Zone Indicator -->
+    <div id="sanctuary-banner" class="gothic-panel px-3 py-1.5 rounded-full border border-emerald-600/60 flex items-center gap-2 shadow-lg transition-opacity duration-500">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="hud-net-status-pill" class="font-cinzel text-xs text-emerald-300 tracking-wider uppercase">Aegis of the Tree of Life (Sanctuary)</span>
+      <button id="btn-top-left-invite" class="gothic-btn px-2 py-0.5 rounded text-[10px] font-cinzel font-bold ml-1">🔗 Copy Invite Link</button>
+    </div>
+  </div>
+
+  <!-- Top Center: Target Inspection Frame (When clicking another character or the Tree) -->
+  <div id="hud-target-frame" class="fixed top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto hidden">
+    <div class="gothic-panel rounded-xl px-4 py-2.5 min-w-[300px] max-w-[92vw] border border-amber-500/80 shadow-2xl relative">
+      <button id="btn-close-target" class="absolute top-1.5 right-2 text-stone-400 hover:text-amber-300 text-xs font-mono-code px-1.5 py-0.5 rounded">✕</button>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-amber-950/90 border border-amber-500/70 flex items-center justify-center font-cinzel font-bold text-amber-300 text-lg">
+          <span id="target-badge">🌳</span>
+        </div>
+        <div>
+          <div id="target-name" class="font-cinzel font-bold text-sm text-amber-200">The First Tree of Life</div>
+          <div id="target-subtitle" class="text-[11px] italic text-stone-400">Cradle of Creation • Safe Sanctuary</div>
+        </div>
+      </div>
+      <div id="target-stats-row" class="flex flex-wrap gap-3 text-[11px] font-mono-code text-stone-300 mt-2 pt-1.5 border-t border-stone-800"></div>
+      <div id="target-runes-row" class="text-[10px] text-amber-400/90 italic mt-0.5"></div>
+    </div>
+  </div>
+
+  <!-- Top Right: Minimap & Live Realm Telemetry -->
+  <div id="hud-top-right" class="fixed top-3 right-3 z-20 flex flex-col items-end gap-2 pointer-events-auto hidden">
+    <div class="gothic-panel p-2.5 rounded-xl flex flex-col items-center min-w-[175px]">
+      <div class="w-full flex justify-between items-center text-[10px] font-cinzel text-amber-300 px-0.5 mb-1">
+        <span id="hud-shard-label" class="truncate max-w-[95px]">TreeOfLife-Main</span>
+        <span id="hud-coords" class="font-mono-code text-stone-400">1600, 1600</span>
+      </div>
+      <canvas id="minimap-canvas" width="144" height="144" class="rounded-lg border border-amber-900/70 bg-stone-950"></canvas>
+
+      <!-- Live WebSocket Status & Ping -->
+      <div class="w-full flex justify-between items-center mt-1.5 px-0.5 text-[10px] font-mono-code">
+        <div class="flex items-center gap-1">
+          <span id="hud-net-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="player-count-hud" class="text-emerald-400 font-bold">1 Human Online</span>
+        </div>
+        <span id="hud-ping" class="text-stone-400">-- ms</span>
+      </div>
+
+      <!-- Roster & Action Buttons -->
+      <div class="w-full grid grid-cols-2 gap-1 mt-1.5">
+        <button id="btn-hud-invite" class="gothic-btn px-2 py-1 rounded text-[10px] font-cinzel font-semibold">🔗 Invite</button>
+        <button id="btn-recreate" class="gothic-btn px-2 py-1 rounded text-[10px] font-cinzel font-semibold" title="Edit Character or Switch Shard">⚙️ Character</button>
+      </div>
+
+      <!-- Live Online Player Roster List -->
+      <div class="w-full mt-1.5 pt-1.5 border-t border-stone-800/80">
+        <div class="text-[9px] font-cinzel uppercase tracking-wider text-amber-400/90 mb-1">Souls in Shard</div>
+        <div id="hud-roster-list" class="max-h-24 overflow-y-auto space-y-0.5 text-[11px] pr-0.5">
+          <!-- Populated dynamically with real connected players -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Overworld Canvas -->
+  <main class="relative w-full h-full">
+    <canvas id="game-canvas" class="w-full h-full block cursor-pointer"></canvas>
+
+    <!-- Mobile Touch Joystick -->
+    <div id="joystick-zone" class="fixed bottom-44 right-6 z-20 w-28 h-28 rounded-full bg-stone-900/60 border border-amber-700/50 backdrop-blur-sm hidden pointer-events-auto touch-none items-center justify-center">
+      <div id="joystick-stick" class="w-11 h-11 rounded-full bg-amber-500/80 shadow-md"></div>
+    </div>
+  </main>
+
+  <!-- Bottom Left: Classic MMO Multi-Channel Chat & Emote Bar -->
+  <div id="hud-chat-panel" class="fixed bottom-3 left-3 z-20 w-[94vw] sm:w-[430px] pointer-events-auto hidden">
+    <div class="gothic-panel rounded-xl p-2.5 flex flex-col gap-1.5 bg-opacity-90">
+      <!-- Channel / Quick Emote Buttons -->
+      <div class="flex items-center justify-between gap-1 border-b border-stone-800 pb-1">
+        <div class="flex items-center gap-1">
+          <span class="font-cinzel text-[11px] text-amber-300 uppercase tracking-wider mr-1">Realm Chat</span>
+          <button data-emote="/bow" class="emote-btn gothic-btn px-2 py-0.5 rounded text-[11px]">🙇 Bow</button>
+          <button data-emote="/wave" class="emote-btn gothic-btn px-2 py-0.5 rounded text-[11px]">👋 Wave</button>
+          <button data-emote="/cheer" class="emote-btn gothic-btn px-2 py-0.5 rounded text-[11px]">⚔️ Cheer</button>
+          <button data-emote="/sit" class="emote-btn gothic-btn px-2 py-0.5 rounded text-[11px]">🧘 Sit</button>
+        </div>
+        <span class="text-[10px] text-stone-400 hidden sm:inline">WASD or Click Ground</span>
+      </div>
+
+      <!-- Scrollable Chat History Log -->
+      <div id="chat-log" class="h-28 overflow-y-auto text-xs space-y-1 px-1.5 py-1 gothic-subpanel rounded">
+        <div class="text-amber-300/90 italic">[System] The winds stir through the tall grass around the Tree of Life...</div>
+      </div>
+
+      <!-- Chat Input Bar -->
+      <div class="flex items-center gap-1.5">
+        <select id="chat-channel" class="gothic-subpanel text-amber-200 text-xs px-2 py-1.5 rounded border border-amber-900/60 focus:outline-none">
+          <option value="say">/say</option>
+          <option value="shout">/shout</option>
+          <option value="emote">/emote</option>
+        </select>
+        <input id="chat-input" type="text" maxlength="90" placeholder="Speak to those gathered beneath the Tree (Enter)..."
+               autocomplete="off"
+               class="flex-1 gothic-subpanel text-stone-100 placeholder-stone-500 text-xs px-3 py-1.5 rounded focus:outline-none focus:border-amber-500" />
+        <button id="btn-send-chat" class="gothic-btn px-3 py-1.5 rounded font-cinzel text-xs font-bold">
+          Speak
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. LORE DATA, MULTIPLAYER SYNC & OVERWORLD ENGINE                         -->
+  <!-- ========================================================================= -->
+  <!-- 3. LORE DATA, LIVE WEBSOCKET MULTIPLAYER & OVERWORLD ENGINE               -->
+  <!-- ========================================================================= -->
+  <script type="module">
+    // --- SHADOWBANE RACES ---
+    const RACES = {
+      Human: {
+        name: 'Human',
+        tagline: 'Empire Builders',
+        scale: 1.0,
+        speedMod: 1.0,
+        baseStats: { str: 40, dex: 40, con: 40, int: 40, spi: 40 },
+        lore: 'Balanced in body and mind, Humans founded the great kingdoms of old before the Turning. They adapt effortlessly to any martial or arcane calling.'
+      },
+      Aelfborn: {
+        name: 'Aelfborn',
+        tagline: 'Half-Elven Scions',
+        scale: 0.98,
+        speedMod: 1.05,
+        baseStats: { str: 35, dex: 48, con: 35, int: 44, spi: 38 },
+        lore: 'Born of Human and Elven bloodlines, the sharp-eared Aelfborn walk between two worlds with uncanny grace and keen perception.'
+      },
+      Dwarf: {
+        name: 'Dwarf',
+        tagline: 'Stone-Forged',
+        scale: 0.88,
+        speedMod: 0.93,
+        baseStats: { str: 48, dex: 32, con: 55, int: 32, spi: 33 },
+        lore: 'Carved from the living granite of the deep mountains by Morloch himself, Dwarves possess unyielding endurance and braided beards of iron pride.'
+      },
+      Irekei: {
+        name: 'Irekei',
+        tagline: 'Desert Nomads',
+        scale: 1.05,
+        speedMod: 1.07,
+        baseStats: { str: 38, dex: 52, con: 35, int: 42, spi: 33 },
+        lore: 'Fierce, pale-skinned desert elves of the burning wastes. Marked with tribal war-tattoos and glowing dark eyes, they strike like scorpions.'
+      },
+      Minotaur: {
+        name: 'Minotaur',
+        tagline: 'Labyrinth Titan',
+        scale: 1.28,
+        speedMod: 0.96,
+        baseStats: { str: 62, dex: 30, con: 56, int: 25, spi: 27 },
+        lore: 'Towering horned beastmen of immense muscular bulk. Few can withstand the earth-shaking charge of a Minotaur warrior in open battle.'
+      },
+      Centaur: {
+        name: 'Centaur',
+        tagline: 'Plains Outrider',
+        scale: 1.18,
+        speedMod: 1.18,
+        baseStats: { str: 48, dex: 44, con: 48, int: 30, spi: 30 },
+        lore: 'Four-legged equine lords of the boundless steppes. None can outrun a Centaur coursing through the tall grasslands of the realm.'
+      },
+      Nephilim: {
+        name: 'Nephilim',
+        tagline: 'Abyssal-Winged',
+        scale: 1.08,
+        speedMod: 1.06,
+        baseStats: { str: 42, dex: 42, con: 34, int: 50, spi: 32 },
+        lore: 'Cursed crossbreeds of celestial and dark abyssal lineages, bearing shadowy bat-like wings upon their backs and innate mastery of sorcery.'
+      }
+    };
+
+    // --- BASE CLASSES ---
+    const CLASSES = {
+      Fighter: {
+        name: 'Fighter',
+        weapon: 'Broadblade & Shield',
+        icon: '⚔️',
+        statBonuses: { str: 5, dex: 0, con: 5, int: 0, spi: 0 },
+        desc: 'Clad in forged plate and mail, Fighters master steel and shield to dominate the front lines.'
+      },
+      Healer: {
+        name: 'Healer',
+        weapon: 'Blessed Scepter & Tome',
+        icon: '✨',
+        statBonuses: { str: 0, dex: 0, con: 3, int: 2, spi: 5 },
+        desc: 'Devoted channelers of the Tree of Life, mending mortal wounds and warding allies from death.'
+      },
+      Mage: {
+        name: 'Mage',
+        weapon: 'Runed Greatstaff',
+        icon: '🔮',
+        statBonuses: { str: 0, dex: 2, con: 0, int: 6, spi: 2 },
+        desc: 'Scholars of the high arcane arts who bend elemental fire, frost, and eldritch lightning.'
+      },
+      Rogue: {
+        name: 'Rogue',
+        weapon: 'Twin Kris Daggers',
+        icon: '🗡️',
+        statBonuses: { str: 2, dex: 6, con: 2, int: 0, spi: 0 },
+        desc: 'Masters of stealth, poison, and swift twin blades who strike unseen from the tall grass.'
+      }
+    };
+
+    // --- STARTING CREATION RUNES ---
+    const RUNES = [
+      { id: 'mighty', name: 'Blood of the Ancients', bonusText: '+8 STR, +15 Health', mods: { str: 8, dex: 0, con: 3, int: 0, spi: 0 } },
+      { id: 'fleet', name: 'Wind-Walker Signet', bonusText: '+8 DEX, +8% Move Speed', mods: { str: 0, dex: 8, con: 0, int: 0, spi: 0 }, speedBonus: 0.08 },
+      { id: 'iron', name: 'Heart of Granite', bonusText: '+10 CON, Stone Resilience', mods: { str: 0, dex: 0, con: 10, int: 0, spi: 0 } },
+      { id: 'sage', name: 'Eye of the Eldritch', bonusText: '+8 INT, +8 SPI', mods: { str: 0, dex: 0, con: 0, int: 8, spi: 8 } },
+      { id: 'treechild', name: 'Seed of the First Tree', bonusText: '+4 All Attributes', mods: { str: 4, dex: 4, con: 4, int: 4, spi: 4 } }
+    ];
+
+    const SKIN_COLORS = ['#f3cfb3', '#d9a17c', '#9e6b49', '#593b28', '#c8d1db', '#8f9aa8', '#7d5841', '#484952'];
+    const HAIR_COLORS = ['#1a1718', '#4f2c1d', '#9e3324', '#d6a84f', '#dcd9e6', '#2e5941', '#673ab7', '#801b36'];
+    const ARMOR_COLORS = ['#8b1e22', '#1e3a5f', '#1f4d36', '#614119', '#4a235a', '#2c3038', '#b8860b', '#80391e'];
+
+    const FANTASY_NAMES = [
+      'Vaelen', 'Kaelith', 'Thorgar', 'Morwen', 'Drakok', 'Zulrak', 'Aelindra', 'Baelor',
+      'Sariel', 'Malakor', 'Elowen', 'Gorim', 'Nyxara', 'Caelum', 'Valerius', 'Vespera',
+      'Azrael', 'Tauron', 'Sylvara', 'Fenris', 'Orym', 'Korgan', 'Zephyros', 'Valkor'
+    ];
+
+    // --- WORLD CONSTANTS ---
+    const WORLD_SIZE = 3200;
+    const TREE_X = 1600;
+    const TREE_Y = 1600;
+    const TREE_TRUNK_RADIUS = 95;
+    const SANCTUARY_RADIUS = 520;
+    const BASE_MOVE_SPEED = 215;
+    const STORAGE_KEY = 'shadowbane_tree_of_life_char_v2';
+
+    // Read ?shard= from URL if present so friends clicking an invite link join the exact same shard
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentShard = (urlParams.get('shard') || 'TreeOfLife-Main').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24) || 'TreeOfLife-Main';
+
+    // Unique per-tab session ID so you can even test 2 characters in 2 browser tabs side-by-side
+    const sessionRandomId = 'soul_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36).slice(-4);
+    let localUserId = sessionRandomId;
+
+    // --- CHARACTER CREATION STATE (WITH LOCALSTORAGE PERSISTENCE) ---
+    const defaultCCState = () => ({
+      name: FANTASY_NAMES[Math.floor(Math.random() * FANTASY_NAMES.length)],
+      race: 'Human',
+      charClass: 'Fighter',
+      skinColor: SKIN_COLORS[0],
+      hairColor: HAIR_COLORS[1],
+      armorColor: ARMOR_COLORS[0],
+      headStyle: 0,
+      pointsRemaining: 25,
+      allocated: { str: 0, dex: 0, con: 0, int: 0, spi: 0 },
+      selectedRunes: ['treechild']
+    });
+
+    let ccState = defaultCCState();
+    try {
+      const savedRaw = localStorage.getItem(STORAGE_KEY);
+      if (savedRaw) {
+        const parsed = JSON.parse(savedRaw);
+        if (parsed && RACES[parsed.race] && CLASSES[parsed.charClass]) {
+          ccState = { ...defaultCCState(), ...parsed };
+        }
+      }
+    } catch (e) {}
+
+    function saveCharacterProfile() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(ccState));
+      } catch (e) {}
+    }
+
+    // --- OVERWORLD LOCAL PLAYER STATE ---
+    let hasSpawned = false;
+    let selectedTargetId = null;
+
+    const localPlayer = {
+      id: localUserId,
+      name: ccState.name,
+      race: ccState.race,
+      charClass: ccState.charClass,
+      skinColor: ccState.skinColor,
+      hairColor: ccState.hairColor,
+      armorColor: ccState.armorColor,
+      headStyle: ccState.headStyle || 0,
+      stats: { str: 44, dex: 44, con: 44, int: 44, spi: 44 },
+      runes: ['Seed of the First Tree'],
+      x: TREE_X,
+      y: TREE_Y + 220,
+      targetX: null,
+      targetY: null,
+      facing: 1,
+      isMoving: false,
+      sitting: false,
+      emote: null,
+      emoteTimer: 0,
+      swingTimer: 0,
+      chat: '',
+      chatType: 'say',
+      chatTimestamp: 0,
+      spawnBeamTimer: 0
+    };
+
+    // 100% Real Human Players Map (Zero AI Bots)
+    const remotePlayers = new Map();
+
+    // =========================================================================
+    // TOAST & INVITE LINK HELPER
+    // =========================================================================
+    function showToast(msg) {
+      const t = document.getElementById('toast-banner');
+      t.textContent = msg;
+      t.style.opacity = '1';
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 2800);
+    }
+
+    function copyInviteLink() {
+      const cleanShard = (document.getElementById('cc-shard-input').value.trim() || 'TreeOfLife-Main').replace(/[^a-zA-Z0-9_-]/g, '');
+      const url = new URL(window.location.href);
+      url.searchParams.set('shard', cleanShard);
+      const shareStr = url.toString();
+
+      const tempInput = document.createElement('textarea');
+      tempInput.value = shareStr;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast(`Invite Link Copied for Shard "${cleanShard}"! Send it to your friend.`);
+    }
+
+    document.getElementById('cc-copy-invite')?.addEventListener('click', copyInviteLink);
+    document.getElementById('btn-hud-invite')?.addEventListener('click', copyInviteLink);
+    document.getElementById('btn-top-left-invite')?.addEventListener('click', copyInviteLink);
+
+    // =========================================================================
+    // CHARACTER CREATION UI LOGIC
+    // =========================================================================
+    const ccShardInput = document.getElementById('cc-shard-input');
+    ccShardInput.value = currentShard;
+    ccShardInput.addEventListener('change', () => {
+      const nextShard = ccShardInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'TreeOfLife-Main';
+      ccShardInput.value = nextShard;
+      if (nextShard !== currentShard) {
+        switchShard(nextShard);
+      }
+    });
+
+    const ccNameInput = document.getElementById('cc-name-input');
+    ccNameInput.value = ccState.name;
+    ccNameInput.addEventListener('input', (e) => {
+      ccState.name = e.target.value.trim() || 'Wanderer';
+      saveCharacterProfile();
+    });
+
+    document.getElementById('cc-random-name').addEventListener('click', () => {
+      const pick = FANTASY_NAMES[Math.floor(Math.random() * FANTASY_NAMES.length)] +
+                   (Math.random() < 0.35 ? ' ' + ['Ash', 'Bane', 'Root', 'Thorn', 'Vane', 'Crow'][Math.floor(Math.random() * 6)] : '');
+      ccState.name = pick;
+      ccNameInput.value = pick;
+      saveCharacterProfile();
+    });
+
+    document.getElementById('cc-reset-char').addEventListener('click', () => {
+      ccState = defaultCCState();
+      ccNameInput.value = ccState.name;
+      saveCharacterProfile();
+      renderCreationUI();
+      showToast('Character reset to default starting values.');
+    });
+
+    function computeFinalStats() {
+      const rBase = RACES[ccState.race].baseStats;
+      const cBonus = CLASSES[ccState.charClass].statBonuses;
+      const totals = {
+        str: rBase.str + cBonus.str + ccState.allocated.str,
+        dex: rBase.dex + cBonus.dex + ccState.allocated.dex,
+        con: rBase.con + cBonus.con + ccState.allocated.con,
+        int: rBase.int + cBonus.int + ccState.allocated.int,
+        spi: rBase.spi + cBonus.spi + ccState.allocated.spi
+      };
+      ccState.selectedRunes.forEach(rId => {
+        const rune = RUNES.find(r => r.id === rId);
+        if (rune) {
+          totals.str += rune.mods.str;
+          totals.dex += rune.mods.dex;
+          totals.con += rune.mods.con;
+          totals.int += rune.mods.int;
+          totals.spi += rune.mods.spi;
+        }
+      });
+      return totals;
+    }
+
+    function renderCreationUI() {
+      saveCharacterProfile();
+
+      // 1. Races Grid
+      const raceGrid = document.getElementById('cc-race-grid');
+      raceGrid.innerHTML = '';
+      Object.keys(RACES).forEach(rKey => {
+        const r = RACES[rKey];
+        const btn = document.createElement('button');
+        const active = ccState.race === rKey;
+        btn.className = `gothic-btn px-2.5 py-1.5 rounded text-left flex items-center justify-between ${active ? 'gothic-btn-active' : ''}`;
+        btn.innerHTML = `<span class="font-cinzel text-xs font-bold">${r.name}</span><span class="text-[10px] opacity-75">${r.tagline.split(' ')[0]}</span>`;
+        btn.onclick = () => {
+          ccState.race = rKey;
+          if (rKey === 'Irekei') ccState.skinColor = '#c8d1db';
+          if (rKey === 'Minotaur') ccState.skinColor = '#593b28';
+          renderCreationUI();
+        };
+        raceGrid.appendChild(btn);
+      });
+
+      // 2. Classes Grid
+      const classGrid = document.getElementById('cc-class-grid');
+      classGrid.innerHTML = '';
+      Object.keys(CLASSES).forEach(cKey => {
+        const c = CLASSES[cKey];
+        const btn = document.createElement('button');
+        const active = ccState.charClass === cKey;
+        btn.className = `gothic-btn px-2.5 py-2 rounded text-left flex items-center gap-2 ${active ? 'gothic-btn-active' : ''}`;
+        btn.innerHTML = `<span class="text-base">${c.icon}</span><div><div class="font-cinzel text-xs font-bold">${c.name}</div></div>`;
+        btn.onclick = () => {
+          ccState.charClass = cKey;
+          renderCreationUI();
+        };
+        classGrid.appendChild(btn);
+      });
+
+      // 3. Lore & Taglines
+      const raceObj = RACES[ccState.race];
+      const classObj = CLASSES[ccState.charClass];
+      document.getElementById('cc-race-tagline').textContent = raceObj.tagline;
+      document.getElementById('cc-class-weapon-label').textContent = classObj.weapon;
+      document.getElementById('cc-lore-title').textContent = `${raceObj.name} ${classObj.name}`;
+      document.getElementById('cc-lore-desc').textContent = `${raceObj.lore} ${classObj.desc}`;
+      document.getElementById('cc-summary-pill').textContent = `Level 1 ${raceObj.name} ${classObj.name}`;
+
+      // 4. Swatches
+      renderSwatchRow('cc-skin-swatches', SKIN_COLORS, ccState.skinColor, (val) => { ccState.skinColor = val; renderCreationUI(); });
+      renderSwatchRow('cc-hair-swatches', HAIR_COLORS, ccState.hairColor, (val) => { ccState.hairColor = val; renderCreationUI(); });
+      renderSwatchRow('cc-armor-swatches', ARMOR_COLORS, ccState.armorColor, (val) => { ccState.armorColor = val; renderCreationUI(); });
+      document.getElementById('cc-style-label').textContent = `Crest ${ccState.headStyle + 1} / 4`;
+
+      // 5. Attribute Allocation
+      document.getElementById('cc-points-left').textContent = ccState.pointsRemaining;
+      const statsList = document.getElementById('cc-stats-list');
+      statsList.innerHTML = '';
+      const totals = computeFinalStats();
+      const statMeta = [
+        { key: 'str', label: 'Strength', desc: 'Melee damage & carry weight' },
+        { key: 'dex', label: 'Dexterity', desc: 'Accuracy, dodge & agility' },
+        { key: 'con', label: 'Constitution', desc: 'Health & physical vitality' },
+        { key: 'int', label: 'Intelligence', desc: 'Arcane power & mana pool' },
+        { key: 'spi', label: 'Spirit', desc: 'Magical resistance & regeneration' }
+      ];
+
+      statMeta.forEach(st => {
+        const row = document.createElement('div');
+        row.className = 'gothic-subpanel px-2.5 py-1.5 rounded flex items-center justify-between';
+        row.innerHTML = `
+          <div>
+            <div class="font-cinzel text-xs font-bold text-amber-200">${st.label}</div>
+            <div class="text-[10px] text-stone-400">${st.desc}</div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button data-stat="${st.key}" data-dir="-5" class="stat-btn gothic-btn px-1.5 py-0.5 rounded text-[10px]" ${ccState.allocated[st.key] < 5 ? 'disabled opacity-40' : ''}>-5</button>
+            <button data-stat="${st.key}" data-dir="-1" class="stat-btn gothic-btn px-2 py-0.5 rounded text-xs" ${ccState.allocated[st.key] <= 0 ? 'disabled opacity-40' : ''}>-</button>
+            <span class="font-mono-code font-bold text-sm text-amber-300 w-9 text-center">${totals[st.key]}</span>
+            <button data-stat="${st.key}" data-dir="1" class="stat-btn gothic-btn px-2 py-0.5 rounded text-xs" ${ccState.pointsRemaining <= 0 ? 'disabled opacity-40' : ''}>+</button>
+            <button data-stat="${st.key}" data-dir="5" class="stat-btn gothic-btn px-1.5 py-0.5 rounded text-[10px]" ${ccState.pointsRemaining < 5 ? 'disabled opacity-40' : ''}>+5</button>
+          </div>
+        `;
+        statsList.appendChild(row);
+      });
+
+      statsList.querySelectorAll('.stat-btn').forEach(btn => {
+        btn.onclick = () => {
+          const k = btn.dataset.stat;
+          const delta = parseInt(btn.dataset.dir, 10);
+          if (delta > 0 && ccState.pointsRemaining >= delta) {
+            ccState.allocated[k] += delta;
+            ccState.pointsRemaining -= delta;
+          } else if (delta < 0 && ccState.allocated[k] >= Math.abs(delta)) {
+            ccState.allocated[k] += delta;
+            ccState.pointsRemaining -= delta;
+          }
+          renderCreationUI();
+        };
+      });
+
+      // Derived Vitals
+      document.getElementById('cc-derived-hp').textContent = Math.round(80 + totals.con * 3.5 + totals.str * 0.6);
+      document.getElementById('cc-derived-mp').textContent = Math.round(40 + totals.int * 2.8 + totals.spi * 1.5);
+      document.getElementById('cc-derived-st').textContent = Math.round(60 + totals.con * 2.0 + totals.dex * 1.4);
+
+      // 6. Creation Runes
+      document.getElementById('cc-rune-counter').textContent = `Selected: ${ccState.selectedRunes.length} / 2`;
+      const runesList = document.getElementById('cc-runes-list');
+      runesList.innerHTML = '';
+      RUNES.forEach(rune => {
+        const isSelected = ccState.selectedRunes.includes(rune.id);
+        const btn = document.createElement('button');
+        btn.className = `w-full gothic-btn px-2.5 py-1.5 rounded text-left flex items-center justify-between ${isSelected ? 'gothic-btn-active' : ''}`;
+        btn.innerHTML = `
+          <div>
+            <div class="font-cinzel text-xs font-bold">❖ ${rune.name}</div>
+            <div class="text-[10px] text-amber-300/80">${rune.bonusText}</div>
+          </div>
+          <span class="text-xs font-mono-code">${isSelected ? 'EQUIPPED' : 'SELECT'}</span>
+        `;
+        btn.onclick = () => {
+          if (isSelected) {
+            ccState.selectedRunes = ccState.selectedRunes.filter(id => id !== rune.id);
+          } else {
+            if (ccState.selectedRunes.length >= 2) ccState.selectedRunes.shift();
+            ccState.selectedRunes.push(rune.id);
+          }
+          renderCreationUI();
+        };
+        runesList.appendChild(btn);
+      });
+    }
+
+    function renderSwatchRow(containerId, palette, activeHex, onSelect) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      palette.forEach(color => {
+        const b = document.createElement('button');
+        b.className = `w-5 h-5 rounded-full border transition-transform ${activeHex === color ? 'border-amber-300 scale-125 shadow-md' : 'border-stone-700 opacity-80'}`;
+        b.style.backgroundColor = color;
+        b.onclick = () => onSelect(color);
+        el.appendChild(b);
+      });
+    }
+
+    document.getElementById('cc-style-prev').onclick = () => {
+      ccState.headStyle = (ccState.headStyle + 3) % 4;
+      renderCreationUI();
+    };
+    document.getElementById('cc-style-next').onclick = () => {
+      ccState.headStyle = (ccState.headStyle + 1) % 4;
+      renderCreationUI();
+    };
+
+    renderCreationUI();
+
+    // =========================================================================
+    // DETAILED 2.5D CHARACTER SPRITE RENDERER (Shared by Preview & Overworld)
+    // =========================================================================
+    function drawCharacterSprite(ctx, charData, screenX, screenY, time, scaleMultiplier = 1.0, isSelf = false, isTargeted = false) {
+      const raceObj = RACES[charData.race] || RACES.Human;
+      const sc = raceObj.scale * scaleMultiplier;
+
+      ctx.save();
+      ctx.translate(screenX, screenY);
+
+      // Target Selection Ring on Ground
+      if (isTargeted) {
+        ctx.save();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 4, 26 * sc, 13 * sc, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      } else if (isSelf) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(234, 179, 8, 0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 4, 22 * sc, 11 * sc, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Ground Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.48)';
+      ctx.beginPath();
+      const shadowW = charData.race === 'Centaur' ? 28 * sc : 18 * sc;
+      ctx.ellipse(0, 4, shadowW, 9 * sc, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Walking / Breathing Bob
+      const isMoving = charData.isMoving;
+      const walkCycle = isMoving ? Math.sin(time * 11) : Math.sin(time * 2.5);
+      const bobY = charData.sitting ? 6 * sc : (isMoving ? Math.abs(walkCycle) * -5 * sc : walkCycle * 1.5 * sc);
+
+      ctx.save();
+      ctx.scale((charData.facing || 1) * sc, sc);
+      ctx.translate(0, bobY);
+
+      // 1. NEPHILIM WINGS (Behind Torso)
+      if (charData.race === 'Nephilim') {
+        const wingFlap = Math.sin(time * (isMoving ? 8 : 3)) * 0.14;
+        ctx.save();
+        ctx.fillStyle = '#1b162a';
+        ctx.strokeStyle = '#4c3a6e';
+        ctx.lineWidth = 1.5;
+        ctx.save();
+        ctx.rotate(-0.2 + wingFlap);
+        ctx.beginPath();
+        ctx.moveTo(-4, -26);
+        ctx.quadraticCurveTo(-34, -48, -38, -18);
+        ctx.quadraticCurveTo(-24, -14, -6, -12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+        ctx.save();
+        ctx.rotate(0.2 - wingFlap);
+        ctx.beginPath();
+        ctx.moveTo(4, -26);
+        ctx.quadraticCurveTo(26, -45, 30, -18);
+        ctx.quadraticCurveTo(18, -14, 6, -12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+        ctx.restore();
+      }
+
+      // 2. CENTAUR EQUINE BODY OR BIPEDAL LEGS
+      if (charData.race === 'Centaur') {
+        ctx.fillStyle = charData.hairColor || '#4f2c1d';
+        ctx.beginPath();
+        ctx.roundRect(-24, -18, 34, 15, 7);
+        ctx.fill();
+        const legSwing = isMoving ? Math.sin(time * 12) * 5 : 0;
+        ctx.strokeStyle = '#261710';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(-20, -5); ctx.lineTo(-20 - legSwing, 4);
+        ctx.moveTo(-13, -5); ctx.lineTo(-13 + legSwing, 4);
+        ctx.moveTo(4, -5);   ctx.lineTo(4 + legSwing, 4);
+        ctx.moveTo(9, -5);   ctx.lineTo(9 - legSwing, 4);
+        ctx.stroke();
+        ctx.strokeStyle = charData.hairColor;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-24, -14);
+        ctx.quadraticCurveTo(-33, -8, -30, 0);
+        ctx.stroke();
+      } else {
+        const stride = isMoving ? Math.sin(time * 11) * 5 : 0;
+        ctx.fillStyle = '#262322';
+        if (charData.sitting) {
+          ctx.fillRect(-9, -8, 18, 6);
+        } else {
+          ctx.fillRect(-7 + stride * 0.5, -10, 5, 12);
+          ctx.fillRect(2 - stride * 0.5, -10, 5, 12);
+        }
+      }
+
+      // 3. TORSO & CLASS ARMOR
+      const torsoW = charData.race === 'Minotaur' ? 24 : (charData.race === 'Dwarf' ? 21 : 17);
+      const torsoH = charData.race === 'Minotaur' ? 22 : 19;
+
+      if (charData.charClass === 'Mage' || charData.charClass === 'Healer') {
+        ctx.fillStyle = charData.armorColor;
+        ctx.beginPath();
+        ctx.moveTo(-torsoW / 2 - 2, -27);
+        ctx.lineTo(torsoW / 2 + 2, -27);
+        ctx.lineTo(torsoW / 2 + 5, -3);
+        ctx.lineTo(-torsoW / 2 - 5, -3);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.fillStyle = charData.armorColor || '#8b1e22';
+      ctx.beginPath();
+      ctx.roundRect(-torsoW / 2, -28, torsoW, torsoH, 4);
+      ctx.fill();
+
+      ctx.strokeStyle = charData.charClass === 'Fighter' ? '#c8ccd4' : '#d4af59';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(-torsoW / 2 + 1, -27, torsoW - 2, torsoH - 2);
+
+      if (charData.charClass === 'Fighter') {
+        ctx.fillStyle = '#9ea6b2';
+        ctx.beginPath();
+        ctx.arc(-torsoW / 2 - 1, -24, 5, 0, Math.PI * 2);
+        ctx.arc(torsoW / 2 + 1, -24, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 4. HEAD, EARS, BEARD & HORNS
+      const headRadius = charData.race === 'Minotaur' ? 11.5 : 9.5;
+      const headY = -36;
+
+      ctx.fillStyle = charData.skinColor || '#f3cfb3';
+      ctx.beginPath();
+      ctx.arc(0, headY, headRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (charData.race === 'Aelfborn' || charData.race === 'Irekei') {
+        ctx.fillStyle = charData.skinColor;
+        ctx.beginPath();
+        ctx.moveTo(-headRadius + 1, headY - 1);
+        ctx.lineTo(-headRadius - 8, headY - 5);
+        ctx.lineTo(-headRadius + 2, headY + 3);
+        ctx.moveTo(headRadius - 1, headY - 1);
+        ctx.lineTo(headRadius + 8, headY - 5);
+        ctx.lineTo(headRadius - 2, headY + 3);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = charData.race === 'Irekei' ? '#ff9900' : (charData.race === 'Nephilim' ? '#b366ff' : '#1a1817');
+      ctx.fillRect(1, headY - 2, 2.5, 2.5);
+      ctx.fillRect(6, headY - 2, 2.5, 2.5);
+
+      if (charData.race === 'Dwarf') {
+        ctx.fillStyle = charData.hairColor;
+        ctx.beginPath();
+        ctx.moveTo(-7, headY + 2);
+        ctx.lineTo(8, headY + 2);
+        ctx.lineTo(5, headY + 16);
+        ctx.lineTo(-4, headY + 16);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      if (charData.race === 'Minotaur' || charData.race === 'Nephilim') {
+        ctx.strokeStyle = '#d8cbb8';
+        ctx.lineWidth = charData.race === 'Minotaur' ? 3.5 : 2.2;
+        ctx.beginPath();
+        ctx.moveTo(-7, headY - 5);
+        ctx.quadraticCurveTo(-20, headY - 12, -15, headY - 22);
+        ctx.moveTo(7, headY - 5);
+        ctx.quadraticCurveTo(20, headY - 12, 15, headY - 22);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = charData.hairColor;
+        const hs = (charData.headStyle || 0) % 4;
+        if (hs === 0) {
+          ctx.beginPath();
+          ctx.arc(0, headY - 3, headRadius + 1, Math.PI, Math.PI * 2);
+          ctx.fill();
+        } else if (hs === 1) {
+          ctx.beginPath();
+          ctx.arc(0, headY - 4, headRadius, Math.PI, Math.PI * 2);
+          ctx.arc(-8, headY - 9, 5, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (hs === 2) {
+          ctx.fillRect(-headRadius - 1, headY - 9, headRadius * 2 + 2, 6);
+          ctx.fillRect(-headRadius - 2, headY - 6, 6, 15);
+        }
+      }
+
+      // 5. WEAPON & SHIELD / STAFF
+      const swingAngle = charData.swingTimer > 0 ? Math.sin(charData.swingTimer * 18) * 1.1 : (isMoving ? Math.sin(time * 11) * 0.2 : 0);
+      ctx.save();
+      ctx.translate(9, -18);
+      ctx.rotate(swingAngle);
+
+      if (charData.charClass === 'Fighter') {
+        ctx.fillStyle = '#dce2ea';
+        ctx.fillRect(2, -22, 4, 20);
+        ctx.fillStyle = '#d4af59';
+        ctx.fillRect(-1, -4, 10, 3);
+      } else if (charData.charClass === 'Mage') {
+        ctx.fillStyle = '#5c3a21';
+        ctx.fillRect(2, -26, 3, 30);
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(3.5, -28, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (charData.charClass === 'Healer') {
+        ctx.fillStyle = '#c8a253';
+        ctx.fillRect(2, -20, 3, 22);
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath();
+        ctx.arc(3.5, -22, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(2, -14, 3, 13);
+      }
+      ctx.restore();
+
+      if (charData.charClass === 'Fighter') {
+        ctx.fillStyle = charData.armorColor;
+        ctx.strokeStyle = '#d4af59';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(-torsoW / 2 - 5, -23, 9, 13, 3);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      ctx.restore();
+
+      // 6. OVERHEAD EMOTE ANIMATION BADGE
+      if (charData.emote && charData.emoteTimer > 0) {
+        ctx.save();
+        ctx.font = 'bold 13px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fde047';
+        ctx.fillText(charData.emote, 0, -68 * sc);
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    // --- LIVE CHARACTER CREATION PREVIEW CANVAS LOOP ---
+    const previewCanvas = document.getElementById('cc-preview-canvas');
+    const pCtx = previewCanvas.getContext('2d');
+    let previewSwing = 0;
+
+    previewCanvas.addEventListener('click', () => {
+      previewSwing = 1.0;
+    });
+
+    function renderCreationPreviewLoop(nowMs) {
+      if (!hasSpawned) {
+        const t = nowMs / 1000;
+        if (previewSwing > 0) previewSwing = Math.max(0, previewSwing - 0.04);
+
+        pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+        const grad = pCtx.createRadialGradient(150, 120, 15, 150, 130, 150);
+        grad.addColorStop(0, 'rgba(56, 110, 68, 0.35)');
+        grad.addColorStop(1, 'rgba(10, 12, 16, 0.95)');
+        pCtx.fillStyle = grad;
+        pCtx.fillRect(0, 0, 300, 250);
+
+        pCtx.fillStyle = '#232229';
+        pCtx.strokeStyle = '#6e5322';
+        pCtx.lineWidth = 2;
+        pCtx.beginPath();
+        pCtx.ellipse(150, 195, 58, 18, 0, 0, Math.PI * 2);
+        pCtx.fill();
+        pCtx.stroke();
+
+        drawCharacterSprite(pCtx, {
+          race: ccState.race,
+          charClass: ccState.charClass,
+          skinColor: ccState.skinColor,
+          hairColor: ccState.hairColor,
+          armorColor: ccState.armorColor,
+          headStyle: ccState.headStyle,
+          facing: 1,
+          isMoving: false,
+          swingTimer: previewSwing
+        }, 150, 190, t, 1.85, false, false);
+      }
+      requestAnimationFrame(renderCreationPreviewLoop);
+    }
+    requestAnimationFrame(renderCreationPreviewLoop);
+
+    // =========================================================================
+    // SPAWN INTO OVERWORLD HANDLER
+    // =========================================================================
+    document.getElementById('btn-spawn-tree').addEventListener('click', () => {
+      const desiredShard = ccShardInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, '') || 'TreeOfLife-Main';
+      if (desiredShard !== currentShard) {
+        switchShard(desiredShard);
+      }
+
+      const finalStats = computeFinalStats();
+      localPlayer.name = (ccNameInput.value.trim() || ccState.name).slice(0, 16);
+      localPlayer.race = ccState.race;
+      localPlayer.charClass = ccState.charClass;
+      localPlayer.skinColor = ccState.skinColor;
+      localPlayer.hairColor = ccState.hairColor;
+      localPlayer.armorColor = ccState.armorColor;
+      localPlayer.headStyle = ccState.headStyle;
+      localPlayer.stats = finalStats;
+      localPlayer.runes = ccState.selectedRunes.map(id => RUNES.find(r => r.id === id)?.name || id);
+
+      if (!hasSpawned) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 185 + Math.random() * 90;
+        localPlayer.x = Math.round(TREE_X + Math.cos(angle) * dist);
+        localPlayer.y = Math.round(TREE_Y + Math.sin(angle) * dist);
+      }
+      localPlayer.targetX = null;
+      localPlayer.targetY = null;
+      localPlayer.spawnBeamTimer = 2.5;
+
+      // Update HUD
+      document.getElementById('hud-self-name').textContent = localPlayer.name;
+      document.getElementById('hud-self-raceclass').textContent = `${localPlayer.race} ${localPlayer.charClass}`;
+      document.getElementById('hud-self-icon').textContent = CLASSES[localPlayer.charClass].icon;
+      document.getElementById('hud-shard-label').textContent = currentShard;
+
+      hasSpawned = true;
+      document.getElementById('char-creation-screen').classList.add('hidden');
+      document.getElementById('hud-top-left').classList.remove('hidden');
+      document.getElementById('hud-top-right').classList.remove('hidden');
+      document.getElementById('hud-chat-panel').classList.remove('hidden');
+
+      appendChatLog('System', `Awakened in shard [${currentShard}] as ${localPlayer.name} (${localPlayer.race} ${localPlayer.charClass}). Click "Invite" in the top-right to summon friends!`, 'system');
+      spawnGrassParticles(localPlayer.x, localPlayer.y, 18, '#fde047');
+
+      // Immediately broadcast presence to all live players in the shard
+      broadcastStatePacket('join');
+      updateRosterUI();
+    });
+
+    document.getElementById('btn-recreate').addEventListener('click', () => {
+      hasSpawned = false;
+      document.getElementById('char-creation-screen').classList.remove('hidden');
+    });
+
+    // =========================================================================
+    // PROCEDURAL TALL GRASS, TREE OF LIFE ROOTS & SPORES
+    // =========================================================================
+    const GRASS_PATCHES = [];
+    const NUM_GRASS_BLADES = 2600;
+    for (let i = 0; i < NUM_GRASS_BLADES; i++) {
+      const gx = 80 + Math.random() * (WORLD_SIZE - 160);
+      const gy = 80 + Math.random() * (WORLD_SIZE - 160);
+      if (Math.hypot(gx - TREE_X, gy - TREE_Y) < 90) continue;
+      GRASS_PATCHES.push({
+        x: gx,
+        y: gy,
+        height: 12 + Math.random() * 14,
+        hue: 95 + Math.floor(Math.random() * 32),
+        light: 22 + Math.floor(Math.random() * 18),
+        bend: 0
+      });
+    }
+    GRASS_PATCHES.sort((a, b) => a.y - b.y);
+
+    const TREE_SPORES = [];
+    for (let i = 0; i < 65; i++) {
+      TREE_SPORES.push({
+        angle: Math.random() * Math.PI * 2,
+        dist: 40 + Math.random() * 460,
+        speed: 0.15 + Math.random() * 0.35,
+        size: 1.8 + Math.random() * 2.8,
+        gold: Math.random() > 0.35
+      });
+    }
+
+    const particles = [];
+    function spawnGrassParticles(wx, wy, count = 4, color = '#4d7c0f') {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: wx + (Math.random() - 0.5) * 16,
+          y: wy + (Math.random() - 0.5) * 8,
+          vx: (Math.random() - 0.5) * 45,
+          vy: -15 - Math.random() * 35,
+          life: 0.5 + Math.random() * 0.4,
+          color,
+          size: 2 + Math.random() * 2.5
+        });
+      }
+    }
+
+    // =========================================================================
+    // ZERO-DEPENDENCY MULTI-ENGINE NETWORKING (WebSocket + Firebase + BroadcastChannel)
+    // =========================================================================
+    // Engine 1: Native WebSocket Pub/Sub Relay over standard port 443 (Cross-Device / Internet)
+    // Engine 2: Optional Sandbox Firebase Firestore Sync (when __firebase_config is present)
+    // Engine 3: Native BroadcastChannel (0ms Same-Browser Multi-Tab Sync)
+    const WS_RELAYS = [
+      (shard) => `wss://free.blr2.piesocket.com/v3/salvies_sb_${shard.toLowerCase()}?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self=1`,
+      (shard) => `wss:// socketsbay.com/wss/v2/1/salvies_sb_${shard.toLowerCase()}/`.replace(' ', '')
+    ];
+
+    let activeWs = null;
+    let wsRelayIdx = 0;
+    let isWsConnected = false;
+    let isFirebaseConnected = false;
+    let currentPingMs = 28;
+    let fbWritePlayerState = null;
+
+    // Engine 3: Instant Same-Browser Multi-Tab Channel
+    let localTabChannel = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        localTabChannel = new BroadcastChannel('salvies_shadowbane_v3');
+        localTabChannel.onmessage = (ev) => {
+          try {
+            if (ev.data && ev.data.shard === currentShard) {
+              handleIncomingNetworkPacket(ev.data);
+            }
+          } catch (err) {}
+        };
+      }
+    } catch (e) {}
+
+    function updateNetBadgeUI(statusText, isGood) {
+      const ccBadge = document.getElementById('cc-online-badge');
+      const netDot = document.getElementById('hud-net-dot');
+      if (ccBadge) {
+        ccBadge.textContent = statusText;
+        ccBadge.className = isGood
+          ? 'text-xs bg-emerald-950/90 border border-emerald-600/70 text-emerald-300 px-3 py-1 rounded-full font-mono-code'
+          : 'text-xs bg-amber-950/90 border border-amber-600/70 text-amber-300 px-3 py-1 rounded-full font-mono-code';
+      }
+      if (netDot) {
+        netDot.className = isGood
+          ? 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse'
+          : 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+      }
+    }
+
+    function connectGlobalWebSocket() {
+      try {
+        if (activeWs) {
+          try {
+            activeWs.onclose = null;
+            activeWs.onerror = null;
+            activeWs.onmessage = null;
+            activeWs.close();
+          } catch (e) {}
+          activeWs = null;
+        }
+
+        const relayBuilder = WS_RELAYS[wsRelayIdx % WS_RELAYS.length];
+        const wsUrl = relayBuilder(currentShard);
+
+        if (!isFirebaseConnected) {
+          updateNetBadgeUI(`🟢 Shard Ready (${currentShard})`, true);
+        }
+
+        const ws = new WebSocket(wsUrl);
+        activeWs = ws;
+
+        ws.onopen = () => {
+          isWsConnected = true;
+          updateNetBadgeUI(`🟢 Live Online (${currentShard})`, true);
+          publishPacket({ type: 'who_is_here', id: localUserId, shard: currentShard, sentAt: Date.now() });
+          if (hasSpawned) broadcastStatePacket('join');
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            if (typeof event.data === 'string' && event.data.startsWith('{')) {
+              const pkt = JSON.parse(event.data);
+              handleIncomingNetworkPacket(pkt);
+            }
+          } catch (e) {}
+        };
+
+        ws.onerror = () => {
+          isWsConnected = false;
+        };
+
+        ws.onclose = () => {
+          isWsConnected = false;
+          wsRelayIdx++;
+          setTimeout(() => {
+            if (!isWsConnected) connectGlobalWebSocket();
+          }, 4500);
+        };
+      } catch (err) {
+        updateNetBadgeUI(`🟢 Local & Tab Sync (${currentShard})`, true);
+      }
+    }
+
+    // Engine 2: Optional Sandbox Firebase Firestore Sync (Auto-detected safely)
+    async function initOptionalFirebaseSync() {
+      try {
+        if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const [{ initializeApp }, { getAuth, signInAnonymously, signInWithCustomToken }, { getFirestore, collection, doc, setDoc, onSnapshot }] = await Promise.all([
+          import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js'),
+          import('https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js'),
+          import('https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js')
+        ]);
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        if (!auth.currentUser) return;
+        isFirebaseConnected = true;
+        updateNetBadgeUI(`🟢 Cloud & WSS Live (${currentShard})`, true);
+
+        const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'shadowbane_tree_players');
+        onSnapshot(colRef, (snap) => {
+          snap.docChanges().forEach((change) => {
+            const data = change.doc.data();
+            if (data && data.shard === currentShard) {
+              handleIncomingNetworkPacket(data);
+            }
+          });
+        }, () => {});
+
+        fbWritePlayerState = (pkt) => {
+          if (!auth.currentUser) return;
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'shadowbane_tree_players', localUserId);
+          setDoc(docRef, pkt).catch(() => {});
+        };
+      } catch (e) {
+        // Silent fallback if running standalone on GitHub/Cloudflare Pages
+      }
+    }
+
+    function switchShard(newShard) {
+      if (hasSpawned) {
+        publishPacket({ type: 'leave', id: localUserId, shard: currentShard });
+      }
+      remotePlayers.clear();
+      currentShard = newShard;
+      const shardLbl = document.getElementById('hud-shard-label');
+      if (shardLbl) shardLbl.textContent = currentShard;
+      updateRosterUI();
+
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.set('shard', currentShard);
+        window.history.replaceState({}, '', u.toString());
+      } catch (e) {}
+
+      connectGlobalWebSocket();
+    }
+
+    let lastFbWriteAt = 0;
+    function publishPacket(pkt) {
+      pkt.shard = currentShard;
+
+      // 1. Send over Native WebSocket if open
+      if (activeWs && isWsConnected && activeWs.readyState === WebSocket.OPEN) {
+        try {
+          activeWs.send(JSON.stringify(pkt));
+        } catch (e) {}
+      }
+
+      // 2. Send over BroadcastChannel for instant multi-tab sync
+      if (localTabChannel) {
+        try {
+          localTabChannel.postMessage(pkt);
+        } catch (e) {}
+      }
+
+      // 3. Send over Cloud Firestore if active (throttled to respect quotas)
+      if (fbWritePlayerState && (pkt.type === 'join' || pkt.type === 'chat' || pkt.type === 'leave' || Date.now() - lastFbWriteAt > 350)) {
+        lastFbWriteAt = Date.now();
+        try {
+          fbWritePlayerState(pkt);
+        } catch (e) {}
+      }
+    }
+
+    function broadcastStatePacket(packetType = 'state') {
+      if (!hasSpawned) return;
+      publishPacket({
+        type: packetType,
+        id: localUserId,
+        name: localPlayer.name,
+        race: localPlayer.race,
+        charClass: localPlayer.charClass,
+        skinColor: localPlayer.skinColor,
+        hairColor: localPlayer.hairColor,
+        armorColor: localPlayer.armorColor,
+        headStyle: localPlayer.headStyle,
+        x: Math.round(localPlayer.x),
+        y: Math.round(localPlayer.y),
+        facing: localPlayer.facing,
+        isMoving: localPlayer.isMoving,
+        sitting: localPlayer.sitting,
+        emote: localPlayer.emoteTimer > 0 ? localPlayer.emote : null,
+        swing: localPlayer.swingTimer > 0,
+        chat: localPlayer.chat,
+        chatType: localPlayer.chatType,
+        chatTimestamp: localPlayer.chatTimestamp,
+        stats: localPlayer.stats,
+        runes: localPlayer.runes,
+        sentAt: Date.now()
+      });
+    }
+
+    function handleIncomingNetworkPacket(pkt) {
+      if (!pkt || pkt.shard !== currentShard) return;
+
+      if (pkt.id === localUserId) {
+        if (pkt.sentAt) {
+          currentPingMs = Math.max(4, Math.min(999, Date.now() - pkt.sentAt));
+          const pingEl = document.getElementById('hud-ping');
+          if (pingEl) pingEl.textContent = `${currentPingMs} ms`;
+        }
+        return;
+      }
+
+      const now = Date.now();
+
+      if (pkt.type === 'who_is_here') {
+        if (hasSpawned) {
+          broadcastStatePacket('state');
+        }
+        return;
+      }
+
+      if (pkt.type === 'leave') {
+        const departing = remotePlayers.get(pkt.id);
+        if (departing) {
+          appendChatLog('System', `${departing.name} has departed the realm.`, 'system');
+          remotePlayers.delete(pkt.id);
+          updateRosterUI();
+        }
+        return;
+      }
+
+      if (pkt.type === 'join' || pkt.type === 'state' || pkt.type === 'chat') {
+        // Ignore stale historical documents older than 15 seconds
+        if (pkt.sentAt && Math.abs(now - pkt.sentAt) > 15000 && !remotePlayers.has(pkt.id)) {
+          return;
+        }
+
+        let existing = remotePlayers.get(pkt.id);
+        if (!existing) {
+          existing = {
+            id: pkt.id,
+            name: pkt.name || 'Traveler',
+            race: pkt.race || 'Human',
+            charClass: pkt.charClass || 'Fighter',
+            skinColor: pkt.skinColor || SKIN_COLORS[0],
+            hairColor: pkt.hairColor || HAIR_COLORS[0],
+            armorColor: pkt.armorColor || ARMOR_COLORS[0],
+            headStyle: pkt.headStyle || 0,
+            x: pkt.x || TREE_X,
+            y: pkt.y || TREE_Y + 200,
+            syncX: pkt.x || TREE_X,
+            syncY: pkt.y || TREE_Y + 200,
+            facing: pkt.facing || 1,
+            isMoving: pkt.isMoving || false,
+            sitting: pkt.sitting || false,
+            emote: pkt.emote || null,
+            emoteTimer: pkt.emote ? 2.5 : 0,
+            swingTimer: pkt.swing ? 0.6 : 0,
+            chat: pkt.chat || '',
+            chatType: pkt.chatType || 'say',
+            chatTimestamp: pkt.chatTimestamp || 0,
+            stats: pkt.stats || RACES.Human.baseStats,
+            runes: pkt.runes || [],
+            lastSeen: now
+          };
+          remotePlayers.set(pkt.id, existing);
+          appendChatLog('System', `${existing.name} (${existing.race} ${existing.charClass}) has awakened at the Tree of Life!`, 'system');
+          spawnGrassParticles(existing.x, existing.y, 14, '#fde047');
+          updateRosterUI();
+
+          if (hasSpawned && pkt.type === 'join') {
+            broadcastStatePacket('state');
+          }
+        } else {
+          if (pkt.chat && pkt.chatTimestamp && pkt.chatTimestamp !== existing.chatTimestamp) {
+            appendChatLog(pkt.name || existing.name, pkt.chat, pkt.chatType || 'say');
+          }
+          const nameChanged = existing.name !== pkt.name || existing.race !== pkt.race || existing.charClass !== pkt.charClass;
+          existing.name = pkt.name || existing.name;
+          existing.race = pkt.race || existing.race;
+          existing.charClass = pkt.charClass || existing.charClass;
+          existing.skinColor = pkt.skinColor || existing.skinColor;
+          existing.hairColor = pkt.hairColor || existing.hairColor;
+          existing.armorColor = pkt.armorColor || existing.armorColor;
+          existing.headStyle = pkt.headStyle ?? existing.headStyle;
+          existing.syncX = pkt.x ?? existing.syncX;
+          existing.syncY = pkt.y ?? existing.syncY;
+          existing.facing = pkt.facing || existing.facing;
+          existing.isMoving = Boolean(pkt.isMoving);
+          existing.sitting = Boolean(pkt.sitting);
+          if (pkt.emote) {
+            existing.emote = pkt.emote;
+            existing.emoteTimer = 2.5;
+          }
+          if (pkt.swing) {
+            existing.swingTimer = 0.6;
+          }
+          existing.chat = pkt.chat || '';
+          existing.chatType = pkt.chatType || 'say';
+          existing.chatTimestamp = pkt.chatTimestamp || 0;
+          existing.stats = pkt.stats || existing.stats;
+          existing.runes = pkt.runes || existing.runes;
+          existing.lastSeen = now;
+          if (nameChanged) updateRosterUI();
+        }
+      }
+    }
+
+    function updateRosterUI() {
+      const rosterEl = document.getElementById('hud-roster-list');
+      if (!rosterEl) return;
+      rosterEl.innerHTML = '';
+
+      const allHumans = [
+        ...(hasSpawned ? [{ ...localPlayer, isSelf: true }] : []),
+        ...Array.from(remotePlayers.values())
+      ];
+
+      const totalCount = allHumans.length;
+      const countHud = document.getElementById('player-count-hud');
+      if (countHud) countHud.textContent = `${totalCount} ${totalCount === 1 ? 'Human' : 'Humans'} Online`;
+
+      allHumans.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between px-1.5 py-0.5 rounded hover:bg-stone-800/70 cursor-pointer';
+        row.innerHTML = `
+          <span class="truncate font-semibold ${p.isSelf ? 'text-amber-300' : 'text-emerald-300'}">${p.name}${p.isSelf ? ' (You)' : ''}</span>
+          <span class="text-[9px] text-stone-400 ml-1">${p.race.slice(0, 4)} ${CLASSES[p.charClass]?.icon || ''}</span>
+        `;
+        row.onclick = () => inspectEntity(p);
+        rosterEl.appendChild(row);
+      });
+    }
+
+    // Start networking engines non-blockingly
+    connectGlobalWebSocket();
+    initOptionalFirebaseSync();
+
+    // =========================================================================
+    // CHAT & EMOTE SYSTEM
+    // =========================================================================
+    const chatLogEl = document.getElementById('chat-log');
+    const chatInputEl = document.getElementById('chat-input');
+    const chatChannelEl = document.getElementById('chat-channel');
+
+    function appendChatLog(sender, text, mode = 'say') {
+      if (!chatLogEl) return;
+      const div = document.createElement('div');
+      if (mode === 'system') {
+        div.className = 'text-amber-300/90 italic';
+        div.textContent = `[System] ${text}`;
+      } else if (mode === 'emote') {
+        div.className = 'text-amber-400 italic';
+        div.textContent = `* ${sender} ${text}`;
+      } else if (mode === 'shout') {
+        div.className = 'text-red-300 font-semibold';
+        div.textContent = `[Shout] ${sender}: ${text}`;
+      } else {
+        div.className = 'text-stone-200';
+        div.innerHTML = `<span class="text-emerald-300 font-semibold">[Say] ${sender}:</span> `;
+        const span = document.createElement('span');
+        span.textContent = text;
+        div.appendChild(span);
+      }
+      chatLogEl.appendChild(div);
+      chatLogEl.scrollTop = chatLogEl.scrollHeight;
+    }
+
+    function triggerEmoteCommand(cmd) {
+      if (cmd === '/sit') {
+        localPlayer.sitting = !localPlayer.sitting;
+        localPlayer.targetX = null;
+        localPlayer.targetY = null;
+        appendChatLog(localPlayer.name, localPlayer.sitting ? 'sits down in the tall grass.' : 'stands up.', 'emote');
+        broadcastStatePacket('state');
+        return;
+      }
+      const map = {
+        '/bow': { badge: '🙇 *Bows*', log: 'bows respectfully before the Tree of Life.' },
+        '/wave': { badge: '👋 *Waves*', log: 'waves in greeting.' },
+        '/cheer': { badge: '⚔️ *Victory!*', log: 'raises weapon and cheers mightily!' }
+      };
+      const item = map[cmd];
+      if (item) {
+        localPlayer.emote = item.badge;
+        localPlayer.emoteTimer = 3.0;
+        localPlayer.swingTimer = 0.8;
+        appendChatLog(localPlayer.name, item.log, 'emote');
+        broadcastStatePacket('state');
+      }
+    }
+
+    document.querySelectorAll('.emote-btn').forEach(btn => {
+      btn.addEventListener('click', () => triggerEmoteCommand(btn.dataset.emote));
+    });
+
+    function submitChatMessage() {
+      const raw = chatInputEl.value.trim();
+      if (!raw) return;
+      chatInputEl.value = '';
+      chatInputEl.blur();
+
+      if (raw.startsWith('/')) {
+        const lower = raw.toLowerCase();
+        if (['/bow', '/wave', '/cheer', '/sit'].includes(lower)) {
+          triggerEmoteCommand(lower);
+          return;
+        }
+      }
+
+      const mode = chatChannelEl.value;
+      localPlayer.chat = raw;
+      localPlayer.chatType = mode;
+      localPlayer.chatTimestamp = Date.now();
+      appendChatLog(localPlayer.name, raw, mode);
+      broadcastStatePacket('chat');
+    }
+
+    document.getElementById('btn-send-chat').addEventListener('click', submitChatMessage);
+    chatInputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitChatMessage();
+    });
+
+    // Target Frame Inspection UI
+    const targetFrame = document.getElementById('hud-target-frame');
+    document.getElementById('btn-close-target')?.addEventListener('click', () => {
+      selectedTargetId = null;
+      targetFrame?.classList.add('hidden');
+    });
+
+    function inspectEntity(entity) {
+      selectedTargetId = entity.id;
+      targetFrame.classList.remove('hidden');
+      document.getElementById('target-badge').textContent = entity.race ? entity.race[0] : '🌳';
+      document.getElementById('target-name').textContent = entity.name;
+      document.getElementById('target-subtitle').textContent = entity.subtitle || `Level 1 ${entity.race} ${entity.charClass} (Real Player)`;
+
+      const statsRow = document.getElementById('target-stats-row');
+      if (entity.stats) {
+        statsRow.innerHTML = `
+          <span>STR: <b class="text-amber-300">${entity.stats.str}</b></span>
+          <span>DEX: <b class="text-amber-300">${entity.stats.dex}</b></span>
+          <span>CON: <b class="text-amber-300">${entity.stats.con}</b></span>
+          <span>INT: <b class="text-amber-300">${entity.stats.int}</b></span>
+          <span>SPI: <b class="text-amber-300">${entity.stats.spi}</b></span>
+        `;
+      } else {
+        statsRow.innerHTML = `<span class="text-emerald-300">Ancient World Axis • Immortal Sanctuary</span>`;
+      }
+
+      const runesRow = document.getElementById('target-runes-row');
+      runesRow.textContent = entity.runes && entity.runes.length ? `Runes: ${entity.runes.join(' • ')}` : '';
+    }
+
+    // =========================================================================
+    // OVERWORLD INPUTS (WASD + SHADOWBANE CLICK-TO-MOVE)
+    // =========================================================================
+    const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false };
+    const touchVector = { x: 0, y: 0, active: false };
+    let clickMarker = null;
+
+    window.addEventListener('keydown', (e) => {
+      if (!hasSpawned) return;
+      if (document.activeElement === chatInputEl) {
+        if (e.key === 'Escape') chatInputEl.blur();
+        return;
+      }
+      if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = true;
+        localPlayer.targetX = null;
+        localPlayer.targetY = null;
+        localPlayer.sitting = false;
+      } else if (e.key === 'Enter') {
+        chatInputEl.focus();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+    });
+
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const minimapCanvas = document.getElementById('minimap-canvas');
+    const mCtx = minimapCanvas.getContext('2d');
+    let screenWidth = window.innerWidth;
+    let screenHeight = window.innerHeight;
+
+    function resizeGameCanvas() {
+      screenWidth = window.innerWidth;
+      screenHeight = window.innerHeight;
+      canvas.width = screenWidth * window.devicePixelRatio;
+      canvas.height = screenHeight * window.devicePixelRatio;
+      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    }
+    window.addEventListener('resize', resizeGameCanvas);
+    resizeGameCanvas();
+
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!hasSpawned) return;
+      const cameraX = localPlayer.x - screenWidth / 2;
+      const cameraY = localPlayer.y - screenHeight / 2;
+      const worldClickX = e.clientX + cameraX;
+      const worldClickY = e.clientY + cameraY;
+
+      // 1. Check if clicked on any real connected player to inspect
+      for (const ent of remotePlayers.values()) {
+        if (Math.hypot(worldClickX - ent.x, worldClickY - (ent.y - 22)) < 36) {
+          inspectEntity(ent);
+          return;
+        }
+      }
+
+      // 2. Check if clicked on the Tree of Life trunk
+      if (Math.hypot(worldClickX - TREE_X, worldClickY - TREE_Y) < TREE_TRUNK_RADIUS + 15) {
+        inspectEntity({
+          id: 'tree_of_life',
+          name: 'The First Tree of Life',
+          subtitle: 'Cradle of Creation • Safe Sanctuary',
+          runes: ['All souls awaken beneath its golden boughs']
+        });
+        return;
+      }
+
+      // 3. Otherwise set Click-to-Move destination
+      localPlayer.sitting = false;
+      localPlayer.targetX = Math.max(60, Math.min(WORLD_SIZE - 60, worldClickX));
+      localPlayer.targetY = Math.max(60, Math.min(WORLD_SIZE - 60, worldClickY));
+      clickMarker = { x: localPlayer.targetX, y: localPlayer.targetY, timer: 1.0 };
+    });
+
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Mobile Joystick Setup
+    const joystickZone = document.getElementById('joystick-zone');
+    const joystickStick = document.getElementById('joystick-stick');
+    let joyCenter = { x: 0, y: 0 };
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      joystickZone.classList.remove('hidden');
+      joystickZone.classList.add('flex');
+    }
+    joystickZone.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+      const t = e.changedTouches[0];
+      const r = joystickZone.getBoundingClientRect();
+      joyCenter = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      touchVector.active = true;
+      localPlayer.targetX = null;
+      updateJoystick(t.clientX, t.clientY);
+    }, { passive: false });
+    window.addEventListener('touchmove', (e) => {
+      if (!touchVector.active) return;
+      const t = e.changedTouches[0];
+      updateJoystick(t.clientX, t.clientY);
+    }, { passive: false });
+    window.addEventListener('touchend', () => {
+      touchVector.active = false;
+      touchVector.x = 0;
+      touchVector.y = 0;
+      joystickStick.style.transform = 'translate(0px,0px)';
+    });
+    function updateJoystick(cx, cy) {
+      const maxR = 36;
+      let dx = cx - joyCenter.x;
+      let dy = cy - joyCenter.y;
+      const d = Math.hypot(dx, dy);
+      if (d > maxR) { dx = (dx / d) * maxR; dy = (dy / d) * maxR; }
+      touchVector.x = dx / maxR;
+      touchVector.y = dy / maxR;
+      joystickStick.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
+
+    // =========================================================================
+    // OVERWORLD UPDATE & TREE OF LIFE RENDERING
+    // =========================================================================
+    function resolveTreeCollision(entity) {
+      const dx = entity.x - TREE_X;
+      const dy = entity.y - TREE_Y;
+      const dist = Math.hypot(dx, dy);
+      const minD = TREE_TRUNK_RADIUS + 20;
+      if (dist < minD && dist > 0.001) {
+        entity.x = TREE_X + (dx / dist) * minD;
+        entity.y = TREE_Y + (dy / dist) * minD;
+      }
+    }
+
+    function updateOverworld(dt) {
+      if (!hasSpawned) return;
+
+      const raceSpeed = (RACES[localPlayer.race] || RACES.Human).speedMod;
+      const runeSpeed = ccState.selectedRunes.includes('fleet') ? 0.08 : 0;
+      const effectiveSpeed = BASE_MOVE_SPEED * (raceSpeed + runeSpeed);
+
+      let vx = 0;
+      let vy = 0;
+      if (keys.w || keys.ArrowUp) vy -= 1;
+      if (keys.s || keys.ArrowDown) vy += 1;
+      if (keys.a || keys.ArrowLeft) vx -= 1;
+      if (keys.d || keys.ArrowRight) vx += 1;
+      if (touchVector.active) { vx += touchVector.x; vy += touchVector.y; }
+
+      if (Math.hypot(vx, vy) > 0.05) {
+        const len = Math.hypot(vx, vy);
+        vx /= len; vy /= len;
+        localPlayer.x += vx * effectiveSpeed * dt;
+        localPlayer.y += vy * effectiveSpeed * dt;
+        if (Math.abs(vx) > 0.1) localPlayer.facing = vx > 0 ? 1 : -1;
+        localPlayer.isMoving = true;
+      } else if (localPlayer.targetX !== null && localPlayer.targetY !== null) {
+        const dx = localPlayer.targetX - localPlayer.x;
+        const dy = localPlayer.targetY - localPlayer.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 6) {
+          localPlayer.x += (dx / dist) * effectiveSpeed * dt;
+          localPlayer.y += (dy / dist) * effectiveSpeed * dt;
+          if (Math.abs(dx) > 2) localPlayer.facing = dx > 0 ? 1 : -1;
+          localPlayer.isMoving = true;
+        } else {
+          localPlayer.targetX = null;
+          localPlayer.targetY = null;
+          localPlayer.isMoving = false;
+        }
+      } else {
+        localPlayer.isMoving = false;
+      }
+
+      localPlayer.x = Math.max(50, Math.min(WORLD_SIZE - 50, localPlayer.x));
+      localPlayer.y = Math.max(50, Math.min(WORLD_SIZE - 50, localPlayer.y));
+      resolveTreeCollision(localPlayer);
+
+      if (localPlayer.isMoving && Math.random() < 0.35) {
+        spawnGrassParticles(localPlayer.x, localPlayer.y + 4, 1, '#65a30d');
+      }
+
+      if (localPlayer.emoteTimer > 0) localPlayer.emoteTimer = Math.max(0, localPlayer.emoteTimer - dt);
+      if (localPlayer.swingTimer > 0) localPlayer.swingTimer = Math.max(0, localPlayer.swingTimer - dt);
+      if (localPlayer.spawnBeamTimer > 0) localPlayer.spawnBeamTimer = Math.max(0, localPlayer.spawnBeamTimer - dt);
+      if (clickMarker && clickMarker.timer > 0) clickMarker.timer = Math.max(0, clickMarker.timer - dt);
+
+      const distToTree = Math.hypot(localPlayer.x - TREE_X, localPlayer.y - TREE_Y);
+      const sanctuaryEl = document.getElementById('sanctuary-banner');
+      sanctuaryEl.style.opacity = distToTree < SANCTUARY_RADIUS ? '1' : '0.25';
+      document.getElementById('hud-coords').textContent = `${Math.round(localPlayer.x)}, ${Math.round(localPlayer.y)}`;
+
+      // Smoothly interpolate real remote players
+      remotePlayers.forEach((rp) => {
+        rp.x += (rp.syncX - rp.x) * Math.min(1, dt * 12);
+        rp.y += (rp.syncY - rp.y) * Math.min(1, dt * 12);
+        if (rp.emoteTimer > 0) rp.emoteTimer = Math.max(0, rp.emoteTimer - dt);
+        if (rp.swingTimer > 0) rp.swingTimer = Math.max(0, rp.swingTimer - dt);
+      });
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.life -= dt;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+    }
+
+    function drawTreeOfLifeBaseAndRoots(ctx, camX, camY, time) {
+      const tx = TREE_X - camX;
+      const ty = TREE_Y - camY;
+
+      ctx.save();
+      const sanctuaryGrad = ctx.createRadialGradient(tx, ty, 60, tx, ty, SANCTUARY_RADIUS);
+      sanctuaryGrad.addColorStop(0, 'rgba(234, 179, 8, 0.22)');
+      sanctuaryGrad.addColorStop(0.6, 'rgba(34, 197, 94, 0.08)');
+      sanctuaryGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = sanctuaryGrad;
+      ctx.beginPath();
+      ctx.arc(tx, ty, SANCTUARY_RADIUS, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(212, 175, 89, 0.28)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 220, 0, Math.PI * 2);
+      ctx.stroke();
+
+      for (let i = 0; i < 8; i++) {
+        const ang = (i / 8) * Math.PI * 2 + 0.2;
+        ctx.save();
+        ctx.translate(tx, ty);
+        ctx.rotate(ang);
+        ctx.fillStyle = '#3b2618';
+        ctx.strokeStyle = '#24160d';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -28);
+        ctx.quadraticCurveTo(110, -35, 215, -6);
+        ctx.quadraticCurveTo(110, 18, 0, 28);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.fillStyle = '#472e1d';
+      ctx.strokeStyle = '#1f130b';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(tx, ty, TREE_TRUNK_RADIUS, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      const pulse = 0.55 + Math.sin(time * 2.2) * 0.35;
+      ctx.strokeStyle = `rgba(250, 204, 21, ${pulse})`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 38, 0, Math.PI * 2);
+      ctx.moveTo(tx, ty - 55); ctx.lineTo(tx, ty + 55);
+      ctx.moveTo(tx - 55, ty); ctx.lineTo(tx + 55, ty);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawTreeOfLifeCanopyAndSpores(ctx, camX, camY, time) {
+      const tx = TREE_X - camX;
+      const ty = TREE_Y - camY;
+
+      ctx.save();
+      const playerDist = Math.hypot(localPlayer.x - TREE_X, localPlayer.y - TREE_Y);
+      const canopyAlpha = playerDist < 310 ? 0.38 : 0.88;
+      ctx.globalAlpha = canopyAlpha;
+
+      const clusters = [
+        { dx: 0, dy: -60, r: 210, color: '#143821' },
+        { dx: -130, dy: -20, r: 155, color: '#194528' },
+        { dx: 135, dy: -25, r: 155, color: '#194528' },
+        { dx: -95, dy: 90, r: 145, color: '#1f5230' },
+        { dx: 105, dy: 85, r: 145, color: '#1f5230' },
+        { dx: 0, dy: -30, r: 165, color: '#27633a' },
+        { dx: 0, dy: -45, r: 110, color: '#38804c' }
+      ];
+
+      clusters.forEach((c, idx) => {
+        const swayX = Math.sin(time * 1.2 + idx) * 6;
+        const swayY = Math.cos(time * 1.0 + idx) * 4;
+        ctx.fillStyle = c.color;
+        ctx.beginPath();
+        ctx.arc(tx + c.dx + swayX, ty + c.dy + swayY, c.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.restore();
+
+      ctx.save();
+      TREE_SPORES.forEach((sp) => {
+        const a = sp.angle + time * sp.speed;
+        const sx = tx + Math.cos(a) * sp.dist;
+        const sy = ty + Math.sin(a) * (sp.dist * 0.75) - 30;
+        ctx.fillStyle = sp.gold ? 'rgba(253, 224, 71, 0.85)' : 'rgba(110, 231, 183, 0.8)';
+        ctx.beginPath();
+        ctx.arc(sx, sy, sp.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawNameplateAndSpeech(ctx, ent, sx, sy, isSelf) {
+      ctx.save();
+      const raceObj = RACES[ent.race] || RACES.Human;
+      const offsetY = 58 * raceObj.scale;
+
+      ctx.font = '700 12px Cinzel, serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = isSelf ? '#fde047' : '#34d399';
+      ctx.shadowColor = 'rgba(0,0,0,0.95)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(ent.name, sx, sy - offsetY);
+
+      ctx.font = 'italic 11px Crimson Pro, serif';
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillText(`<${ent.race} ${ent.charClass}>`, sx, sy - offsetY + 12);
+      ctx.shadowBlur = 0;
+
+      if (ent.chat && Date.now() - ent.chatTimestamp < 6500) {
+        ctx.font = '600 13px Crimson Pro, serif';
+        const m = ctx.measureText(ent.chat);
+        const bw = Math.min(280, m.width + 22);
+        const bh = 26;
+        const bx = sx - bw / 2;
+        const by = sy - offsetY - 42;
+
+        ctx.fillStyle = 'rgba(14, 14, 18, 0.92)';
+        ctx.strokeStyle = ent.chatType === 'shout' ? '#f87171' : '#c8a253';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, bw, bh, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = ent.chatType === 'shout' ? '#fecaca' : '#fef3c7';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ent.chat, sx, by + bh / 2);
+      }
+
+      ctx.restore();
+    }
+
+    function renderOverworld(time) {
+      if (!hasSpawned) return;
+
+      ctx.clearRect(0, 0, screenWidth, screenHeight);
+
+      const camX = localPlayer.x - screenWidth / 2;
+      const camY = localPlayer.y - screenHeight / 2;
+
+      ctx.fillStyle = '#152414';
+      ctx.fillRect(0, 0, screenWidth, screenHeight);
+
+      ctx.strokeStyle = 'rgba(34, 62, 30, 0.45)';
+      ctx.lineWidth = 1;
+      const step = 128;
+      const startX = Math.floor(camX / step) * step;
+      const startY = Math.floor(camY / step) * step;
+      for (let x = startX; x < camX + screenWidth + step; x += step) {
+        ctx.beginPath(); ctx.moveTo(x - camX, 0); ctx.lineTo(x - camX, screenHeight); ctx.stroke();
+      }
+      for (let y = startY; y < camY + screenHeight + step; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y - camY); ctx.lineTo(screenWidth, y - camY); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#8b1e22';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(-camX, -camY, WORLD_SIZE, WORLD_SIZE);
+
+      if (clickMarker && clickMarker.timer > 0) {
+        ctx.save();
+        ctx.strokeStyle = `rgba(250, 204, 21, ${clickMarker.timer})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(clickMarker.x - camX, clickMarker.y - camY, 16 * clickMarker.timer, 8 * clickMarker.timer, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      drawTreeOfLifeBaseAndRoots(ctx, camX, camY, time);
+
+      // Collect ONLY real human characters (You + Live Connected Players)
+      const allChars = [
+        { ...localPlayer, isSelf: true },
+        ...Array.from(remotePlayers.values())
+      ];
+      allChars.sort((a, b) => a.y - b.y);
+
+      // Interactive Tall Grass Blades
+      ctx.save();
+      ctx.lineCap = 'round';
+      for (let i = 0; i < GRASS_PATCHES.length; i++) {
+        const g = GRASS_PATCHES[i];
+        const gx = g.x - camX;
+        const gy = g.y - camY;
+        if (gx < -30 || gx > screenWidth + 30 || gy < -30 || gy > screenHeight + 30) continue;
+
+        let targetBend = Math.sin(time * 2.2 + g.x * 0.02 + g.y * 0.01) * 4.5;
+        for (let c = 0; c < allChars.length; c++) {
+          const ch = allChars[c];
+          const dx = g.x - ch.x;
+          const dy = g.y - ch.y;
+          const dSq = dx * dx + dy * dy;
+          if (dSq < 1800) {
+            const push = (1 - Math.sqrt(dSq) / 42) * 16;
+            targetBend += (dx >= 0 ? push : -push);
+          }
+        }
+        g.bend += (targetBend - g.bend) * 0.22;
+
+        ctx.strokeStyle = `hsl(${g.hue}, 46%, ${g.light}%)`;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(gx, gy);
+        ctx.quadraticCurveTo(gx + g.bend * 0.5, gy - g.height * 0.6, gx + g.bend, gy - g.height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(gx + 3, gy + 1);
+        ctx.quadraticCurveTo(gx + 3 + g.bend * 0.4, gy - g.height * 0.5, gx + 4 + g.bend * 0.85, gy - g.height * 0.82);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Render Y-Sorted Real Players
+      allChars.forEach(ch => {
+        const sx = ch.x - camX;
+        const sy = ch.y - camY;
+        if (sx < -120 || sx > screenWidth + 120 || sy < -120 || sy > screenHeight + 120) return;
+
+        drawCharacterSprite(ctx, ch, sx, sy, time, 1.0, ch.isSelf, selectedTargetId === ch.id);
+        drawNameplateAndSpeech(ctx, ch, sx, sy, ch.isSelf);
+
+        if (ch.isSelf && localPlayer.spawnBeamTimer > 0) {
+          ctx.save();
+          const beamAlpha = Math.min(0.75, localPlayer.spawnBeamTimer * 0.4);
+          const beamGrad = ctx.createLinearGradient(sx - 35, sy, sx + 35, sy);
+          beamGrad.addColorStop(0, 'rgba(253, 224, 71, 0)');
+          beamGrad.addColorStop(0.5, `rgba(253, 224, 71, ${beamAlpha})`);
+          beamGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+          ctx.fillStyle = beamGrad;
+          ctx.fillRect(sx - 35, sy - 400, 70, 410);
+          ctx.restore();
+        }
+      });
+
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x - camX, p.y - camY, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      drawTreeOfLifeCanopyAndSpores(ctx, camX, camY, time);
+      renderMinimap();
+    }
+
+    function renderMinimap() {
+      const mw = minimapCanvas.width;
+      const mh = minimapCanvas.height;
+      mCtx.clearRect(0, 0, mw, mh);
+
+      mCtx.fillStyle = '#0d190d';
+      mCtx.fillRect(0, 0, mw, mh);
+
+      const cx = (TREE_X / WORLD_SIZE) * mw;
+      const cy = (TREE_Y / WORLD_SIZE) * mh;
+      mCtx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
+      mCtx.beginPath();
+      mCtx.arc(cx, cy, (SANCTUARY_RADIUS / WORLD_SIZE) * mw, 0, Math.PI * 2);
+      mCtx.stroke();
+
+      mCtx.fillStyle = '#facc15';
+      mCtx.beginPath();
+      mCtx.arc(cx, cy, 5, 0, Math.PI * 2);
+      mCtx.fill();
+
+      // Other Real Connected Players (Emerald Dots)
+      mCtx.fillStyle = '#34d399';
+      remotePlayers.forEach(rp => {
+        mCtx.beginPath();
+        mCtx.arc((rp.x / WORLD_SIZE) * mw, (rp.y / WORLD_SIZE) * mh, 3, 0, Math.PI * 2);
+        mCtx.fill();
+      });
+
+      // Local Player Dot (White)
+      mCtx.fillStyle = '#ffffff';
+      mCtx.beginPath();
+      mCtx.arc((localPlayer.x / WORLD_SIZE) * mw, (localPlayer.y / WORLD_SIZE) * mh, 3, 0, Math.PI * 2);
+      mCtx.fill();
+    }
+
+    // --- MAIN GAME LOOP ---
+    let lastFrameTime = performance.now();
+    let netSyncAccumulator = 0;
+    function mainLoop(nowMs) {
+      const dt = Math.min((nowMs - lastFrameTime) / 1000, 0.1);
+      lastFrameTime = nowMs;
+      const elapsedSeconds = nowMs / 1000;
+
+      updateOverworld(dt);
+      renderOverworld(elapsedSeconds);
+
+      if (hasSpawned) {
+        netSyncAccumulator += dt;
+        if (netSyncAccumulator >= (localPlayer.isMoving ? 0.12 : 1.0)) {
+          netSyncAccumulator = 0;
+          broadcastStatePacket('state');
+        }
+      }
+
+      requestAnimationFrame(mainLoop);
+    }
+
+    // Start main loop immediately on module execution so it never misses window.onload
+    requestAnimationFrame(mainLoop);
+  </script>
+</body>
+</html>
