@@ -3,76 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Intake & Inventory Engine</title>
+  <title>Salvies Book Intake & Value Triage</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
+      --bg: #0b0f19;
+      --card-bg: #151e2e;
+      --card-border: #243248;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
-      --accent-hover: #0284c7;
       --success: #22c55e;
       --warning: #f59e0b;
       --danger: #ef4444;
+      --flag-bg: rgba(239, 68, 68, 0.15);
+      --flag-border: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 1.5rem; line-height: 1.5; }
-    .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem; }
-    h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
-    .badge { background: #0369a1; color: #e0f2fe; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
-    
-    /* Stats Bar */
-    .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-    .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 1rem; }
-    .stat-card span { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .stat-card div { font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 0.25rem; }
+    body { background-color: var(--bg); color: var(--text); padding: 1.25rem; }
+    .container { max-width: 1300px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.25rem; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem; }
+    h1 { font-size: 1.4rem; font-weight: 700; color: #fff; }
+    .status-pill { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; background: #0369a1; color: #e0f2fe; }
 
-    /* Intake Section */
-    .intake-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; }
-    @media (max-width: 900px) { .intake-grid { grid-template-columns: 1fr; } }
-    
+    /* Flash warning alert on flag */
+    .triage-alert {
+      display: none; padding: 1rem; border-radius: 8px; font-weight: 700; font-size: 1.05rem;
+      align-items: center; justify-content: space-between; border: 2px solid; animation: pulse 1s infinite alternate;
+    }
+    .alert-flag { background: #450a0a; border-color: var(--danger); color: #fecaca; display: flex; }
+    .alert-safe { background: #052e16; border-color: var(--success); color: #bbf7d0; display: flex; }
+    @keyframes pulse { from { opacity: 0.85; } to { opacity: 1; } }
+
+    /* Work layout */
+    .grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 1.25rem; }
+    @media (max-width: 950px) { .grid { grid-template-columns: 1fr; } }
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.25rem; }
-    .input-group { margin-bottom: 1rem; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; }
-    input, select, textarea {
-      width: 100%; background: #0b1120; border: 1px solid var(--card-border); border-radius: 6px;
-      padding: 0.6rem 0.75rem; color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s;
-    }
-    input:focus, select:focus { border-color: var(--accent); }
-    .scanner-input { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.05em; border: 2px solid var(--accent); color: #38bdf8; }
-    
-    .fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600; padding: 0.6rem 1rem; border-radius: 6px; border: none; cursor: pointer; transition: all 0.2s; }
-    .btn-primary { background: var(--accent); color: #0b1120; }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-success { background: var(--success); color: #052e16; }
-    .btn-secondary { background: #334155; color: #fff; }
-    .btn-secondary:hover { background: #475569; }
 
-    /* Book Preview */
+    .scanner-box { border: 2px solid var(--accent); padding: 0.85rem; font-size: 1.25rem; font-weight: 700; color: #38bdf8; background: #070d17; width: 100%; border-radius: 6px; outline: none; }
+    .input-group { margin-top: 0.85rem; }
+    label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+    input, select { width: 100%; background: #070d17; border: 1px solid var(--card-border); border-radius: 6px; padding: 0.6rem; color: #fff; font-size: 0.95rem; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+    /* Book preview */
     .preview-box { display: flex; gap: 1.25rem; }
-    .book-thumb { width: 100px; height: 145px; background: #0b1120; border-radius: 4px; object-fit: cover; border: 1px solid var(--card-border); flex-shrink: 0; }
-    .book-info { flex: 1; }
-    .book-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
-    .book-author { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
-    .comp-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-    .comp-link {
-      font-size: 0.75rem; text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px;
-      font-weight: 600; border: 1px solid var(--card-border); color: #fff; background: #0b1120;
-    }
-    .comp-link:hover { border-color: var(--accent); color: var(--accent); }
+    .thumb { width: 110px; height: 160px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border); background: #070d17; flex-shrink: 0; }
+    .meta-title { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+    .meta-author { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; }
 
-    /* Inventory Table */
-    .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
-    .table-container { overflow-x: auto; max-height: 400px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
-    th { background: #0b1120; color: var(--text-muted); font-weight: 600; padding: 0.75rem; border-bottom: 1px solid var(--card-border); position: sticky; top: 0; }
+    /* Triage flags list */
+    .flag-reasons { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; }
+    .flag-chip { font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .chip-danger { background: #7f1d1d; color: #fecaca; }
+    .chip-warning { background: #78350f; color: #fde68a; }
+    .chip-neutral { background: #1e293b; color: #cbd5e1; }
+
+    /* Action Buttons */
+    .btn { cursor: pointer; font-weight: 700; padding: 0.75rem 1rem; border-radius: 6px; border: none; transition: 0.2s; }
+    .btn-budget { background: #10b981; color: #022c22; width: 100%; font-size: 1rem; margin-top: 0.75rem; }
+    .btn-hold { background: #f59e0b; color: #451a03; width: 100%; font-size: 1rem; margin-top: 0.5rem; }
+    .btn-secondary { background: #334155; color: #fff; }
+
+    /* Comps Bar */
+    .comps-bar { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .comp-btn { font-size: 0.75rem; font-weight: 700; text-decoration: none; padding: 0.4rem 0.75rem; border-radius: 4px; border: 1px solid var(--card-border); background: #070d17; color: #fff; }
+    .comp-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
+    th { background: #070d17; padding: 0.75rem; border-bottom: 1px solid var(--card-border); color: var(--text-muted); position: sticky; top: 0; }
     td { padding: 0.75rem; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
-    tr:hover { background: #1a2234; }
-    .delete-btn { color: var(--danger); background: none; border: none; cursor: pointer; font-weight: bold; }
+    .tag-hold { background: #7f1d1d; color: #fecaca; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+    .tag-budget { background: #064e3b; color: #a7f3d0; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -80,359 +82,411 @@
 <div class="container">
   <header>
     <div>
-      <h1>Book Intake & Inventory Engine</h1>
-      <p style="color: var(--text-muted); font-size: 0.85rem;">Eyoyo Wedge Ready • LocalStorage • eBay & CSV Export</p>
+      <h1>Salvies Auto-Triage & Scanner Desk</h1>
+      <p style="color: var(--text-muted); font-size: 0.8rem;">High-Volume Intake with Valued Edition & First-Print Intercept</p>
     </div>
-    <span class="badge" id="scannerStatus">Eyoyo Wedge Listening</span>
+    <div style="display:flex; gap:0.5rem; align-items:center;">
+      <span class="status-pill" id="eyoyoState">Eyoyo Wedge Listening</span>
+      <button class="btn btn-secondary" onclick="exportCSV()" style="padding:0.4rem 0.8rem; font-size:0.8rem;">Export CSV</button>
+    </div>
   </header>
 
-  <!-- Metrics -->
-  <div class="stats-bar">
-    <div class="stat-card">
-      <span>Logged Inventory</span>
-      <div id="statCount">0 units</div>
-    </div>
-    <div class="stat-card">
-      <span>Total Catalog Value</span>
-      <div id="statValue">$0.00</div>
-    </div>
-    <div class="stat-card">
-      <span>Avg. Book Price</span>
-      <div id="statAvg">$0.00</div>
-    </div>
+  <!-- Big Visual Alert Banner -->
+  <div id="triageBanner" class="triage-alert">
+    <span id="triageText"></span>
+    <span id="triageAction" style="font-size:0.85rem; text-decoration:underline;"></span>
   </div>
 
-  <!-- Intake Workspace -->
-  <div class="intake-grid">
-    <!-- Scanner Bar & Active Form -->
+  <div class="grid">
+    <!-- Scanner Bar & Controls -->
     <div class="card">
-      <div class="input-group">
-        <label for="isbnInput">SCAN ISBN / BARCODE (AUTO-SUBMITS ON TRIGGER)</label>
-        <input type="text" id="isbnInput" class="scanner-input" placeholder="Point Eyoyo & scan..." autofocus autocomplete="off">
-      </div>
+      <label for="isbnInput">SCAN BARCODE (EYOYO AUTOSUBMIT)</label>
+      <input type="text" id="isbnInput" class="scanner-box" placeholder="Scan ISBN..." autofocus autocomplete="off">
 
-      <div class="fields-row">
+      <div class="row" style="margin-top: 0.75rem;">
         <div class="input-group">
-          <label for="locationInput">Shelf / Bin ID</label>
-          <input type="text" id="locationInput" placeholder="e.g. Shelf-A3, Bin-12" value="Intake-Bin-1">
+          <label>Target Shelf / Bin</label>
+          <input type="text" id="binInput" value="Budget-Rack-1">
         </div>
         <div class="input-group">
-          <label for="conditionInput">Condition</label>
+          <label>Condition</label>
           <select id="conditionInput">
-            <option value="Very Good">Very Good</option>
             <option value="Good" selected>Good</option>
+            <option value="Very Good">Very Good</option>
             <option value="Like New">Like New</option>
             <option value="Acceptable">Acceptable</option>
-            <option value="Collectible">Collectible / Vintage</option>
+            <option value="Collectible">Collectible</option>
           </select>
         </div>
       </div>
 
-      <div class="fields-row">
+      <div class="row">
         <div class="input-group">
-          <label for="priceInput">Your Listing Price ($)</label>
-          <input type="number" step="0.50" id="priceInput" placeholder="e.g. 8.50">
+          <label>Assigned Price ($)</label>
+          <input type="number" step="0.50" id="priceInput" value="4.99">
         </div>
         <div class="input-group">
-          <label for="costInput">Cost of Goods / Purchase ($)</label>
-          <input type="number" step="0.10" id="costInput" placeholder="e.g. 0.50" value="0.50">
+          <label>Estimated MSRP ($)</label>
+          <input type="text" id="msrpInput" readonly style="color: var(--text-muted);">
         </div>
       </div>
 
-      <button class="btn btn-success" id="addBtn" style="width: 100%; margin-top: 0.5rem;" disabled>Commit Book to Inventory</button>
+      <!-- Quick Triage Buttons -->
+      <button class="btn btn-budget" id="btnBudget" onclick="commitBook('BUDGET_FLOOR', false)">
+        ✓ Pass to Budget Shelves ($4.99)
+      </button>
+      <button class="btn btn-hold" id="btnHold" onclick="commitBook('HOLD_FOR_AUDIT', true)">
+        ⚠️ Hold for Research (First Ed / High Value)
+      </button>
     </div>
 
-    <!-- Live Comp & Lookup Preview -->
+    <!-- Live Preview & Flag Audit Card -->
     <div class="card">
-      <label>LIVE LOOKUP PREVIEW</label>
-      <div class="preview-box" id="previewContainer">
-        <div class="book-thumb" style="display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.75rem;">No Cover</div>
-        <div class="book-info">
-          <div class="book-title" id="previewTitle">Ready to scan...</div>
-          <div class="book-author" id="previewAuthor">Pull the trigger on your Eyoyo scanner</div>
-          <div class="comp-links" id="compLinks" style="display: none;">
-            <a href="#" target="_blank" id="ebaySoldLink" class="comp-link">eBay Sold Comps ↗</a>
-            <a href="#" target="_blank" id="bookfinderLink" class="comp-link">BookFinder Market ↗</a>
-            <a href="#" target="_blank" id="abebooksLink" class="comp-link">AbeBooks Comps ↗</a>
-          </div>
+      <label>SCAN AUDIT & RISK ANALYSIS</label>
+      <div class="preview-box" style="margin-top:0.5rem;">
+        <img id="bookThumb" src="" class="thumb" style="display:none;" alt="Cover">
+        <div id="noThumb" class="thumb" style="display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.75rem;">No Cover</div>
+        <div style="flex:1;">
+          <div class="meta-title" id="bookTitle">Ready for intake...</div>
+          <div class="meta-author" id="bookAuthor">Pull scanner trigger to evaluate</div>
+          <div class="flag-reasons" id="flagReasons"></div>
         </div>
+      </div>
+
+      <div class="comps-bar" id="compsBar" style="display:none;">
+        <a id="ebaySoldComp" href="#" target="_blank" class="comp-btn">eBay Sold Comps ↗</a>
+        <a id="bookFinderComp" href="#" target="_blank" class="comp-btn">BookFinder ↗</a>
+        <a id="abebooksComp" href="#" target="_blank" class="comp-btn">AbeBooks (Check 1st) ↗</a>
       </div>
     </div>
   </div>
 
-  <!-- Inventory Catalog Table -->
-  <div class="card">
-    <div class="table-header">
-      <div>
-        <h2 style="font-size: 1.1rem; color: #fff;">Catalog Manifest</h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Stored directly in browser localStorage</span>
-      </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button class="btn btn-secondary" onclick="exportMasterCSV()">Export Master CSV</button>
-        <button class="btn btn-primary" onclick="exportEbayCSV()">Export eBay Bulk CSV</button>
-      </div>
+  <!-- Manifest Manifest Table -->
+  <div class="card" style="padding:0;">
+    <div style="padding:1rem; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="font-size:1rem; color:#fff;">Processed Session Manifest (<span id="countSpan">0</span> books)</h2>
+      <span style="font-size:0.8rem; color:var(--text-muted);">Auto-saved to LocalStorage</span>
     </div>
-
-    <div class="table-container">
-      <table id="inventoryTable">
+    <div style="max-height:350px; overflow-y:auto;">
+      <table>
         <thead>
           <tr>
-            <th>Date</th>
+            <th>Status</th>
             <th>ISBN</th>
             <th>Title</th>
             <th>Author</th>
-            <th>Location</th>
-            <th>Condition</th>
-            <th>Cost</th>
+            <th>MSRP</th>
             <th>Price</th>
+            <th>Bin</th>
             <th>Action</th>
           </tr>
         </thead>
-        <tbody id="inventoryBody">
-          <!-- Populated by JS -->
-        </tbody>
+        <tbody id="tableBody"></tbody>
       </table>
     </div>
   </div>
 </div>
 
 <script>
-  // Web Audio Scanner Beep Synthesizer
-  function playBeep(freq = 880, type = 'sine', duration = 0.08) {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = type;
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+  // High-variance author alert database
+  const WATCHLIST_AUTHORS = [
+    "dan brown", "stephen king", "j.k. rowling", "jk rowling", "cormac mccarthy",
+    "brandon sanderson", "neil gaiman", "george r.r. martin", "octavia butler",
+    "philip k. dick", "andy weir", "haruki murakami", "chuck palahniuk"
+  ];
+
+  // High-value niche subjects
+  const HIGH_VALUE_SUBJECTS = ["occult", "tarot", "rpg", "dungeons", "railroad", "firearms", "textbook", "encyclopedia", "first edition", "signed"];
+
+  // Web Audio Synthesizer
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'safe') {
+      // Pleasant high double beep
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
       osc.start();
-      osc.stop(ctx.currentTime + duration);
-    } catch (e) {
-      console.warn("Audio Context blocked or not supported:", e);
+      osc.stop(audioCtx.currentTime + 0.08);
+    } else if (type === 'flag') {
+      // Siren warble to immediately halt scanning
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.25);
     }
   }
 
-  // Active book buffer
   let currentBook = null;
+  let manifest = JSON.parse(localStorage.getItem('salvies_triage_manifest') || '[]');
+
   const isbnInput = document.getElementById('isbnInput');
-  const addBtn = document.getElementById('addBtn');
+  const triageBanner = document.getElementById('triageBanner');
+  const triageText = document.getElementById('triageText');
+  const triageAction = document.getElementById('triageAction');
+  const flagReasons = document.getElementById('flagReasons');
 
-  // Load Inventory from localStorage
-  let inventory = JSON.parse(localStorage.getItem('salvies_book_inventory') || '[]');
-
-  function saveInventory() {
-    localStorage.setItem('salvies_book_inventory', JSON.stringify(inventory));
-    renderTable();
-    updateStats();
-  }
-
-  // ISBN Scanner Trigger listener
+  // Scanner capture
   isbnInput.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const raw = isbnInput.value.trim().replace(/[^0-9Xx]/g, '');
       if (raw.length >= 10) {
-        await lookupISBN(raw);
+        await evaluateISBN(raw);
       }
     }
   });
 
-  async function lookupISBN(isbn) {
-    document.getElementById('previewTitle').innerText = 'Searching catalog...';
-    document.getElementById('previewAuthor').innerText = 'Querying Google Books & Open Library...';
-    
-    let book = null;
+  async function evaluateISBN(isbn) {
+    document.getElementById('bookTitle').innerText = 'Auditing catalog & pricing...';
+    document.getElementById('bookAuthor').innerText = 'Querying Google Books & Open Library...';
+    flagReasons.innerHTML = '';
+    triageBanner.style.display = 'none';
 
+    let book = null;
+    let msrp = null;
+    let subjects = [];
+
+    // 1. Google Books Query
     try {
-      // 1. Google Books API
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
-      const data = await res.json();
-      if (data.items && data.items.length > 0) {
-        const item = data.items[0].volumeInfo;
+      const gRes = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+      const gData = await gRes.json();
+      if (gData.items && gData.items.length > 0) {
+        const item = gData.items[0];
+        const v = item.volumeInfo;
+        if (item.saleInfo && item.saleInfo.listPrice) {
+          msrp = item.saleInfo.listPrice.amount;
+        }
+        if (v.categories) subjects = v.categories.map(c => c.toLowerCase());
         book = {
           isbn: isbn,
-          title: item.title || 'Unknown Title',
-          authors: (item.authors || ['Unknown Author']).join(', '),
-          publisher: item.publisher || '',
-          publishedDate: item.publishedDate || '',
-          thumbnail: item.imageLinks ? item.imageLinks.thumbnail : ''
+          title: v.title || 'Unknown Title',
+          authors: (v.authors || ['Unknown Author']).join(', '),
+          publishedDate: v.publishedDate || '',
+          pageCount: v.pageCount || 0,
+          thumbnail: v.imageLinks ? v.imageLinks.thumbnail : '',
+          msrp: msrp,
+          subjects: subjects
         };
       }
-    } catch (err) {}
+    } catch (e) {}
 
-    // 2. Open Library fallback
-    if (!book) {
-      try {
-        const olRes = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
-        const olData = await olRes.json();
-        const olItem = olData[`ISBN:${isbn}`];
-        if (olItem) {
+    // 2. Open Library Query for First Edition analysis
+    let firstPublishYear = null;
+    try {
+      const olRes = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+      const olData = await olRes.json();
+      const olItem = olData[`ISBN:${isbn}`];
+      if (olItem) {
+        if (!book) {
           book = {
             isbn: isbn,
             title: olItem.title || 'Unknown Title',
             authors: olItem.authors ? olItem.authors.map(a => a.name).join(', ') : 'Unknown Author',
-            publisher: olItem.publishers ? olItem.publishers[0].name : '',
             publishedDate: olItem.publish_date || '',
-            thumbnail: olItem.cover ? olItem.cover.medium : ''
+            thumbnail: olItem.cover ? olItem.cover.medium : '',
+            msrp: null,
+            subjects: []
           };
         }
-      } catch (err) {}
+        if (olItem.publish_date) {
+          const match = olItem.publish_date.match(/\d{4}/);
+          if (match) firstPublishYear = parseInt(match[0], 10);
+        }
+      }
+    } catch (e) {}
+
+    if (!book) {
+      playSound('flag');
+      triageBanner.className = 'triage-alert alert-flag';
+      triageText.innerText = '⚠️ UNINDEXED ISBN - MANUAL CHECK REQUIRED';
+      triageAction.innerText = 'Pre-ISBN, private press, or import.';
+      triageBanner.style.display = 'flex';
+      currentBook = { isbn: isbn, title: 'Unindexed Book', authors: 'Unknown', msrp: null, flags: ['Unindexed'] };
+      renderBookCard(currentBook, ['Unindexed barcode — check copyright page for age & printing.']);
+      return;
     }
 
-    if (book) {
-      playBeep(920, 'sine', 0.08); // Success chirp
-      currentBook = book;
-      renderPreview(book);
-      addBtn.disabled = false;
-      document.getElementById('priceInput').focus();
+    // RUN THE 5 VALUE HEURISTICS
+    const flags = [];
+    const authorLower = (book.authors || '').toLowerCase();
+    const titleLower = (book.title || '').toLowerCase();
+
+    // Heuristic A: Watchlist breakout author (Da Vinci Code Rule)
+    for (const author of WATCHLIST_AUTHORS) {
+      if (authorLower.includes(author)) {
+        flags.push({ level: 'danger', reason: `High-Variance Author (${author.toUpperCase()}): Verify 1st edition number line / printing!` });
+        break;
+      }
+    }
+
+    // Heuristic B: MSRP floor rule
+    if (book.msrp) {
+      document.getElementById('msrpInput').value = `$${book.msrp.toFixed(2)}`;
+      if (book.msrp >= 35) {
+        flags.push({ level: 'danger', reason: `High Original MSRP ($${book.msrp.toFixed(2)}): Likely textbook, art monograph, or specialty reference.` });
+      }
     } else {
-      playBeep(300, 'sawtooth', 0.2); // Not found buzz
-      document.getElementById('previewTitle').innerText = 'Book Not Found';
-      document.getElementById('previewAuthor').innerText = 'Pre-ISBN or unindexed. Fill out manually.';
-      currentBook = { isbn: isbn, title: 'Manual Entry', authors: '', thumbnail: '' };
-      renderPreview(currentBook);
-      addBtn.disabled = false;
+      document.getElementById('msrpInput').value = 'Unlisted';
+    }
+
+    // Heuristic C: Early printing timeline match
+    if (firstPublishYear && book.publishedDate) {
+      const pubMatch = book.publishedDate.match(/\d{4}/);
+      if (pubMatch) {
+        const thisPubYear = parseInt(pubMatch[0], 10);
+        if (Math.abs(thisPubYear - firstPublishYear) <= 1) {
+          flags.push({ level: 'warning', reason: `Early Publication Run (${thisPubYear}): Matches original release year (${firstPublishYear}). Inspect copyright number line.` });
+        }
+      }
+    }
+
+    // Heuristic D: Collectible subjects
+    for (const subj of book.subjects) {
+      for (const needle of HIGH_VALUE_SUBJECTS) {
+        if (subj.includes(needle) || titleLower.includes(needle)) {
+          flags.push({ level: 'warning', reason: `High-Demand Niche (${needle.toUpperCase()}): Strong secondary collector demand.` });
+          break;
+        }
+      }
+    }
+
+    currentBook = { ...book, flags: flags };
+    renderBookCard(book, flags);
+
+    // AUDIO & VISUAL TRIAGE
+    if (flags.length > 0) {
+      playSound('flag');
+      triageBanner.className = 'triage-alert alert-flag';
+      triageText.innerText = `🚨 FLAGGED (${flags.length} Potential Value Indicators) - DO NOT PUT IN BUDGET BIN`;
+      triageAction.innerText = 'Check copyright page number line & comps.';
+      triageBanner.style.display = 'flex';
+      document.getElementById('priceInput').value = '25.00';
+      document.getElementById('btnHold').focus();
+    } else {
+      playSound('safe');
+      triageBanner.className = 'triage-alert alert-safe';
+      triageText.innerText = '✓ SAFE BUDGET PASS: Mass production run, sub-$30 MSRP, standard reprint.';
+      triageAction.innerText = 'Clear to bin at $4.99.';
+      triageBanner.style.display = 'flex';
+      document.getElementById('priceInput').value = '4.99';
+      document.getElementById('btnBudget').focus();
     }
   }
 
-  function renderPreview(b) {
-    document.getElementById('previewTitle').innerText = b.title;
-    document.getElementById('previewAuthor').innerText = b.authors;
-    
-    const container = document.getElementById('previewContainer');
-    const existingImg = container.querySelector('.book-thumb');
-    if (b.thumbnail) {
-      existingImg.outerHTML = `<img src="${b.thumbnail}" class="book-thumb" alt="Cover">`;
+  function renderBookCard(book, flags) {
+    document.getElementById('bookTitle').innerText = book.title;
+    document.getElementById('bookAuthor').innerText = book.authors;
+
+    const thumb = document.getElementById('bookThumb');
+    const noThumb = document.getElementById('noThumb');
+    if (book.thumbnail) {
+      thumb.src = book.thumbnail;
+      thumb.style.display = 'block';
+      noThumb.style.display = 'none';
     } else {
-      existingImg.outerHTML = `<div class="book-thumb" style="display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.75rem;">No Cover</div>`;
+      thumb.style.display = 'none';
+      noThumb.style.display = 'flex';
     }
 
-    // Set Live Comp Links
-    document.getElementById('compLinks').style.display = 'flex';
-    document.getElementById('ebaySoldLink').href = `https://www.ebay.com/sch/i.html?_nkw=${b.isbn}&LH_Complete=1&LH_Sold=1`;
-    document.getElementById('bookfinderLink').href = `https://www.bookfinder.com/search/?isbn=${b.isbn}&mode=basic&st=sr&ac=qr`;
-    document.getElementById('abebooksLink').href = `https://www.abebooks.com/servlet/SearchResults?isbn=${b.isbn}`;
+    flagReasons.innerHTML = '';
+    flags.forEach(f => {
+      const chip = document.createElement('div');
+      chip.className = `flag-chip ${f.level === 'danger' ? 'chip-danger' : 'chip-warning'}`;
+      chip.innerText = (typeof f === 'string') ? f : f.reason;
+      flagReasons.appendChild(chip);
+    });
+
+    // Populate comps
+    const comps = document.getElementById('compsBar');
+    comps.style.display = 'flex';
+    document.getElementById('ebaySoldComp').href = `https://www.ebay.com/sch/i.html?_nkw=${book.isbn}&LH_Complete=1&LH_Sold=1`;
+    document.getElementById('bookFinderComp').href = `https://www.bookfinder.com/search/?isbn=${book.isbn}&mode=basic&st=sr&ac=qr`;
+    document.getElementById('abebooksComp').href = `https://www.abebooks.com/servlet/SearchResults?isbn=${book.isbn}&bi=0&ds=30&sortby=1`;
   }
 
-  // Commit book to inventory
-  addBtn.addEventListener('click', () => {
+  function commitBook(status, isHold) {
     if (!currentBook) return;
 
     const entry = {
       id: Date.now(),
-      date: new Date().toLocaleDateString(),
+      status: status,
+      isHold: isHold,
       isbn: currentBook.isbn,
       title: currentBook.title,
       authors: currentBook.authors,
-      location: document.getElementById('locationInput').value || 'Floor',
+      msrp: currentBook.msrp ? `$${currentBook.msrp.toFixed(2)}` : 'N/A',
+      price: parseFloat(document.getElementById('priceInput').value) || 4.99,
+      bin: isHold ? 'HOLD-RESEARCH-PILE' : document.getElementById('binInput').value,
       condition: document.getElementById('conditionInput').value,
-      cost: parseFloat(document.getElementById('costInput').value) || 0,
-      price: parseFloat(document.getElementById('priceInput').value) || 0
+      flagSummary: (currentBook.flags || []).map(f => (typeof f === 'string' ? f : f.reason)).join(' | ')
     };
 
-    inventory.unshift(entry);
-    saveInventory();
+    manifest.unshift(entry);
+    localStorage.setItem('salvies_triage_manifest', JSON.stringify(manifest));
+    renderTable();
 
-    // Reset Form for next scan
+    // Reset scanner
     isbnInput.value = '';
-    document.getElementById('priceInput').value = '';
-    addBtn.disabled = true;
     currentBook = null;
+    triageBanner.style.display = 'none';
     isbnInput.focus();
-    playBeep(1200, 'sine', 0.05); // High confirmation beep
-  });
+  }
 
-  // Render Table
   function renderTable() {
-    const tbody = document.getElementById('inventoryBody');
-    tbody.innerHTML = '';
-    inventory.forEach(item => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${item.date}</td>
+    const tb = document.getElementById('tableBody');
+    tb.innerHTML = '';
+    manifest.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="${item.isHold ? 'tag-hold' : 'tag-budget'}">${item.status}</span></td>
         <td><code>${item.isbn}</code></td>
-        <td style="font-weight:600; color:#fff;">${item.title}</td>
+        <td style="font-weight:700; color:#fff;">${item.title}</td>
         <td>${item.authors}</td>
-        <td><span class="badge" style="background:#334155;">${item.location}</span></td>
-        <td>${item.condition}</td>
-        <td>$${item.cost.toFixed(2)}</td>
+        <td>${item.msrp}</td>
         <td style="color:#38bdf8; font-weight:700;">$${item.price.toFixed(2)}</td>
-        <td><button class="delete-btn" onclick="deleteItem(${item.id})">✕</button></td>
+        <td>${item.bin}</td>
+        <td><button onclick="removeItem(${item.id})" style="background:none; border:none; color:#ef4444; cursor:pointer;">✕</button></td>
       `;
-      tbody.appendChild(row);
+      tb.appendChild(tr);
     });
+    document.getElementById('countSpan').innerText = manifest.length;
   }
 
-  function deleteItem(id) {
-    inventory = inventory.filter(i => i.id !== id);
-    saveInventory();
+  function removeItem(id) {
+    manifest = manifest.filter(m => m.id !== id);
+    localStorage.setItem('salvies_triage_manifest', JSON.stringify(manifest));
+    renderTable();
   }
 
-  function updateStats() {
-    const totalCount = inventory.length;
-    const totalVal = inventory.reduce((sum, item) => sum + (item.price || 0), 0);
-    const avgVal = totalCount > 0 ? (totalVal / totalCount) : 0;
-
-    document.getElementById('statCount').innerText = `${totalCount} units`;
-    document.getElementById('statValue').innerText = `$${totalVal.toFixed(2)}`;
-    document.getElementById('statAvg').innerText = `$${avgVal.toFixed(2)}`;
-  }
-
-  // Master CSV Export
-  function exportMasterCSV() {
-    if (inventory.length === 0) return alert('No books in inventory to export.');
-    let csv = 'Date,ISBN,Title,Author,Location,Condition,Cost,Price\n';
-    inventory.forEach(i => {
-      const titleEsc = `"${(i.title || '').replace(/"/g, '""')}"`;
-      const authorEsc = `"${(i.authors || '').replace(/"/g, '""')}"`;
-      csv += `${i.date},${i.isbn},${titleEsc},${authorEsc},${i.location},${i.condition},${i.cost},${i.price}\n`;
+  function exportCSV() {
+    if (manifest.length === 0) return alert('No books to export.');
+    let csv = 'Status,ISBN,Title,Author,MSRP,Price,Bin,Condition,AuditFlags\n';
+    manifest.forEach(m => {
+      const cleanTitle = `"${(m.title || '').replace(/"/g, '""')}"`;
+      const cleanAuthor = `"${(m.authors || '').replace(/"/g, '""')}"`;
+      const cleanFlags = `"${(m.flagSummary || '').replace(/"/g, '""')}"`;
+      csv += `${m.status},${m.isbn},${cleanTitle},${cleanAuthor},${m.msrp},${m.price},${m.bin},${m.condition},${cleanFlags}\n`;
     });
-    downloadBlob(csv, `bookstore_manifest_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
-  }
-
-  // eBay File Exchange / Seller Hub Reports Bulk CSV
-  function exportEbayCSV() {
-    if (inventory.length === 0) return alert('No books to export for eBay.');
-    // Core eBay Seller Hub Upload headers
-    let csv = 'Action,CustomLabel,Category,Title,StartPrice,Quantity,Format,ConditionID,Product:ISBN\n';
-    
-    // Map human conditions to eBay Condition IDs
-    const condMap = {
-      'Like New': '2750',
-      'Very Good': '4000',
-      'Good': '5000',
-      'Acceptable': '6000',
-      'Collectible': '4000'
-    };
-
-    inventory.forEach(i => {
-      const cleanTitle = `"${(i.title || '').slice(0, 80).replace(/"/g, '""')}"`;
-      const condId = condMap[i.condition] || '5000';
-      const sku = `${i.location}-${i.isbn}`;
-      // Action: Add | CustomLabel (SKU) | Category (267: Books) | Title | Price | Qty | Format (FixedPrice) | ConditionID | ISBN
-      csv += `Add,${sku},267,${cleanTitle},${i.price.toFixed(2)},1,FixedPrice,${condId},${i.isbn}\n`;
-    });
-
-    downloadBlob(csv, `ebay_bulk_listings_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
-  }
-
-  function downloadBlob(content, filename, contentType) {
-    const blob = new Blob([content], { type: contentType });
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = `salvies_intake_triage_${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
 
-  // Initial render
   renderTable();
-  updateStats();
 </script>
 </body>
 </html>
