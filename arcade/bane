@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wizardry Inverted: Tartaria Online</title>
+  <title>Wizardry Inverted: Tartaria Online (1991 OVA & Card Art Edition)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Crimson+Pro:ital,wght@0,500;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink-black: #040306;
-      --tartaria-bg: #08060c;
+      --tartaria-bg: #08070c;
       --tartaria-gold: #c89d54;
       --tartaria-gold-bright: #f4dca6;
-      --tartaria-blood: #7c0a0a;
-      --tartaria-crimson: #d92626;
-      --tartaria-stone: #1c1824;
+      --wiz-red: #d92b2b;
+      --ova-slate: #2c3545;
+      --ova-ectoplasm: #84cc16;
     }
     * {
       box-sizing: border-box;
@@ -50,7 +50,7 @@
     }
 
     .tartaria-window {
-      background: linear-gradient(180deg, rgba(16, 13, 22, 0.94) 0%, rgba(7, 5, 10, 0.97) 100%);
+      background: linear-gradient(180deg, rgba(18, 16, 26, 0.95) 0%, rgba(7, 6, 12, 0.98) 100%);
       border: 2px solid var(--tartaria-gold);
       outline: 2px solid #000;
       box-shadow:
@@ -60,11 +60,11 @@
       border-radius: 2px;
     }
 
-    /* Character Creation & Returning Login Modal */
+    /* Character Creation Modal */
     #char-modal {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 30%, rgba(42, 12, 16, 0.95) 0%, rgba(4, 3, 7, 0.99) 85%);
+      background: radial-gradient(circle at 50% 30%, rgba(36, 24, 38, 0.96) 0%, rgba(4, 3, 7, 0.99) 85%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -75,7 +75,7 @@
     }
     .char-card {
       width: 100%;
-      max-width: 860px;
+      max-width: 880px;
       padding: 18px 22px;
       display: grid;
       grid-template-columns: 1.25fr 0.75fr;
@@ -88,24 +88,53 @@
       grid-column: 1 / -1;
       text-align: center;
       border-bottom: 2px solid #3a2818;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
+      position: relative;
+    }
+    /* Sword-pierced Wizardry Logo styling */
+    .wiz-logo-wrap {
+      position: relative;
+      display: inline-block;
+      padding: 0 36px;
+    }
+    .wiz-logo-sword {
+      position: absolute;
+      top: 52%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ef4444 0%, #dc2626 85%, #facc15 100%);
+      box-shadow: 0 2px 0 #000;
+      z-index: 1;
+    }
+    .wiz-logo-sword::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: -9px;
+      width: 4px;
+      height: 22px;
+      background: #ef4444;
+      box-shadow: 1px 1px 0 #000;
     }
     .title-banner h1 {
+      position: relative;
+      z-index: 2;
       font-family: 'Cinzel', serif;
-      font-size: 24px;
+      font-size: 27px;
       font-weight: 900;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       text-transform: uppercase;
-      color: var(--tartaria-gold-bright);
-      text-shadow: 2px 2px 0 #000, 0 0 18px rgba(180, 20, 20, 0.7);
+      color: #ef4444;
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 18px rgba(220, 38, 38, 0.75);
     }
     .title-banner h2 {
       font-family: 'Cinzel', serif;
       font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #b89456;
-      margin-top: 2px;
+      color: var(--tartaria-gold-bright);
+      margin-top: 4px;
     }
     .save-banner {
       grid-column: 1 / -1;
@@ -126,15 +155,15 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      background: #050408;
+      background: #07080d;
       border: 2px solid #3a2818;
       box-shadow: inset 0 0 28px rgba(0,0,0,0.95);
       padding: 10px;
     }
     #previewCanvas {
       width: 240px;
-      height: 205px;
-      background: radial-gradient(circle at 50% 65%, #261219 0%, #040306 75%);
+      height: 215px;
+      background: radial-gradient(circle at 50% 65%, #1c2230 0%, #050508 78%);
       border: 1px solid #2d2016;
     }
     .lore-box {
@@ -185,7 +214,7 @@
 
     .btn-spawn {
       grid-column: 1 / -1;
-      background: linear-gradient(180deg, #8b0c0c 0%, #420404 100%);
+      background: linear-gradient(180deg, #991b1b 0%, #450a0a 100%);
       border: 2px solid var(--tartaria-gold-bright);
       outline: 2px solid #000;
       color: #fff4db;
@@ -201,7 +230,36 @@
     }
     .btn-spawn:hover { filter: brightness(1.15); }
 
-    /* Translucent Quick Inventory & Equipment Popup [I] */
+    /* Werdna 1981 Illustrated Taunt Modal */
+    #werdna-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 92%;
+      max-width: 520px;
+      background: #f5f0e1;
+      color: #111;
+      border: 4px solid #111;
+      outline: 3px solid var(--tartaria-gold);
+      box-shadow: 0 18px 55px rgba(0,0,0,0.95);
+      padding: 18px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 180;
+    }
+    #werdna-modal p {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: justify;
+      color: #1a1615;
+    }
+
+    /* Quick Translucent Inventory & Equipment Popup [I] */
     #inventory-modal {
       position: absolute;
       top: 50%;
@@ -209,7 +267,7 @@
       transform: translate(-50%, -50%);
       width: 92%;
       max-width: 580px;
-      background: rgba(10, 8, 15, 0.84);
+      background: rgba(10, 8, 15, 0.85);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       border: 2px solid var(--tartaria-gold);
@@ -248,10 +306,7 @@
       color: var(--tartaria-gold-bright);
       margin-top: 2px;
     }
-    .equip-box span {
-      font-size: 10.5px;
-      color: #4ade80;
-    }
+    .equip-box span { font-size: 10.5px; color: #4ade80; }
     .bag-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -281,10 +336,7 @@
       color: #f4dca6;
       font-weight: 700;
     }
-    .bag-slot .item-stat {
-      font-size: 10px;
-      color: #a89984;
-    }
+    .bag-slot .item-stat { font-size: 10px; color: #a89984; }
 
     /* Grimoire / Ascension Modals */
     #grimoire-modal, #ascend-modal {
@@ -369,7 +421,7 @@
       top: 50px;
       left: 12px;
       padding: 10px 14px;
-      width: 268px;
+      width: 274px;
       font-size: 11px;
     }
     .bar-container {
@@ -390,7 +442,7 @@
     #mana-fill { background: linear-gradient(180deg, #2b78b8 0%, #123654 100%); }
     #xp-fill { background: linear-gradient(180deg, #f4dca6 0%, #b88b3a 100%); }
 
-    /* 9-Slot Grimoire Action Bar (1 Slot Per Level up to 9) */
+    /* 9-Slot Grimoire Action Bar */
     .hotbar {
       position: absolute;
       bottom: 12px;
@@ -444,14 +496,14 @@
       position: absolute;
       bottom: 76px;
       left: 12px;
-      width: 340px;
+      width: 350px;
       max-width: calc(100vw - 24px);
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
     .chat-log {
-      height: 112px;
+      height: 116px;
       padding: 7px 10px;
       overflow-y: auto;
       display: flex;
@@ -482,7 +534,6 @@
       outline: none;
     }
 
-    /* Souls-like Banner / Toast */
     #souls-banner {
       position: absolute;
       top: 24%;
@@ -525,12 +576,22 @@
   <div id="crt-overlay"></div>
   <div id="souls-banner">FIREPIT RESTORED</div>
 
+  <!-- Werdna 1981 Manual Art Portrait Modal -->
+  <div id="werdna-modal">
+    <p>"Come, enter the World of Wizardry if you dare. I am sure I know you. You lead a small band of foolhardy adventurers that dares challenge me. Ha! My dark legions laugh at your exploits in my domain. But wait. You have yet to meet me and face the ultimate terrors of my wicked magic. You can still run away, fools! Ha, ha, ha!"</p>
+    <canvas id="werdnaCanvas" width="260" height="230" style="border:2px solid #111; background:#f5f0e1;"></canvas>
+    <button class="action-btn" onclick="document.getElementById('werdna-modal').style.display='none'" style="background:#7c0a0a; color:#fff; padding:6px 18px;">Defy Werdna [Close]</button>
+  </div>
+
   <!-- Character Creation / Persistent Server Login -->
   <div id="char-modal">
     <div class="char-card tartaria-window">
       <div class="title-banner">
-        <h1>Wizardry Inverted: Tartaria Online</h1>
-        <h2>Always-On MMORPG • Full-Loot PvP • 1991 OVA Souls-Gothic Labyrinth</h2>
+        <div class="wiz-logo-wrap">
+          <div class="wiz-logo-sword"></div>
+          <h1>WIZARDRY: TARTARIA</h1>
+        </div>
+        <h2>1991 OVA & Suemi Card Art Edition • Full-Loot PvP • Interactive Portcullis Gates</h2>
       </div>
 
       <div id="returning-save-banner" class="save-banner">
@@ -541,7 +602,7 @@
       <div class="form-col">
         <div class="form-group">
           <label for="char-name">Denizen Name</label>
-          <input type="text" id="char-name" maxlength="16" value="Vaelen">
+          <input type="text" id="char-name" maxlength="16" value="Shinobi">
         </div>
 
         <div class="grid-2">
@@ -550,7 +611,7 @@
             <select id="char-race"></select>
           </div>
           <div class="form-group">
-            <label for="char-subrace">Sub-Race / Bloodline</label>
+            <label for="char-subrace">Sub-Race / Card Archetype</label>
             <select id="char-subrace"></select>
           </div>
         </div>
@@ -560,17 +621,17 @@
             <label for="char-class">Core Calling (Lv.1)</label>
             <select id="char-class">
               <option value="Fighter">Fighter (Lv.3 -> Warrior)</option>
-              <option value="Rogue">Rogue (Lv.3 -> Thief)</option>
-              <option value="Mage">Mage (Lv.3 -> Wizard)</option>
-              <option value="Cleric">Cleric (Lv.3 -> Priest)</option>
+              <option value="Rogue">Rogue (Lv.3 -> Thief / OVA Ninja)</option>
+              <option value="Mage">Mage (Lv.3 -> Wizard / Sorceress)</option>
+              <option value="Cleric">Cleric (Lv.3 -> Priest / Witch)</option>
             </select>
           </div>
           <div class="form-group">
             <label for="char-sect">Starting Regional Magic Sect</label>
             <select id="char-sect">
               <option value="Classic">Set Classic (Llylgamyn Chants)</option>
-              <option value="North">Set North (Frost & Runic Fury)</option>
-              <option value="East">Set East (Muramasa & Ki Arts)</option>
+              <option value="East">Set East (OVA Kubi-Kiri & Ki Arts)</option>
+              <option value="North">Set North (Fire Giant & Frost Fury)</option>
               <option value="South">Set South (Sun-Mirage & Alchemy)</option>
               <option value="West">Set West (Obsidian Totem & Blood)</option>
             </select>
@@ -590,8 +651,8 @@
       </div>
 
       <div class="preview-col">
-        <span style="font-family:'Cinzel',serif; font-size:10px; color:#c89d54; letter-spacing:1px;">1991 OVA CEL VISAGE</span>
-        <canvas id="previewCanvas" width="240" height="205"></canvas>
+        <span style="font-family:'Cinzel',serif; font-size:10px; color:#c89d54; letter-spacing:1px;">JUN SUEMI / 1991 OVA VISAGE</span>
+        <canvas id="previewCanvas" width="240" height="215"></canvas>
         <div class="lore-box" id="race-lore-box"></div>
       </div>
 
@@ -619,9 +680,9 @@
         <span id="eq-armor-stat">+25 HP</span>
       </div>
       <div class="equip-box" onclick="unequipSlot('relic')">
-        <small>Talisman / Relic</small>
-        <strong id="eq-relic-name">Ash Signet</strong>
-        <span id="eq-relic-stat">+10 MP</span>
+        <small>Shield / Talisman</small>
+        <strong id="eq-relic-name">Sun-Eye Buckler</strong>
+        <span id="eq-relic-stat">+15 HP +5 ATK</span>
       </div>
     </div>
 
@@ -673,6 +734,7 @@
         <span id="online-badge" style="color:#c89d54; font-family:'JetBrains Mono',monospace; font-size:10px;">(1 Denizen)</span>
       </div>
       <div class="panel tartaria-window interactive">
+        <button id="btn-gates" class="action-btn" title="Open/Close Nearest Portcullis Gate">⛩️ Gate [E]</button>
         <button id="btn-inv" class="action-btn">🎒 Bag [I]</button>
         <button id="btn-grim" class="action-btn">📖 Spells [G]</button>
         <button id="btn-audio" class="action-btn">🔊 BGM: ON</button>
@@ -683,10 +745,10 @@
 
     <div class="vitals-box tartaria-window">
       <div style="display:flex; justify-content:space-between; align-items:baseline;">
-        <div id="vitals-name" style="font-weight:900; font-size:14px; color:#f4dca6; font-family:'Cinzel',serif;">Vaelen</div>
+        <div id="vitals-name" style="font-weight:900; font-size:14px; color:#f4dca6; font-family:'Cinzel',serif;">Shinobi</div>
         <span id="vitals-lvl" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#c89d54;">LV.1</span>
       </div>
-      <div style="font-size:11px; color:#d4a359; font-weight:bold;" id="vitals-race">Halfling • Kobold</div>
+      <div style="font-size:11px; color:#d4a359; font-weight:bold;" id="vitals-race">Halfling • Cobold King</div>
       <div style="font-size:11px; color:#b8a68e; margin-bottom:5px; font-style:italic;" id="vitals-class">Core Fighter</div>
 
       <div style="display:flex; justify-content:space-between; font-size:10px;">
@@ -707,14 +769,14 @@
 
     <div class="chat-container interactive">
       <div class="chat-log tartaria-window" id="chat-log">
-        <div class="chat-msg" style="color: #f4dca6;"><i>[Chronicle of Tartaria]: The Central Firepit is a Safezone. Venture through the N/S/E/W stone doors into the connecting halls and outer vaults for Full-Loot PvP, chests, and NPC Denizens! Keys: [WASD/Click] Move, [1-9] Grimoire Slots, [I] Inventory, [G] Spellbook, [E] Talk to NPC.</i></div>
+        <div class="chat-msg" style="color: #f4dca6;"><i>[Tartaria Oracle]: Gates now open automatically when you walk near them, or press [E] / click any Portcullis Gate to raise or slam it shut! Visit Hawkwind's Tavern Table in the NW Sanctum, or challenge Werdna in the South Vault.</i></div>
       </div>
       <div class="chat-input-row">
         <input type="text" id="chat-input" class="chat-input" placeholder="Press Enter to speak across Tartaria..." maxlength="100">
       </div>
     </div>
 
-    <!-- 9-Slot Grimoire Bar (Unlocks 1 slot per level up to Lv.9) -->
+    <!-- 9-Slot Grimoire Bar -->
     <div class="hotbar interactive" id="hotbar-container"></div>
   </div>
 
@@ -722,108 +784,98 @@
 
   <script>
     // =========================================================================
-    // 1. WORLD GEOMETRY: CENTRAL FIREPIT + N/S/E/W HALLWAYS + 4 OUTER ROOMS
+    // 1. WORLD GEOMETRY: SEAMLESS OVERLAPPING ZONES + INTERACTIVE PORTCULLIS GATES
     // =========================================================================
     const WORLD_SIZE = 4400;
-    const FIREPIT_POS = { x: 2200, y: 2200, radius: 68, safeRadius: 430 };
+    const FIREPIT_POS = { x: 2200, y: 2200, radius: 64, safeRadius: 430 };
 
-    // Walkable Rectangular Stone Zones (Collision-checked so players stay inside rooms & halls!)
+    // Generously overlapped rectangular zones so you never snag when walking through gates!
     const WALKABLE_ZONES = [
       // Central Firepit Sanctum (Safezone Hub)
-      { id: 'center', name: 'Tartaria Firepit Sanctum', x: 1700, y: 1700, w: 1000, h: 1000, safe: true, floor: '#13101a' },
+      { id: 'center', name: 'Tartaria Firepit Sanctum', x: 1700, y: 1700, w: 1000, h: 1000, safe: true, floor: '#191d26' },
 
-      // North Connecting Hallway + Mini-Maze Alcoves
-      { id: 'hall-n', name: 'North Torchlit Passage',   x: 2070, y: 1150, w: 260,  h: 570,  safe: false, floor: '#161118' },
-      { id: 'alc-n',  name: 'Northern Guard Alcove',    x: 1920, y: 1340, w: 560,  h: 160,  safe: false, floor: '#18121a' },
-      // North Room: Catacomb of the Iron Saint
-      { id: 'room-n', name: 'North: Catacomb of the Iron Saint', x: 1650, y: 350, w: 1100, h: 820, safe: false, floor: '#181117' },
+      // North Connecting Hallway + Alcove + Room (Overlapped Y bounds for smooth passage)
+      { id: 'hall-n', name: 'North Torchlit Passage',   x: 2050, y: 1100, w: 300,  h: 660,  safe: false, floor: '#1c2029' },
+      { id: 'alc-n',  name: 'Northern Guard Alcove',    x: 1900, y: 1330, w: 600,  h: 180,  safe: false, floor: '#1f242e' },
+      { id: 'room-n', name: 'North: Fire Giant Stronghold', x: 1650, y: 340, w: 1100, h: 840, safe: false, floor: '#21181c' },
 
-      // South Connecting Hallway + Alcove
-      { id: 'hall-s', name: 'South Ossuary Hallway',    x: 2070, y: 2680, w: 260,  h: 570,  safe: false, floor: '#161118' },
-      { id: 'alc-s',  name: 'Southern Crypt Crossing',  x: 1920, y: 2900, w: 560,  h: 160,  safe: false, floor: '#18121a' },
-      // South Room: Sunken Reliquary of Werdna
-      { id: 'room-s', name: 'South: Sunken Reliquary of Werdna', x: 1650, y: 3230, w: 1100, h: 820, safe: false, floor: '#14131d' },
+      // South Connecting Hallway + Alcove + Room
+      { id: 'hall-s', name: 'South Ossuary Hallway',    x: 2050, y: 2640, w: 300,  h: 660,  safe: false, floor: '#1c2029' },
+      { id: 'alc-s',  name: 'Southern Crypt Crossing',  x: 1900, y: 2890, w: 600,  h: 180,  safe: false, floor: '#1f242e' },
+      { id: 'room-s', name: 'South: Sunken Sanctum of Werdna', x: 1650, y: 3220, w: 1100, h: 840, safe: false, floor: '#181624' },
 
-      // East Connecting Hallway + Alcove
-      { id: 'hall-e', name: 'East Sulfur Causeway',     x: 2680, y: 2070, w: 570,  h: 260,  safe: false, floor: '#191114' },
-      { id: 'alc-e',  name: 'Eastern Smelter Bay',      x: 2900, y: 1920, w: 160,  h: 560,  safe: false, floor: '#1d1215' },
-      // East Room: Crimson Foundry of Malakor
-      { id: 'room-e', name: 'East: Crimson Foundry Vault',       x: 3230, y: 1650, w: 820,  h: 1100, safe: false, floor: '#1f1113' },
+      // East Connecting Hallway + Alcove + Room
+      { id: 'hall-e', name: 'East Sulfur Causeway',     x: 2640, y: 2050, w: 660,  h: 300,  safe: false, floor: '#21191d' },
+      { id: 'alc-e',  name: 'Eastern Smelter Bay',      x: 2890, y: 1900, w: 180,  h: 600,  safe: false, floor: '#251a1e' },
+      { id: 'room-e', name: 'East: Greater Demon Cosmic Forge', x: 3220, y: 1650, w: 840, h: 1100, safe: false, floor: '#211318' },
 
-      // West Connecting Hallway + Alcove
-      { id: 'hall-w', name: 'West Whispering Gallery',  x: 1150, y: 2070, w: 570,  h: 260,  safe: false, floor: '#12151c' },
-      { id: 'alc-w',  name: 'Western Shadow Nook',      x: 1340, y: 1920, w: 160,  h: 560,  safe: false, floor: '#141820' },
-      // West Room: Twilight Botanical Warren
-      { id: 'room-w', name: 'West: Twilight Fungal Warren',      x: 350,  y: 1650, w: 820,  h: 1100, safe: false, floor: '#11181c' }
+      // West Connecting Hallway + Alcove + Room
+      { id: 'hall-w', name: 'West Whispering Gallery',  x: 1100, y: 2050, w: 660,  h: 300,  safe: false, floor: '#171f26' },
+      { id: 'alc-w',  name: 'Western Shadow Nook',      x: 1330, y: 1900, w: 180,  h: 600,  safe: false, floor: '#1a232b' },
+      { id: 'room-w', name: 'West: Cobold King & Undead Warren', x: 340, y: 1650, w: 840, h: 1100, safe: false, floor: '#151f21' }
     ];
 
-    // Interior Gothic Pillars / Mini-Maze Obstacles
+    // Interactive Iron Portcullis Gates (Auto-open when approached, or press [E] / Click to toggle!)
+    const GATES = [
+      { id: 'gate-n1', x: 2200, y: 1700, horiz: true,  isOpen: false, manualLock: false, label: 'North Sanctum Gate' },
+      { id: 'gate-n2', x: 2200, y: 1160, horiz: true,  isOpen: false, manualLock: false, label: 'Fire Giant Gate' },
+      { id: 'gate-s1', x: 2200, y: 2700, horiz: true,  isOpen: false, manualLock: false, label: 'South Sanctum Gate' },
+      { id: 'gate-s2', x: 2200, y: 3240, horiz: true,  isOpen: false, manualLock: false, label: 'Werdna Vault Gate' },
+      { id: 'gate-e1', x: 2700, y: 2200, horiz: false, isOpen: false, manualLock: false, label: 'East Sanctum Gate' },
+      { id: 'gate-e2', x: 3240, y: 2200, horiz: false, isOpen: false, manualLock: false, label: 'Cosmic Forge Gate' },
+      { id: 'gate-w1', x: 1700, y: 2200, horiz: false, isOpen: false, manualLock: false, label: 'West Sanctum Gate' },
+      { id: 'gate-w2', x: 1160, y: 2200, horiz: false, isOpen: false, manualLock: false, label: 'Cobold Warren Gate' }
+    ];
+
     const SOLID_PILLARS = [
-      // Center Sanctum Corner Pillars
-      { x: 1900, y: 1900, r: 34 }, { x: 2500, y: 1900, r: 34 },
-      { x: 1900, y: 2500, r: 34 }, { x: 2500, y: 2500, r: 34 },
-      // North Room Pillars
-      { x: 1950, y: 620, r: 38 },  { x: 2450, y: 620, r: 38 },
-      { x: 1950, y: 920, r: 38 },  { x: 2450, y: 920, r: 38 },
-      // South Room Pillars
-      { x: 1950, y: 3500, r: 38 }, { x: 2450, y: 3500, r: 38 },
-      { x: 1950, y: 3800, r: 38 }, { x: 2450, y: 3800, r: 38 },
-      // East Room Pillars
-      { x: 3500, y: 1950, r: 38 }, { x: 3800, y: 1950, r: 38 },
-      { x: 3500, y: 2450, r: 38 }, { x: 3800, y: 2450, r: 38 },
-      // West Room Pillars
-      { x: 620,  y: 1950, r: 38 }, { x: 920,  y: 1950, r: 38 },
-      { x: 620,  y: 2450, r: 38 }, { x: 920,  y: 2450, r: 38 }
-    ];
-
-    // Door Archway Coordinates (Visual thresholds between rooms and halls)
-    const DOORWAYS = [
-      { x: 2200, y: 1700, horiz: true,  label: 'North Gate' },
-      { x: 2200, y: 1160, horiz: true,  label: 'Catacomb Arch' },
-      { x: 2200, y: 2700, horiz: true,  label: 'South Gate' },
-      { x: 2200, y: 3240, horiz: true,  label: 'Reliquary Arch' },
-      { x: 2700, y: 2200, horiz: false, label: 'East Gate' },
-      { x: 3240, y: 2200, horiz: false, label: 'Foundry Arch' },
-      { x: 1700, y: 2200, horiz: false, label: 'West Gate' },
-      { x: 1160, y: 2200, horiz: false, label: 'Warren Arch' }
+      { x: 1900, y: 1900, r: 32 }, { x: 2500, y: 1900, r: 32 },
+      { x: 1900, y: 2500, r: 32 }, { x: 2500, y: 2500, r: 32 },
+      { x: 1950, y: 620,  r: 36 }, { x: 2450, y: 620,  r: 36 },
+      { x: 1950, y: 920,  r: 36 }, { x: 2450, y: 920,  r: 36 },
+      { x: 1950, y: 3500, r: 36 }, { x: 2450, y: 3500, r: 36 },
+      { x: 1950, y: 3800, r: 36 }, { x: 2450, y: 3800, r: 36 },
+      { x: 3500, y: 1950, r: 36 }, { x: 3800, y: 1950, r: 36 },
+      { x: 3500, y: 2450, r: 36 }, { x: 3800, y: 2450, r: 36 },
+      { x: 620,  y: 1950, r: 36 }, { x: 920,  y: 1950, r: 36 },
+      { x: 620,  y: 2450, r: 36 }, { x: 920,  y: 2450, r: 36 }
     ];
 
     // =========================================================================
-    // 2. NON-HUMAN RACES & SUB-RACES (Underworld Legends & Humans Removed)
+    // 2. NON-HUMAN RACES & JUN SUEMI CARD ARCHETYPES
     // =========================================================================
-    const ARMOR_PALETTE = ['#7c0a0a', '#1b263b', '#1b3624', '#4d2f18', '#331a47', '#1f1e26'];
-    const HAIR_PALETTE  = ['#e5dccb', '#121016', '#b82525', '#d4af37', '#4a321d', '#3b6e6c'];
+    const ARMOR_PALETTE = ['#2b3d54', '#7c0a0a', '#1b3624', '#6b21a8', '#b45309', '#1f1e26'];
+    const HAIR_PALETTE  = ['#eab308', '#e5dccb', '#dc2626', '#121016', '#4a321d', '#38bdf8'];
 
     const RACE_TREE = {
       'Halfling': {
-        desc: 'Subterranean pint-sized kin—Kobolds, Imps, Goblins, Gnomes, and Deep Orcs.',
+        desc: 'Pint-sized subterranean kin—Cobold Kings, Imps, Goblins, Gnomes, and Deep Orcs.',
         subraces: {
-          'Kobold': { name: 'Halfling (Kobold)', scale: 0.84, skin: '#a86b3c', hpBonus: 25, speedMod: 1.14, snout: true, ears: true, desc: '"Yipping candle-helmed tunnel trap-smith of Tartaria."' },
-          'Imp':    { name: 'Halfling (Imp)',    scale: 0.82, skin: '#b83232', hpBonus: 20, speedMod: 1.18, wings: true, horns: true, desc: '"Barbed-tail firepit trickster crackling with sulfur."' },
-          'Goblin': { name: 'Halfling (Goblin)', scale: 0.86, skin: '#567d46', hpBonus: 35, speedMod: 1.12, ears: true, desc: '"Cutthroat corridor ambusher armed with notched steel."' },
-          'Gnome':  { name: 'Halfling (Gnome)',  scale: 0.85, skin: '#c9a68a', hpBonus: 30, speedMod: 1.06, beard: true, desc: '"Deep-earth alchemist and gem-cutter folded into the Halfling tribes."' },
-          'Orc':    { name: 'Halfling (Deep Orc)', scale: 0.95, skin: '#4f6346', hpBonus: 60, speedMod: 1.02, tusks: true, desc: '"Stout, boar-tusked subterranean vanguard built for brawling."' }
+          'Kobold': { name: 'Halfling (Cobold King)', scale: 0.90, skin: '#3f7d4c', hpBonus: 35, speedMod: 1.14, snout: true, ears: true, sunShield: true, desc: '"Green-furred Cobold King bearing the blazing Golden Sun-Eye Shield & Scimitar (Wizardry III Card)."' },
+          'Imp':    { name: 'Halfling (Imp)',         scale: 0.82, skin: '#b83232', hpBonus: 20, speedMod: 1.18, wings: true, horns: true, desc: '"Barbed-tail firepit trickster crackling with sulfur."' },
+          'Goblin': { name: 'Halfling (Goblin)',      scale: 0.86, skin: '#567d46', hpBonus: 35, speedMod: 1.12, ears: true, desc: '"Cutthroat corridor ambusher armed with notched steel."' },
+          'Gnome':  { name: 'Halfling (Gnome)',       scale: 0.85, skin: '#c9a68a', hpBonus: 30, speedMod: 1.06, beard: true, desc: '"Deep-earth alchemist and gem-cutter folded into the Halfling tribes."' },
+          'Orc':    { name: 'Halfling (Deep Orc)',    scale: 0.95, skin: '#4f6346', hpBonus: 60, speedMod: 1.02, tusks: true, desc: '"Stout, boar-tusked subterranean vanguard built for brawling."' }
         }
       },
       'Elf': {
-        desc: 'Ancient subterranean and fallen twilight fey seeking the upper stars.',
+        desc: 'Ancient subterranean and fallen twilight fey inspired by Jun Suemi card illustrations.',
         subraces: {
-          'Drow':     { name: 'Elf (Drow)',        scale: 0.98, skin: '#645f82', hpBonus: 25, speedMod: 1.09, ears: true, desc: '"Obsidian-skinned subterranean spellblade of the Spider Vaults."' },
-          'Wood Elf': { name: 'Elf (Wildwood)',    scale: 0.98, skin: '#cfa882', hpBonus: 30, speedMod: 1.11, ears: true, desc: '"Feral root-strider lost in the fungal depths."' },
-          'High Elf': { name: 'Elf (Fallen High)', scale: 1.0,  skin: '#e0c6ad', hpBonus: 20, speedMod: 1.07, ears: true, desc: '"Disgraced silver-blooded noble fluent in high Wizardry."' },
-          'Blood Elf':{ name: 'Elf (Crimson)',     scale: 0.99, skin: '#d99a96', hpBonus: 35, speedMod: 1.08, ears: true, desc: '"Mana-thirsty warlock sustained by demonic ichor."' }
+          'Highlander': { name: 'Elf (Highlander Archer)', scale: 1.0,  skin: '#e8cbb1', hpBonus: 35, speedMod: 1.13, ears: true, bow: true, desc: '"Blonde elven Highlander in magenta & emerald tunic wielding a recurve bow (Bane of the Cosmic Forge Card)."' },
+          'Drow':       { name: 'Elf (Drow)',              scale: 0.98, skin: '#645f82', hpBonus: 25, speedMod: 1.09, ears: true, desc: '"Obsidian-skinned subterranean spellblade of the Spider Vaults."' },
+          'Sorceress':  { name: 'Elf (Gaiden Sorceress)',  scale: 0.99, skin: '#f3e5d8', hpBonus: 25, speedMod: 1.10, ears: true, orb: true, desc: '"Draped in flowing silk robes with a levitating astral orb (Suffering of the Queen Card)."' },
+          'Witch':      { name: 'Elf (Gaiden Witch)',      scale: 0.99, skin: '#edd8c4', hpBonus: 30, speedMod: 1.08, ears: true, witchFlame: true, desc: '"High-ponytail gothic hex-weaver conjuring pale spiritual fire."' }
         }
       },
       'Dwarf': {
-        desc: 'Unyielding stone-carvers and ash-bearded smiths of the deepest Tartaria veins.',
+        desc: 'Unyielding stone-carvers and ash-bearded giants of the deepest Tartaria veins.',
         subraces: {
-          'Duergar':        { name: 'Dwarf (Duergar)',   scale: 0.88, skin: '#7d7580', hpBonus: 70, speedMod: 0.95, beard: true, desc: '"Grim ash-skinned gray dwarf immune to mind-rot."' },
-          'Mountain Dwarf': { name: 'Dwarf (Ironpeak)',  scale: 0.90, skin: '#c99b78', hpBonus: 80, speedMod: 0.93, beard: true, desc: '"Runed bronze-plate defender of the old gates."' },
-          'Forgeborn':      { name: 'Dwarf (Magma-Kin)', scale: 0.92, skin: '#8c4230', hpBonus: 90, speedMod: 0.91, beard: true, desc: '"Basalt-skinned smith whose veins glow with molten gold."' }
+          'Fire-Giant':     { name: 'Dwarf (Fire Giant)', scale: 1.26, skin: '#d98a6c', hpBonus: 105, speedMod: 0.93, beard: true, flamberge: true, shellChest: true, desc: '"Flame-bearded colossus wearing the bronze shell-cuirass and wielding a wavy Flamberge sword."' },
+          'Duergar':        { name: 'Dwarf (Duergar)',    scale: 0.88, skin: '#7d7580', hpBonus: 70,  speedMod: 0.95, beard: true, desc: '"Grim ash-skinned gray dwarf immune to mind-rot."' },
+          'Mountain Dwarf': { name: 'Dwarf (Ironpeak)',   scale: 0.90, skin: '#c99b78', hpBonus: 80,  speedMod: 0.93, beard: true, desc: '"Runed bronze-plate defender of the old gates."' }
         }
       },
       'Arf': {
-        desc: 'Canine-folk (formerly Rawulf) of the Tartaria Hound-Pits—fiercely loyal to their pack.',
+        desc: 'Canine-folk (formerly Rawulf) of the Tartaria Hound-Pits.',
         subraces: {
           'Hound-Kin': { name: 'Arf (Hellhound-Kin)', scale: 1.06, skin: '#8c583a', hpBonus: 60, speedMod: 1.09, snout: true, ears: true, desc: '"Scarred pit-tracker who smells surface blood a mile off."' },
           'Dire-Wolf': { name: 'Arf (Dire-Wolf)',     scale: 1.14, skin: '#575a61', hpBonus: 75, speedMod: 1.06, snout: true, ears: true, desc: '"Towering winter-mane alpha of the Northern Catacombs."' }
@@ -832,15 +884,15 @@
       'Meow': {
         desc: 'Agile feline duelists (formerly Felpurr) with nine-lives reflexes.',
         subraces: {
-          'Panther-Kin': { name: 'Meow (Shadow-Cat)', scale: 0.98, skin: '#2b2833', hpBonus: 35, speedMod: 1.16, catEars: true, desc: '"Velvet-furred nocturnal cutthroat who strikes without sound."' },
-          'Lynx-Blade':  { name: 'Meow (Lynx-Blade)', scale: 1.02, skin: '#c9975b', hpBonus: 45, speedMod: 1.14, catEars: true, desc: '"Tufted-ear samuraic duelist from the Eastern Corridors."' }
+          'Panther-Kin': { name: 'Meow (OVA Ninja-Cat)', scale: 0.98, skin: '#2b2833', hpBonus: 35, speedMod: 1.18, catEars: true, ninjaCowl: true, desc: '"Clad in indigo shinobi cowl—masters of the 1991 OVA Kubi-Kiri decapitation strike."' },
+          'Lynx-Blade':  { name: 'Meow (Lynx-Blade)',    scale: 1.02, skin: '#c9975b', hpBonus: 45, speedMod: 1.14, catEars: true, desc: '"Tufted-ear samuraic duelist from the Eastern Corridors."' }
         }
       },
       'Goon': {
-        desc: 'Scaled dragon-blooded bruisers (formerly Dracon) who breathe acid and embers.',
+        desc: 'Scaled dragon-blooded & abyssal gargoyle bruisers (formerly Dracon).',
         subraces: {
-          'Wyrm-Thug':   { name: 'Goon (Wyrm-Bruiser)',  scale: 1.24, skin: '#3b6e4c', hpBonus: 95, speedMod: 0.96, horns: true, snout: true, desc: '"Thick-scaled subterranean enforcer who shrugs off arrows."' },
-          'Drake-Blood': { name: 'Goon (Crimson Drake)', scale: 1.22, skin: '#9e2b2b', hpBonus: 85, speedMod: 0.99, horns: true, snout: true, desc: '"Horned fire-spitter from the Eastern Foundry."' }
+          'Greater-Demon': { name: 'Goon (Greater Demon)', scale: 1.28, skin: '#28517a', hpBonus: 110, speedMod: 0.97, wings: true, horns: true, tail: true, desc: '"Indigo-blue winged Greater Demon from Bane of the Cosmic Forge—towering, horned, and lethal."' },
+          'Wyrm-Thug':     { name: 'Goon (Wyrm-Bruiser)',  scale: 1.22, skin: '#3b6e4c', hpBonus: 95,  speedMod: 0.96, horns: true, snout: true, desc: '"Thick-scaled subterranean enforcer who shrugs off arrows."' }
         }
       },
       'Mook': {
@@ -851,35 +903,23 @@
         }
       },
       'Vampire': {
-        desc: 'Immortal night-aristocrats and blood-faeries (replacing Faerie) thirsting for warm life.',
+        desc: 'Undead nobles & Maelstrom skeleton knights thirsting for warm life.',
         subraces: {
-          'Blood-Scion': { name: 'Vampire (Crimson Noble)', scale: 1.02, skin: '#d8d0e0', hpBonus: 50, speedMod: 1.11, horns: false, fangs: true, desc: '"High-collared gothic aristocrat wielding blood-sorcery."' },
-          'Nosferatu':   { name: 'Vampire (Nosferatu)',     scale: 1.08, skin: '#8f9489', hpBonus: 70, speedMod: 1.07, ears: true, fangs: true, desc: '"Hollow-eyed crypt predator that feeds in the dark."' },
-          'Dusk-Pixie':  { name: 'Vampire (Fae-Lich)',      scale: 0.80, skin: '#b695c2', hpBonus: 20, speedMod: 1.22, wings: true, fangs: true, desc: '"Dimunitive winged blood-sprite with lethal hexes."' }
+          'Undead-Warrior': { name: 'Vampire (Undead Warrior)', scale: 1.04, skin: '#d6d3c4', hpBonus: 65, speedMod: 1.06, skeleton: true, desc: '"Skeletal knight draped in a tattered blue mantle with bronze round-shield (Heart of the Maelstrom Card)."' },
+          'Blood-Scion':    { name: 'Vampire (Crimson Noble)',  scale: 1.02, skin: '#d8d0e0', hpBonus: 50, speedMod: 1.11, fangs: true, desc: '"High-collared gothic aristocrat wielding blood-sorcery."' },
+          'Dusk-Pixie':     { name: 'Vampire (Fae-Lich)',       scale: 0.80, skin: '#b695c2', hpBonus: 20, speedMod: 1.22, wings: true, fangs: true, desc: '"Diminutive winged blood-sprite with lethal hexes."' }
         }
       }
     };
 
     // =========================================================================
-    // 3. CLASS PROGRESSION (Lv.1 Core -> Lv.3 Elite -> Lv.6 Regional Sets)
+    // 3. CLASS PROGRESSION & REGIONAL SECT GRIMOIRE
     // =========================================================================
     const CLASS_PROGRESSION = {
-      'Fighter': {
-        elite: 'Warrior', hp: 170, mana: 50,
-        focuses: ['Vanguard Cleaver', 'Iron Bastion', 'Blood Berserker']
-      },
-      'Rogue': {
-        elite: 'Thief', hp: 125, mana: 70,
-        focuses: ['Nightblade Cutthroat', 'Trap Saboteur', 'Phantom Duelist']
-      },
-      'Mage': {
-        elite: 'Wizard', hp: 100, mana: 140,
-        focuses: ['Tiltowait Pyromancer', 'Void Chronomancer', 'Runic Archmage']
-      },
-      'Cleric': {
-        elite: 'Priest', hp: 140, mana: 110,
-        focuses: ['Madi Lifebinder', 'Badios Inquisitor', 'Plague Confessor']
-      }
+      'Fighter': { elite: 'Warrior', hp: 175, mana: 50,  focuses: ['Fire Giant Cleaver', 'Cobold Sun-Guard', 'Maelstrom Vanguard'] },
+      'Rogue':   { elite: 'Thief',   hp: 130, mana: 75,  focuses: ['OVA Kubi-Kiri Ninja', 'Highlander Marksman', 'Phantom Cutthroat'] },
+      'Mage':    { elite: 'Wizard',  hp: 105, mana: 145, focuses: ['Gaiden Sorceress', 'Tiltowait Savant', 'Cosmic Forge Warlock'] },
+      'Cleric':  { elite: 'Priest',  hp: 145, mana: 115, focuses: ['Gaiden Witch', 'Madi Lifebinder', 'Badios Blood-Inquisitor'] }
     };
 
     const PRESTIGE_SETS = {
@@ -890,74 +930,58 @@
       'West':    ['Jaguar (Commando)', 'Eagle (Scout)', 'Snake (Shapeshifter)', 'Vulture (Necro-Healer)']
     };
 
-    // =========================================================================
-    // 4. OVERHAULED REGIONAL SECT + WIZARDRY SPELL & SKILL GRIMOIRE
-    // =========================================================================
     const GRIMOIRE_SPELLS = [
-      // Core & Classic Wizardry Chants
-      { id: 'strike',    name: 'Vorpal Cleave',     sect: 'Core',    icon: '⚔️', mp: 0,  cd: 0.5, type: 'melee', dmg: 30, color: '#f4dca6', chant: '"STEEL!"', desc: 'Lethal close-quarters weapon slash.' },
-      { id: 'mahalito',  name: 'MAHALITO',          sect: 'Classic', icon: '🔥', mp: 14, cd: 1.4, type: 'aoe',   dmg: 52, color: '#f97316', chant: '"MAHALITO!!"', desc: 'Classic Wizardry fireball vortex.' },
-      { id: 'molito',    name: 'MOLITO Spark',      sect: 'Classic', icon: '⚡', mp: 9,  cd: 0.9, type: 'bolt',  dmg: 36, color: '#facc15', chant: '"MOLITO!"', desc: 'Crackling dungeon ember bolt.' },
-      { id: 'porfic',    name: 'PORFIC Aegis',      sect: 'Classic', icon: '🛡️', mp: 12, cd: 3.0, type: 'buff',  dmg: 0,  color: '#38bdf8', chant: '"PORFIC!"', desc: 'Shields body & boosts sprint speed.' },
-      { id: 'madi',      name: 'MADI Restoration',  sect: 'Classic', icon: '✨', mp: 18, cd: 2.2, type: 'heal',  dmg: 75, color: '#22c55e', chant: '"MADI!!"', desc: 'Sacred Llylgamyn full-flesh mend.' },
-      { id: 'badios',    name: 'BADIOS Blood-Hex',  sect: 'Classic', icon: '💀', mp: 12, cd: 1.1, type: 'bolt',  dmg: 44, color: '#a855f7', chant: '"BADIOS!"', desc: 'Inverted clerical curse-bolt.' },
-
-      // Set North (Frost & Runic Fury)
-      { id: 'dalto',     name: 'DALTO Jotun-Rime',  sect: 'North',   icon: '❄️', mp: 16, cd: 1.6, type: 'aoe',   dmg: 58, color: '#60a5fa', chant: '"DALTO SKALD!"', desc: 'Northern blizzard nova that chills foes.' },
-      { id: 'ulfhednar', name: 'Ulfhednar Howl',    sect: 'North',   icon: '🐺', mp: 14, cd: 2.5, type: 'buff',  dmg: 20, color: '#ef4444', chant: '"FENRIR!"', desc: 'Fury warcry healing 35 HP & surging speed.' },
-
-      // Set East (Muramasa & Ki Arts)
-      { id: 'muramasa',  name: 'Iaijutsu: Kiku',    sect: 'East',    icon: '🗡️', mp: 15, cd: 1.2, type: 'dash',  dmg: 64, color: '#f43f5e', chant: '"ITTO-RYU!"', desc: 'Shadow-dash katana cleave.' },
-      { id: 'lomilwa',   name: 'LOMILWA Ki-Lotus',  sect: 'East',    icon: '💮', mp: 16, cd: 1.8, type: 'heal',  dmg: 65, color: '#34d399', chant: '"LOMILWA!"', desc: 'Eastern chakra breath restoring vitality.' },
-
-      // Set South (Sun-Mirage & Alchemy)
-      { id: 'lahalito',  name: 'LAHALITO Naphtha',  sect: 'South',   icon: '🏺', mp: 18, cd: 1.6, type: 'aoe',   dmg: 66, color: '#fb923c', chant: '"LAHALITO!"', desc: 'Alchemical Greek-fire eruption.' },
-      { id: 'malor',     name: 'MALOR Mirage-Step', sect: 'South',   icon: '🌪️', mp: 15, cd: 2.0, type: 'dash',  dmg: 45, color: '#eab308', chant: '"MALOR!"', desc: 'Sand-blink strike across the stone floor.' },
-
-      // Set West (Obsidian Totem & Blood)
-      { id: 'tzitzimitl',name: 'Jaguar Macuahuitl', sect: 'West',    icon: '🐆', mp: 14, cd: 1.1, type: 'melee', dmg: 60, color: '#dc2626', chant: '"OCELOTL!"', desc: 'Obsidian saw-blade rip that drains blood.' },
-      { id: 'tiltowait', name: 'TILTOWAIT Eclipse', sect: 'West',    icon: '☄️', mp: 28, cd: 2.8, type: 'aoe',   dmg: 95, color: '#c084fc', chant: '"TILTOWAIT!!"', desc: 'Cataclysmic nuclear sigil of Werdna.' }
+      { id: 'strike',    name: 'Kubi-Kiri Slash',   sect: 'Core',    icon: '⚔️', mp: 0,  cd: 0.45,type: 'melee', dmg: 32, color: '#84cc16', chant: '"KUBI-KIRI!"', desc: 'OVA Ninja strike with a chance to decapitate!' },
+      { id: 'mahalito',  name: 'MAHALITO',          sect: 'Classic', icon: '🔥', mp: 14, cd: 1.3, type: 'aoe',   dmg: 54, color: '#f97316', chant: '"MAHALITO!!"', desc: 'Classic Wizardry fireball vortex.' },
+      { id: 'molito',    name: 'MOLITO Orb',        sect: 'Classic', icon: '🔮', mp: 9,  cd: 0.8, type: 'bolt',  dmg: 38, color: '#facc15', chant: '"MOLITO!"',    desc: 'Sorceress levitating astral spark.' },
+      { id: 'porfic',    name: 'PORFIC Sun-Shield', sect: 'Classic', icon: '🛡️', mp: 12, cd: 2.8, type: 'buff',  dmg: 25, color: '#38bdf8', chant: '"PORFIC!"',    desc: 'Raises Golden Sun-Eye barrier & speed.' },
+      { id: 'madi',      name: 'MADI Restoration',  sect: 'Classic', icon: '✨', mp: 18, cd: 2.0, type: 'heal',  dmg: 80, color: '#22c55e', chant: '"MADI!!"',     desc: 'Sacred Llylgamyn full-flesh mend.' },
+      { id: 'badios',    name: 'BADIOS Witch-Flame',sect: 'Classic', icon: '🕯️', mp: 12, cd: 1.0, type: 'bolt',  dmg: 46, color: '#a855f7', chant: '"BADIOS!"',    desc: 'Gaiden Witch spiritual curse bolt.' },
+      { id: 'dalto',     name: 'DALTO Jotun-Rime',  sect: 'North',   icon: '❄️', mp: 16, cd: 1.5, type: 'aoe',   dmg: 60, color: '#60a5fa', chant: '"DALTO!"',     desc: 'Northern blizzard nova.' },
+      { id: 'flamberge', name: 'Surtr Flamberge',   sect: 'North',   icon: '🗡️', mp: 15, cd: 1.3, type: 'melee', dmg: 68, color: '#ef4444', chant: '"SURTR!"',     desc: 'Fire Giant wavy greatsword cleave.' },
+      { id: 'muramasa',  name: 'Iaijutsu: Kiku',    sect: 'East',    icon: '🩸', mp: 15, cd: 1.1, type: 'dash',  dmg: 66, color: '#84cc16', chant: '"ITTO-RYU!"',  desc: 'Shadow-dash katana beheading slash.' },
+      { id: 'lomilwa',   name: 'LOMILWA Ki-Lotus',  sect: 'East',    icon: '💮', mp: 16, cd: 1.8, type: 'heal',  dmg: 68, color: '#34d399', chant: '"LOMILWA!"',   desc: 'Eastern chakra breath restoring vitality.' },
+      { id: 'lahalito',  name: 'LAHALITO Naphtha',  sect: 'South',   icon: '🏺', mp: 18, cd: 1.5, type: 'aoe',   dmg: 68, color: '#fb923c', chant: '"LAHALITO!"',  desc: 'Alchemical Greek-fire eruption.' },
+      { id: 'malor',     name: 'MALOR Mirage-Step', sect: 'South',   icon: '🌪️', mp: 15, cd: 1.8, type: 'dash',  dmg: 48, color: '#eab308', chant: '"MALOR!"',     desc: 'Teleport strike across the stone floor.' },
+      { id: 'tzitzimitl',name: 'Jaguar Macuahuitl', sect: 'West',    icon: '🐆', mp: 14, cd: 1.1, type: 'melee', dmg: 62, color: '#dc2626', chant: '"OCELOTL!"',   desc: 'Obsidian saw-blade rip.' },
+      { id: 'tiltowait', name: 'TILTOWAIT Eclipse', sect: 'West',    icon: '☄️', mp: 28, cd: 2.6, type: 'aoe',   dmg: 98, color: '#c084fc', chant: '"TILTOWAIT!!"',desc: 'Cataclysmic nuclear sigil of Werdna.' }
     ];
 
     // =========================================================================
-    // 5. TARTARIA NPC DENIZENS (Located in Center & Outer Rooms)
+    // 4. TARTARIA NPC DENIZENS (Includes OVA Tavern Table & Werdna Portrait)
     // =========================================================================
     const TARTARIA_NPCS = [
-      { id: 'npc-vex',    name: 'Archivist Vex',      title: 'Chronicler of Tartaria', x: 2040, y: 2040, color: '#c89d54', dialog: '"Welcome to the Firepit Sanctuary. Each Level up to 9 unlocks a new Grimoire Spell Slot! Press [G] to customize your regional chants."' },
-      { id: 'npc-kor',    name: 'Smith Malakor',      title: 'Magma-Kin Armorer',      x: 2360, y: 2040, color: '#ea580c', dialog: '"Any chest you crack in the North, South, East, or West vaults drops relics into your Bag [I]. Watch your back—outside the Firepit is Full-Loot PvP!"' },
-      { id: 'npc-saint',  name: 'Sister Morwen',      title: 'Iron Saint Penitent',    x: 2200, y: 540,  color: '#93c5fd', dialog: '"The North Catacomb crawls with Surface Paladins. Slay them before they reach our Firepit!"' },
-      { id: 'npc-werdna', name: 'Shade of Werdna',    title: 'Keeper of the Amulet',   x: 2200, y: 3860, color: '#c084fc', dialog: '"My Southern Reliquary holds the highest-grade Wizardry talismans. Claim them if you dare."' },
-      { id: 'npc-ignis',  name: 'Foreman Brazier',    title: 'Foundry Overseer',       x: 3840, y: 2200, color: '#f87171', dialog: '"The Eastern Foundry forges Muramasa blades in demon-coal. Strike the chests for rare steel!"' },
-      { id: 'npc-spore',  name: 'Myconid Seer Xul',   title: 'Whisperer of Spores',    x: 560,  y: 2200, color: '#4ade80', dialog: '"In the Western Fungal Warren, the Vorpal Bunnies breed in the dark. Keep your PORFIC shield up."' }
+      { id: 'npc-hawk',   name: 'Hawkwind & Alex',    title: 'OVA Tavern Party',       x: 1880, y: 1850, color: '#3b82f6', dialog: '"Now, Alex, Hawkwind, what floor should we go to today? Approach any Iron Gate to open it automatically, or press [E] to lock rivals out!"' },
+      { id: 'npc-kor',    name: 'Smith Malakor',      title: 'Cosmic Forge Armorer',   x: 2380, y: 2040, color: '#ea580c', dialog: '"Crit-kills decapitate foes with green OVA ectoplasm! Open your Satchel [I] to equip Flamberges and Sun-Eye Shields."' },
+      { id: 'npc-saint',  name: 'Fire Giant Surtr',   title: 'Lord of the North Hall', x: 2200, y: 520,  color: '#ef4444', dialog: '"Only warriors who can endure my wavy Flamberge may claim the Northern Reliquary Chest!"' },
+      { id: 'npc-werdna', name: 'Archmage Werdna',    title: 'Master of the Amulet',   x: 2200, y: 3880, color: '#c084fc', isWerdna: true, dialog: '"Come, enter the World of Wizardry if you dare! Ha, ha, ha!"' },
+      { id: 'npc-ignis',  name: 'Greater Demon Baal', title: 'Cosmic Forge Overseer',  x: 3860, y: 2200, color: '#28517a', dialog: '"In the Eastern Cosmic Forge, we wings of the abyss test all who seek the Muramasa blade."' },
+      { id: 'npc-cobold', name: 'Cobold King Rex',    title: 'Sun-Eye Sovereign',      x: 540,  y: 2200, color: '#3f7d4c', dialog: '"Yip! My Western Warren is guarded by Undead Warriors from the Heart of the Maelstrom!"' }
     ];
 
-    // =========================================================================
-    // 6. ITEM & LOOT DATABASE
-    // =========================================================================
     const LOOT_TABLE = [
-      { name: 'Muramasa Katana',    slot: 'weapon', atk: 24, hp: 0,  mp: 0,  val: 180 },
-      { name: 'Vorpal Longsword',   slot: 'weapon', atk: 16, hp: 10, mp: 0,  val: 110 },
-      { name: 'Macuahuitl Sawblade',slot: 'weapon', atk: 19, hp: 15, mp: 0,  val: 130 },
-      { name: 'Staff of Mogref',    slot: 'weapon', atk: 14, hp: 0,  mp: 35, val: 125 },
-      { name: 'Llylgamyn Plate',    slot: 'armor',  atk: 0,  hp: 75, mp: 0,  val: 150 },
-      { name: 'Crimson Garb',       slot: 'armor',  atk: 5,  hp: 45, mp: 20, val: 115 },
-      { name: 'Duergar Hauberk',    slot: 'armor',  atk: 3,  hp: 60, mp: 0,  val: 130 },
-      { name: 'Amulet of Werdna',   slot: 'relic',  atk: 15, hp: 35, mp: 45, val: 250 },
-      { name: 'Ring of Porfic',     slot: 'relic',  atk: 4,  hp: 40, mp: 20, val: 120 },
-      { name: 'Crimson Behelit',    slot: 'relic',  atk: 12, hp: 20, mp: 30, val: 160 }
+      { name: 'Muramasa Katana',    slot: 'weapon', atk: 26, hp: 0,  mp: 0,  val: 180 },
+      { name: 'Fire Giant Flamberge',slot:'weapon', atk: 23, hp: 20, mp: 0,  val: 165 },
+      { name: 'Highlander Longbow', slot: 'weapon', atk: 19, hp: 10, mp: 15, val: 140 },
+      { name: 'Cobold Scimitar',    slot: 'weapon', atk: 17, hp: 15, mp: 0,  val: 125 },
+      { name: 'Maelstrom Plate',    slot: 'armor',  atk: 0,  hp: 80, mp: 0,  val: 150 },
+      { name: 'OVA Shinobi Shozoku',slot: 'armor',  atk: 8,  hp: 45, mp: 25, val: 135 },
+      { name: 'Sorceress Silk Gown',slot: 'armor',  atk: 5,  hp: 35, mp: 55, val: 140 },
+      { name: 'Golden Sun-Eye Shield',slot:'relic', atk: 8,  hp: 65, mp: 15, val: 210 },
+      { name: 'Amulet of Werdna',   slot: 'relic',  atk: 18, hp: 45, mp: 50, val: 300 }
     ];
 
     // =========================================================================
-    // 7. LOCAL PLAYER STATE & PERSISTENT LOCALSTORAGE SAVE
+    // 5. LOCAL PLAYER STATE & LOCALSTORAGE PERSISTENCE
     // =========================================================================
     let localPlayer = {
       id: 'p-' + Math.random().toString(36).substring(2, 9),
-      name: 'Vaelen',
+      name: 'Shinobi',
       raceCategory: 'Halfling',
       subraceKey: 'Kobold',
-      raceLabel: 'Halfling (Kobold)',
-      coreClass: 'Fighter',
-      regionalSect: 'Classic',
+      raceLabel: 'Halfling (Cobold King)',
+      coreClass: 'Rogue',
+      regionalSect: 'East',
       specialistFocus: null,
       eliteClass: null,
       prestigeSet: null,
@@ -970,36 +994,33 @@
       targetY: null,
       facing: 1,
       isMoving: false,
-      baseSpeed: 235,
-      speed: 235,
-      baseHp: 200,
+      baseSpeed: 240,
+      speed: 240,
       hp: 225,
       maxHp: 225,
-      baseMana: 60,
-      mana: 70,
-      maxMana: 70,
+      mana: 75,
+      maxMana: 75,
       level: 1,
       xp: 0,
       nextXp: 100,
       gold: 150,
       equipped: {
-        weapon: { name: 'Rusty Gladius', slot: 'weapon', atk: 6, hp: 0, mp: 0 },
-        armor:  { name: 'Tattered Brigandine', slot: 'armor', atk: 0, hp: 25, mp: 0 },
-        relic:  { name: 'Ash Signet', slot: 'relic', atk: 0, hp: 0, mp: 10 }
+        weapon: { name: 'Cobold Scimitar', slot: 'weapon', atk: 12, hp: 0, mp: 0 },
+        armor:  { name: 'OVA Shinobi Shozoku', slot: 'armor', atk: 4, hp: 30, mp: 10 },
+        relic:  { name: 'Golden Sun-Eye Shield', slot: 'relic', atk: 5, hp: 35, mp: 10 }
       },
       backpack: [
-        { name: 'Vorpal Longsword', slot: 'weapon', atk: 16, hp: 10, mp: 0 },
-        { name: 'Ring of Porfic',   slot: 'relic',  atk: 4,  hp: 40, mp: 20 }
+        { name: 'Fire Giant Flamberge', slot: 'weapon', atk: 23, hp: 20, mp: 0 },
+        { name: 'Sorceress Silk Gown',  slot: 'armor',  atk: 5,  hp: 35, mp: 55 }
       ],
-      // 9 Grimoire Spell Slots (1 unlocked per level up to Lv.9)
-      spellBar: ['strike', 'mahalito', 'porfic', 'madi', 'dalto', 'muramasa', 'lahalito', 'tzitzimitl', 'tiltowait'],
+      spellBar: ['strike', 'mahalito', 'porfic', 'madi', 'muramasa', 'flamberge', 'badios', 'dalto', 'tiltowait'],
       targetEntityId: null,
       swingTimer: 0,
       chatBubble: null,
       chatTimer: 0
     };
 
-    const SAVE_KEY = 'tartaria_online_v2_save';
+    const SAVE_KEY = 'tartaria_ova_v3_save';
 
     function recalcEquipmentStats() {
       const subMeta = getSubraceMeta(localPlayer);
@@ -1030,7 +1051,7 @@
 
     function savePersistentProgress() {
       try {
-        const payload = {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
           name: localPlayer.name,
           raceCategory: localPlayer.raceCategory,
           subraceKey: localPlayer.subraceKey,
@@ -1050,8 +1071,7 @@
           equipped: localPlayer.equipped,
           backpack: localPlayer.backpack,
           spellBar: localPlayer.spellBar
-        };
-        localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+        }));
       } catch (e) {}
     }
 
@@ -1067,7 +1087,7 @@
           document.getElementById('char-race').dispatchEvent(new Event('change'));
           document.getElementById('char-subrace').value = localPlayer.subraceKey;
           document.getElementById('char-class').value = localPlayer.coreClass;
-          document.getElementById('char-sect').value = localPlayer.regionalSect || 'Classic';
+          document.getElementById('char-sect').value = localPlayer.regionalSect || 'East';
 
           const banner = document.getElementById('returning-save-banner');
           banner.style.display = 'flex';
@@ -1094,7 +1114,7 @@
     });
 
     // =========================================================================
-    // 8. PROCEDURAL WEB AUDIO SYNTH: GOTHIC DUNGEON BGM + SFX
+    // 6. WEB AUDIO SYNTH: GOTHIC DUNGEON BGM + PORTCULLIS GATE CLANG SFX
     // =========================================================================
     let audioCtx = null;
     let bgmEnabled = true;
@@ -1107,7 +1127,6 @@
       }
       if (audioCtx.state === 'suspended') audioCtx.resume();
       if (!bgmInterval) {
-        // Dark 1991 OVA Dungeon Arpeggio in D Harmonic Minor
         const notes = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 138.59, 146.83];
         bgmInterval = setInterval(() => {
           if (!bgmEnabled || !audioCtx || document.getElementById('char-modal').style.display !== 'none') return;
@@ -1118,7 +1137,7 @@
             osc.type = bgmStep % 4 === 0 ? 'triangle' : 'sine';
             const freq = notes[bgmStep % notes.length];
             osc.frequency.setValueAtTime(bgmStep % 8 === 0 ? freq * 0.5 : freq, now);
-            gain.gain.setValueAtTime(0.035, now);
+            gain.gain.setValueAtTime(0.032, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
@@ -1141,11 +1160,25 @@
 
         if (kind === 'slash') {
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(290, now);
+          osc.frequency.setValueAtTime(310, now);
           osc.frequency.exponentialRampToValueAtTime(65, now + 0.13);
           gain.gain.setValueAtTime(0.16, now);
           gain.gain.linearRampToValueAtTime(0.01, now + 0.13);
           osc.start(now); osc.stop(now + 0.13);
+        } else if (kind === 'behead') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(90, now + 0.24);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.24);
+          osc.start(now); osc.stop(now + 0.24);
+        } else if (kind === 'gate') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(95, now);
+          osc.frequency.linearRampToValueAtTime(140, now + 0.22);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
+          osc.start(now); osc.stop(now + 0.22);
         } else if (kind === 'spell') {
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(180, now);
@@ -1177,8 +1210,60 @@
     });
 
     // =========================================================================
-    // 9. UI INITIALIZATION: RACES, INVENTORY, GRIMOIRE BAR
+    // 7. UI INITIALIZATION & WERDNA PORTRAIT ILLUSTRATION
     // =========================================================================
+    function drawWerdna1981Portrait() {
+      const c = document.getElementById('werdnaCanvas');
+      if (!c) return;
+      const wCtx = c.getContext('2d');
+      wCtx.clearRect(0, 0, c.width, c.height);
+
+      // Crimson-Magenta Robe Billows (matching 1981 manual illustration)
+      wCtx.fillStyle = '#c81e56';
+      wCtx.strokeStyle = '#111';
+      wCtx.lineWidth = 2.5;
+      wCtx.beginPath();
+      wCtx.moveTo(40, 225);
+      wCtx.quadraticCurveTo(15, 130, 75, 95);
+      wCtx.lineTo(185, 95);
+      wCtx.quadraticCurveTo(245, 130, 220, 225);
+      wCtx.closePath();
+      wCtx.fill(); wCtx.stroke();
+
+      // Ornate Mitre Hat
+      wCtx.fillStyle = '#d6336c';
+      wCtx.beginPath();
+      wCtx.moveTo(105, 65);
+      wCtx.lineTo(130, 12);
+      wCtx.lineTo(155, 65);
+      wCtx.closePath();
+      wCtx.fill(); wCtx.stroke();
+
+      // Yellowish Face & Scowl
+      wCtx.fillStyle = '#eab308';
+      wCtx.beginPath();
+      wCtx.arc(130, 78, 18, 0, Math.PI * 2);
+      wCtx.fill(); wCtx.stroke();
+
+      // Long Flowing White Beard
+      wCtx.fillStyle = '#f8fafc';
+      wCtx.beginPath();
+      wCtx.moveTo(112, 85);
+      wCtx.quadraticCurveTo(95, 165, 115, 220);
+      wCtx.quadraticCurveTo(135, 195, 155, 220);
+      wCtx.quadraticCurveTo(165, 155, 148, 85);
+      wCtx.closePath();
+      wCtx.fill(); wCtx.stroke();
+
+      // Clawed Yellow Hands
+      wCtx.fillStyle = '#eab308';
+      wCtx.beginPath();
+      wCtx.arc(85, 112, 10, 0, Math.PI * 2);
+      wCtx.arc(175, 112, 10, 0, Math.PI * 2);
+      wCtx.fill(); wCtx.stroke();
+    }
+    drawWerdna1981Portrait();
+
     function initCreationUI() {
       const raceSel = document.getElementById('char-race');
       const subSel = document.getElementById('char-subrace');
@@ -1255,7 +1340,6 @@
       return `Core ${p.coreClass}`;
     }
 
-    // Build 9-Slot Grimoire Hotbar (1 unlocked per level up to 9)
     function renderHotbarUI() {
       const container = document.getElementById('hotbar-container');
       container.innerHTML = '';
@@ -1287,7 +1371,6 @@
       }
     }
 
-    // Quick Translucent Inventory UI [I]
     function toggleInventory(forceState) {
       const modal = document.getElementById('inventory-modal');
       const open = typeof forceState === 'boolean' ? forceState : modal.style.display !== 'flex';
@@ -1374,13 +1457,11 @@
       renderInventoryUI();
     }
 
-    // Grimoire Loadout Modal [G]
     let selectedGrimoireSlot = 0;
     function toggleGrimoire(forceState) {
       const modal = document.getElementById('grimoire-modal');
       const open = typeof forceState === 'boolean' ? forceState : modal.style.display !== 'flex';
-      modal.style.display = open ? 'none' : 'flex';
-      if (typeof forceState === 'boolean') modal.style.display = forceState ? 'flex' : 'none';
+      modal.style.display = open ? 'flex' : 'none';
       if (modal.style.display === 'flex') renderGrimoireModal();
     }
 
@@ -1425,11 +1506,9 @@
     }
 
     document.getElementById('btn-inv').onclick = () => toggleInventory();
-    document.getElementById('btn-grim').onclick = () => toggleGrimoire(true);
+    document.getElementById('btn-grim').onclick = () => toggleGrimoire();
+    document.getElementById('btn-gates').onclick = () => toggleNearestGate();
 
-    // =========================================================================
-    // 10. LEVEL 3 & LEVEL 6 ASCENSION PROMPTS
-    // =========================================================================
     function checkClassAscensionPrompt() {
       const modal = document.getElementById('ascend-modal');
       const title = document.getElementById('ascend-title');
@@ -1491,40 +1570,42 @@
     }
 
     // =========================================================================
-    // 11. DUNGEON HOSTILES, LOOT CHESTS & CORPSE BAGS
+    // 8. DUNGEON HOSTILES (Updated with Card Art Archetypes!) & DECAPITATION FX
     // =========================================================================
     const enemies = [];
     const lootChests = [];
     const spellVortexes = [];
     const slashArcs = [];
     const bloodSparks = [];
+    const flyingHeads = []; // OVA Screenshot 2 Decapitation Skulls!
     const combatTexts = [];
 
     function spawnWorldEntities() {
       enemies.length = 0;
       const outerZones = [
-        { x: 2200, y: 750,  spread: 360, tier: 1 }, // North Room
-        { x: 2200, y: 3600, spread: 360, tier: 2 }, // South Room
-        { x: 3600, y: 2200, spread: 360, tier: 2 }, // East Room
-        { x: 750,  y: 2200, spread: 360, tier: 1 }, // West Room
-        { x: 2200, y: 1380, spread: 90,  tier: 1 }, // North Hallway
-        { x: 2200, y: 2920, spread: 90,  tier: 1 }, // South Hallway
-        { x: 2920, y: 2200, spread: 90,  tier: 1 }, // East Hallway
-        { x: 1380, y: 2200, spread: 90,  tier: 1 }  // West Hallway
+        { x: 2200, y: 740,  spread: 340, archetype: 'fire_giant' },
+        { x: 2200, y: 3600, spread: 340, archetype: 'sorceress' },
+        { x: 3600, y: 2200, spread: 340, archetype: 'greater_demon' },
+        { x: 740,  y: 2200, spread: 340, archetype: 'undead_warrior' },
+        { x: 2200, y: 1380, spread: 80,  archetype: 'highlander' },
+        { x: 2200, y: 2920, spread: 80,  archetype: 'undead_warrior' },
+        { x: 2920, y: 2200, spread: 80,  archetype: 'greater_demon' },
+        { x: 1380, y: 2200, spread: 80,  archetype: 'cobold_king' }
       ];
 
-      const templates = [
-        { name: 'Surface Paladin',       hp: 105, radius: 18, speed: 135, color: '#3b82f6', kind: 'knight', xp: 55 },
-        { name: 'Llylgamyn Inquisitor',  hp: 85,  radius: 16, speed: 150, color: '#f8fafc', kind: 'knight', xp: 48 },
-        { name: 'Vorpal Bunny',          hp: 60,  radius: 13, speed: 195, color: '#e2e8f0', kind: 'bunny',  xp: 42 },
-        { name: 'Creeping Coin Swarm',   hp: 75,  radius: 15, speed: 155, color: '#facc15', kind: 'coin',   xp: 45 },
-        { name: 'Traitor Hunter Guard',  hp: 125, radius: 19, speed: 130, color: '#991b1b', kind: 'knight', xp: 65 }
-      ];
+      const templates = {
+        'fire_giant':     { name: 'Fire Giant',          hp: 135, radius: 22, speed: 125, color: '#ea580c', kind: 'fire_giant',     xp: 70 },
+        'greater_demon':  { name: 'Greater Demon',       hp: 150, radius: 23, speed: 140, color: '#28517a', kind: 'greater_demon',  xp: 80 },
+        'undead_warrior': { name: 'Undead Warrior',      hp: 95,  radius: 17, speed: 135, color: '#38bdf8', kind: 'undead_warrior', xp: 55 },
+        'cobold_king':    { name: 'Cobold King Guard',   hp: 90,  radius: 16, speed: 165, color: '#3f7d4c', kind: 'cobold_king',    xp: 50 },
+        'highlander':     { name: 'Highlander Huntsman', hp: 85,  radius: 16, speed: 160, color: '#be185d', kind: 'highlander',     xp: 50 },
+        'sorceress':      { name: 'Gaiden Witch-Siren',  hp: 80,  radius: 15, speed: 145, color: '#a855f7', kind: 'sorceress',      xp: 55 }
+      };
 
       outerZones.forEach((zn, zIdx) => {
         const count = zn.spread > 200 ? 5 : 2;
         for (let i = 0; i < count; i++) {
-          const t = templates[Math.floor(Math.random() * templates.length)];
+          const t = templates[zn.archetype] || templates['undead_warrior'];
           enemies.push({
             id: `mob-${zIdx}-${i}-${Math.random().toString(36).slice(2, 6)}`,
             name: t.name,
@@ -1542,13 +1623,12 @@
         }
       });
 
-      // Spawn Initial Treasure Chests in the 4 Outer Rooms
       if (lootChests.length < 4) {
         [
-          { x: 2200, y: 460,  label: 'Iron Saint Reliquary' },
-          { x: 2200, y: 3920, label: 'Werdna Vault Chest' },
-          { x: 3920, y: 2200, label: 'Foundry Obsidian Coffer' },
-          { x: 480,  y: 2200, label: 'Fungal Spore Casket' }
+          { x: 2200, y: 440,  label: 'Fire Giant Coffer' },
+          { x: 2200, y: 3940, label: 'Werdna Reliquary Chest' },
+          { x: 3940, y: 2200, label: 'Cosmic Forge Coffer' },
+          { x: 460,  y: 2200, label: 'Maelstrom Ossuary Chest' }
         ].forEach(c => {
           lootChests.push({
             id: 'chest-' + Math.random().toString(36).slice(2, 7),
@@ -1556,7 +1636,7 @@
             y: c.y,
             label: c.label,
             isCorpse: false,
-            gold: 40 + Math.floor(Math.random() * 60),
+            gold: 45 + Math.floor(Math.random() * 65),
             item: LOOT_TABLE[Math.floor(Math.random() * LOOT_TABLE.length)]
           });
         });
@@ -1565,12 +1645,59 @@
     spawnWorldEntities();
 
     // =========================================================================
-    // 12. COLLISION DETECTION (WALKABLE ROOMS + HALLWAYS + PILLARS + FIREPIT)
+    // 9. GATE MECHANICS & COLLISION DETECTION
     // =========================================================================
+    function updateGatesAutoProximity() {
+      GATES.forEach(g => {
+        if (g.manualLock) return; // Respect manual lock if player locked it via [E]
+        const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
+        if (d < 105 && !g.isOpen) {
+          g.isOpen = true;
+          playSfx('gate');
+        } else if (d > 155 && g.isOpen) {
+          g.isOpen = false;
+        }
+      });
+    }
+
+    function toggleNearestGate() {
+      let nearest = null;
+      let minDist = 170;
+      GATES.forEach(g => {
+        const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
+        if (d < minDist) {
+          minDist = d;
+          nearest = g;
+        }
+      });
+
+      if (nearest) {
+        nearest.isOpen = !nearest.isOpen;
+        nearest.manualLock = !nearest.isOpen;
+        playSfx('gate');
+        showToast(`${nearest.label}: ${nearest.isOpen ? 'OPENED ⛩️' : 'LOCKED SHUT 🔒'}`);
+      } else {
+        showToast('Move closer to a Portcullis Gate to toggle it!');
+      }
+    }
+
+    function isBlockedByClosedGate(px, py) {
+      for (const g of GATES) {
+        if (g.isOpen) continue;
+        if (g.horiz) {
+          if (Math.abs(px - g.x) < 110 && Math.abs(py - g.y) < 18) return true;
+        } else {
+          if (Math.abs(px - g.x) < 18 && Math.abs(py - g.y) < 110) return true;
+        }
+      }
+      return false;
+    }
+
     function isPointInWalkableDungeon(px, py) {
+      if (isBlockedByClosedGate(px, py)) return null;
       for (let i = 0; i < WALKABLE_ZONES.length; i++) {
         const z = WALKABLE_ZONES[i];
-        if (px >= z.x + 18 && px <= z.x + z.w - 18 && py >= z.y + 18 && py <= z.y + z.h - 18) {
+        if (px >= z.x + 14 && px <= z.x + z.w - 14 && py >= z.y + 14 && py <= z.y + z.h - 14) {
           return z;
         }
       }
@@ -1578,7 +1705,6 @@
     }
 
     function resolveDungeonMovement(entity, nextX, nextY) {
-      // Check X axis then Y axis separately so player slides smoothly along stone walls
       if (isPointInWalkableDungeon(nextX, entity.y)) {
         entity.x = nextX;
       }
@@ -1586,11 +1712,10 @@
         entity.y = nextY;
       }
 
-      // Solid Gothic Pillars Collision
       for (let i = 0; i < SOLID_PILLARS.length; i++) {
         const pil = SOLID_PILLARS[i];
         const dist = Math.hypot(entity.x - pil.x, entity.y - pil.y);
-        const minR = pil.r + 16;
+        const minR = pil.r + 15;
         if (dist < minR && dist > 0.001) {
           const ang = Math.atan2(entity.y - pil.y, entity.x - pil.x);
           entity.x = pil.x + Math.cos(ang) * minR;
@@ -1598,7 +1723,6 @@
         }
       }
 
-      // Central Firepit Stone Brazier Collision
       const fDist = Math.hypot(entity.x - FIREPIT_POS.x, entity.y - FIREPIT_POS.y);
       if (fDist < FIREPIT_POS.radius + 14) {
         const ang = Math.atan2(entity.y - FIREPIT_POS.y, entity.x - FIREPIT_POS.x);
@@ -1612,7 +1736,7 @@
     }
 
     // =========================================================================
-    // 13. ALWAYS-ON CENTRAL SERVER NETWORKING + FULL-LOOT PVP
+    // 10. ALWAYS-ON CENTRAL SERVER NETWORKING
     // =========================================================================
     const remotePlayers = new Map();
     const globalUrlParams = new URLSearchParams(window.location.search);
@@ -1621,7 +1745,7 @@
     let localBroadcastChannel = null;
     try {
       if (typeof BroadcastChannel !== 'undefined') {
-        localBroadcastChannel = new BroadcastChannel('tartaria_mmo_v2_' + joinShardId);
+        localBroadcastChannel = new BroadcastChannel('tartaria_mmo_v3_' + joinShardId);
         localBroadcastChannel.onmessage = (ev) => {
           if (ev.data && ev.data.id !== localPlayer.id) handleNetworkPacket(ev.data);
         };
@@ -1629,7 +1753,7 @@
     } catch (e) {}
 
     const RELAY_SERVERS = [
-      'wss://free.blr2.piesocket.com/v3/tartaria_mmo_v2?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self=0'
+      'wss://free.blr2.piesocket.com/v3/tartaria_mmo_v3?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self=0'
     ];
     let activeSocket = null;
     let socketConnected = false;
@@ -1688,7 +1812,7 @@
         }
       } else if (data.type === 'corpse_drop') {
         lootChests.push(data.chest);
-        appendChat('Full-Loot PvP', `💀 ${data.victimName} fell in battle! Their Corpse Coffer dropped at (${Math.round(data.chest.x)}, ${Math.round(data.chest.y)})!`);
+        appendChat('Full-Loot PvP', `💀 ${data.victimName} was decapitated! Corpse Coffer dropped at (${Math.round(data.chest.x)}, ${Math.round(data.chest.y)})!`);
       }
     }
 
@@ -1724,9 +1848,32 @@
     }
 
     // =========================================================================
-    // 14. COMBAT, SPELL ANIMATIONS & FULL-LOOT PVP DEATH
+    // 11. COMBAT & 1991 OVA KUBI-KIRI DECAPITATION ANIMATION
     // =========================================================================
     const slotCooldowns = new Array(9).fill(0);
+
+    function spawnOvaDecapitation(x, y, facing) {
+      playSfx('behead');
+      // Flying grinning skull with trailing hair & green OVA ectoplasm (OVA Screenshot 2)
+      flyingHeads.push({
+        x, y: y - 24,
+        vx: facing * (135 + Math.random() * 60),
+        vy: -165 - Math.random() * 45,
+        rot: 0,
+        vRot: facing * 8,
+        life: 48
+      });
+      // Neon-green ectoplasmic arterial spray
+      for (let i = 0; i < 18; i++) {
+        bloodSparks.push({
+          x, y: y - 20,
+          vx: (Math.random() - 0.3) * facing * 240,
+          vy: -60 - Math.random() * 190,
+          color: i % 3 === 0 ? '#bef264' : '#84cc16',
+          life: 28
+        });
+      }
+    }
 
     function triggerSpellSlot(slotIdx) {
       initAudioEngine();
@@ -1758,37 +1905,36 @@
       if (sp.type === 'heal') {
         playSfx('spell');
         localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + totalPower);
-        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 75, 'runes');
+        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 75);
         spawnCombatText(localPlayer.x, localPlayer.y, `+${totalPower} ${sp.name}`, '#4ade80');
       } else if (sp.type === 'buff') {
         playSfx('spell');
         localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + sp.dmg);
-        localPlayer.speed = 410;
-        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 85, 'shield');
+        localPlayer.speed = 415;
+        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 85);
         setTimeout(() => { recalcEquipmentStats(); }, 2400);
         showToast(`${sp.name} Active!`);
       } else if (sp.type === 'dash') {
         playSfx('slash');
-        const dashX = localPlayer.x + localPlayer.facing * 130;
+        const dashX = localPlayer.x + localPlayer.facing * 135;
         resolveDungeonMovement(localPlayer, dashX, localPlayer.y);
-        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, sp.color, 85);
-        damageTargetsInRadius(localPlayer.x, localPlayer.y, 130, totalPower, sp.name, sp.color);
+        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, sp.color, 88);
+        damageTargetsInRadius(localPlayer.x, localPlayer.y, 135, totalPower, sp.name, sp.color);
       } else if (sp.type === 'aoe') {
         playSfx('spell');
-        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 175, 'vortex');
-        damageTargetsInRadius(localPlayer.x, localPlayer.y, 180, totalPower, sp.name, sp.color);
+        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 180);
+        damageTargetsInRadius(localPlayer.x, localPlayer.y, 185, totalPower, sp.name, sp.color);
       } else {
-        // Melee or Bolt against target or front cone
         playSfx('slash');
         let target = findCurrentTarget();
-        if (target && Math.hypot(target.x - localPlayer.x, target.y - localPlayer.y) <= (sp.type === 'bolt' ? 280 : 115)) {
+        if (target && Math.hypot(target.x - localPlayer.x, target.y - localPlayer.y) <= (sp.type === 'bolt' ? 290 : 120)) {
           localPlayer.facing = target.x >= localPlayer.x ? 1 : -1;
-          spawnSlashArc(target.x, target.y, localPlayer.facing, sp.color, 58);
-          spawnSpellVortex(target.x, target.y, sp.color, 52, 'burst');
+          spawnSlashArc(target.x, target.y, localPlayer.facing, sp.color, 60);
+          spawnSpellVortex(target.x, target.y, sp.color, 52);
           applyHitToTarget(target, totalPower, sp.name, sp.color);
         } else {
-          spawnSlashArc(localPlayer.x + localPlayer.facing * 35, localPlayer.y, localPlayer.facing, sp.color, 56);
-          damageTargetsInRadius(localPlayer.x + localPlayer.facing * 40, localPlayer.y, 90, totalPower, sp.name, sp.color);
+          spawnSlashArc(localPlayer.x + localPlayer.facing * 35, localPlayer.y, localPlayer.facing, sp.color, 58);
+          damageTargetsInRadius(localPlayer.x + localPlayer.facing * 40, localPlayer.y, 95, totalPower, sp.name, sp.color);
         }
       }
 
@@ -1805,17 +1951,22 @@
     }
 
     function damageTargetsInRadius(cx, cy, radius, dmg, label, color) {
-      // Hit Dungeon Hostiles
       for (let i = enemies.length - 1; i >= 0; i--) {
         const en = enemies[i];
         if (Math.hypot(en.x - cx, en.y - cy) <= radius) {
-          en.hp -= dmg;
-          spawnCombatText(en.x, en.y, `-${dmg} ${label}`, color);
-          if (en.hp <= 0) handleEnemyKilled(en, i);
+          const isCrit = Math.random() < 0.28;
+          const finalDmg = isCrit ? Math.round(dmg * 1.45) : dmg;
+          en.hp -= finalDmg;
+          spawnCombatText(en.x, en.y, isCrit ? `-${finalDmg} KUBI-KIRI!!` : `-${finalDmg} ${label}`, isCrit ? '#84cc16' : color);
+          if (en.hp <= 0 || isCrit) {
+            if (en.hp <= 0) {
+              spawnOvaDecapitation(en.x, en.y, localPlayer.facing);
+              handleEnemyKilled(en, i);
+            }
+          }
         }
       }
 
-      // Full-Loot PvP Check (Only if BOTH attacker and victim are outside the Firepit Safezone)
       if (!isInsideFirepitSafezone(localPlayer.x, localPlayer.y)) {
         remotePlayers.forEach(rp => {
           if (!isInsideFirepitSafezone(rp.x, rp.y) && Math.hypot(rp.x - cx, rp.y - cy) <= radius) {
@@ -1848,9 +1999,12 @@
         spawnCombatText(targetWrapper.ref.x, targetWrapper.ref.y, `-${dmg} PVP`, '#ff2a38');
       } else {
         const en = targetWrapper.ref;
-        en.hp -= dmg;
-        spawnCombatText(en.x, en.y, `-${dmg}`, color);
+        const isCrit = Math.random() < 0.3;
+        const finalDmg = isCrit ? Math.round(dmg * 1.5) : dmg;
+        en.hp -= finalDmg;
+        spawnCombatText(en.x, en.y, isCrit ? `-${finalDmg} BEHEAD CRIT!` : `-${finalDmg}`, isCrit ? '#84cc16' : color);
         if (en.hp <= 0) {
+          spawnOvaDecapitation(en.x, en.y, localPlayer.facing);
           const idx = enemies.indexOf(en);
           if (idx !== -1) handleEnemyKilled(en, idx);
         }
@@ -1859,12 +2013,11 @@
 
     function handleEnemyKilled(en, idx) {
       enemies.splice(idx, 1);
-      localPlayer.xp += en.xpValue || 45;
-      const goldDrop = 15 + Math.floor(Math.random() * 25);
+      localPlayer.xp += en.xpValue || 50;
+      const goldDrop = 18 + Math.floor(Math.random() * 28);
       localPlayer.gold += goldDrop;
 
-      // 38% chance to drop a Loot Chest on the stone floor
-      if (Math.random() < 0.38) {
+      if (Math.random() < 0.42) {
         lootChests.push({
           id: 'chest-' + Math.random().toString(36).slice(2, 7),
           x: en.x,
@@ -1897,9 +2050,9 @@
 
     function handleFullLootDeath(killerName) {
       playSfx('death');
-      triggerSoulsBanner('YOU DIED — SATCHEL LOOTED');
+      spawnOvaDecapitation(localPlayer.x, localPlayer.y, -localPlayer.facing);
+      triggerSoulsBanner('YOU WERE DECAPITATED — SATCHEL LOOTED');
 
-      // Drop player's backpack items + 50% gold as a Full-Loot Corpse Coffer at death location
       const droppedItem = localPlayer.backpack.length > 0
         ? localPlayer.backpack[0]
         : LOOT_TABLE[Math.floor(Math.random() * LOOT_TABLE.length)];
@@ -1919,7 +2072,6 @@
       lootChests.push(corpseChest);
       sendPacket({ type: 'corpse_drop', id: localPlayer.id, victimName: localPlayer.name, chest: corpseChest });
 
-      // Respawn at Central Firepit Sanctuary
       localPlayer.x = FIREPIT_POS.x;
       localPlayer.y = FIREPIT_POS.y + 130;
       localPlayer.targetX = null;
@@ -1931,8 +2083,8 @@
       updateVitalsUI();
     }
 
-    function spawnSpellVortex(x, y, color, radius, style) {
-      spellVortexes.push({ x, y, color, radius, style, life: 28, maxLife: 28 });
+    function spawnSpellVortex(x, y, color, radius) {
+      spellVortexes.push({ x, y, color, radius, life: 28, maxLife: 28 });
       for (let i = 0; i < 12; i++) {
         const ang = (i / 12) * Math.PI * 2;
         bloodSparks.push({
@@ -1947,12 +2099,12 @@
 
     function spawnSlashArc(x, y, facing, color, radius) {
       slashArcs.push({ x, y, facing, color, radius, life: 14, maxLife: 14 });
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 10; i++) {
         bloodSparks.push({
           x, y: y - 16,
-          vx: (Math.random() - 0.2) * facing * 190,
-          vy: (Math.random() - 0.8) * 150,
-          color: i % 2 === 0 ? '#991b1b' : color,
+          vx: (Math.random() - 0.2) * facing * 195,
+          vy: (Math.random() - 0.8) * 155,
+          color: i % 2 === 0 ? '#84cc16' : color,
           life: 18
         });
       }
@@ -1963,7 +2115,7 @@
     }
 
     // =========================================================================
-    // 15. INPUTS: WASD, CLICK-TO-MOVE/LOOT/TALK, TAB TARGET, SHORTCUTS
+    // 12. INPUTS: WASD, CLICK-TO-OPEN-GATE/LOOT/TALK, TAB TARGET
     // =========================================================================
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -1993,10 +2145,11 @@
       } else if (e.key.toLowerCase() === 'g') {
         toggleGrimoire();
       } else if (e.key.toLowerCase() === 'e') {
-        interactWithNearestNpcOrChest();
+        interactWithWorldObject();
       } else if (e.key === 'Escape') {
         toggleInventory(false);
         toggleGrimoire(false);
+        document.getElementById('werdna-modal').style.display = 'none';
       } else if (e.key === 'Tab') {
         e.preventDefault();
         cycleTabTarget();
@@ -2016,11 +2169,22 @@
       const clickX = e.clientX + camX;
       const clickY = e.clientY + camY;
 
-      // 1. Check if clicking a Loot Chest / Corpse Bag
+      // 1. Check if clicking a Portcullis Gate lever
+      for (const g of GATES) {
+        if (Math.hypot(clickX - g.x, clickY - g.y) < 55) {
+          g.isOpen = !g.isOpen;
+          g.manualLock = !g.isOpen;
+          playSfx('gate');
+          showToast(`${g.label}: ${g.isOpen ? 'OPENED ⛩️' : 'LOCKED SHUT 🔒'}`);
+          return;
+        }
+      }
+
+      // 2. Check if clicking a Loot Chest / Corpse Bag
       for (let i = lootChests.length - 1; i >= 0; i--) {
         const ch = lootChests[i];
         if (Math.hypot(clickX - ch.x, clickY - ch.y) < 34) {
-          if (Math.hypot(localPlayer.x - ch.x, localPlayer.y - ch.y) < 110) {
+          if (Math.hypot(localPlayer.x - ch.x, localPlayer.y - ch.y) < 115) {
             claimChestLoot(i);
           } else {
             localPlayer.targetX = ch.x;
@@ -2030,20 +2194,23 @@
         }
       }
 
-      // 2. Check if clicking an NPC Denizen
+      // 3. Check if clicking an NPC Denizen
       for (const npc of TARTARIA_NPCS) {
-        if (Math.hypot(clickX - npc.x, clickY - npc.y) < 34) {
+        if (Math.hypot(clickX - npc.x, clickY - npc.y) < 38) {
           appendChat(npc.name, npc.dialog);
           showToast(`${npc.name}: ${npc.dialog}`);
+          if (npc.isWerdna) {
+            document.getElementById('werdna-modal').style.display = 'flex';
+          }
           return;
         }
       }
 
-      // 3. Check if clicking a Hostile Monster
+      // 4. Check if clicking a Hostile Monster
       for (const en of enemies) {
         if (Math.hypot(clickX - en.x, clickY - en.y) < en.radius + 18) {
           localPlayer.targetEntityId = en.id;
-          if (Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y) < 105) {
+          if (Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y) < 110) {
             triggerSpellSlot(0);
           } else {
             localPlayer.targetX = en.x;
@@ -2053,7 +2220,7 @@
         }
       }
 
-      // 4. Check if clicking a Remote Player (for Full-Loot PvP targeting)
+      // 5. Check if clicking a Remote Player
       for (const rp of remotePlayers.values()) {
         if (Math.hypot(clickX - rp.x, clickY - rp.y) < 28) {
           localPlayer.targetEntityId = rp.id;
@@ -2066,20 +2233,22 @@
       localPlayer.targetY = clickY;
     });
 
-    function interactWithNearestNpcOrChest() {
+    function interactWithWorldObject() {
       for (let i = lootChests.length - 1; i >= 0; i--) {
-        if (Math.hypot(localPlayer.x - lootChests[i].x, localPlayer.y - lootChests[i].y) < 110) {
+        if (Math.hypot(localPlayer.x - lootChests[i].x, localPlayer.y - lootChests[i].y) < 115) {
           claimChestLoot(i);
           return;
         }
       }
       for (const npc of TARTARIA_NPCS) {
-        if (Math.hypot(localPlayer.x - npc.x, localPlayer.y - npc.y) < 120) {
+        if (Math.hypot(localPlayer.x - npc.x, localPlayer.y - npc.y) < 125) {
           appendChat(npc.name, npc.dialog);
           showToast(`${npc.name}: ${npc.dialog}`);
+          if (npc.isWerdna) document.getElementById('werdna-modal').style.display = 'flex';
           return;
         }
       }
+      toggleNearestGate();
     }
 
     function claimChestLoot(idx) {
@@ -2116,7 +2285,7 @@
     }
 
     // =========================================================================
-    // 16. 1991 WIZARDRY OVA + SOULS-GOTHIC CEL CHARACTER & WORLD RENDERER
+    // 13. JUN SUEMI CARD ART + 1991 OVA CEL CHARACTER & MONSTER RENDERER
     // =========================================================================
     function drawOVACharacter(ctx, p, cx, cy, timeSec, scaleOverride = 1.0, isTargeted = false) {
       const subMeta = getSubraceMeta(p);
@@ -2148,32 +2317,45 @@
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
 
+      // Reptilian / Greater Demon Barbed Tail
+      if (subMeta.tail) {
+        ctx.strokeStyle = subMeta.skin;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(-6, -8);
+        ctx.quadraticCurveTo(-26, 2, -32, -12 + Math.sin(timeSec * 6) * 5);
+        ctx.stroke();
+      }
+
+      // Bat Wings (Greater Demon / Imp)
       if (subMeta.wings) {
-        const flap = Math.sin(timeSec * 6) * 4;
-        ctx.fillStyle = '#4a0808';
+        const flap = Math.sin(timeSec * 6) * 5;
+        ctx.fillStyle = subMeta.tail ? '#1e3a5f' : '#4a0808';
         ctx.strokeStyle = '#040306';
         ctx.lineWidth = 2.2;
         ctx.beginPath();
-        ctx.moveTo(-4, -24);
-        ctx.lineTo(-30, -42 + flap);
-        ctx.lineTo(-24, -15);
+        ctx.moveTo(-4, -26);
+        ctx.lineTo(-36, -48 + flap);
+        ctx.lineTo(-28, -14);
         ctx.closePath();
         ctx.fill(); ctx.stroke();
       }
 
+      // Billowing Cloak (Blue for Cobold King / Undead Warrior, Crimson/Custom for others)
       const cloakWave = Math.sin(timeSec * 5 + (isMoving ? 2 : 0)) * (isMoving ? 7 : 2.5);
-      ctx.fillStyle = p.armorColor || '#7c0a0a';
+      ctx.fillStyle = subMeta.skeleton ? '#3b82f6' : (subMeta.sunShield ? '#1d4ed8' : (p.armorColor || '#2b3d54'));
       ctx.strokeStyle = '#040306';
       ctx.lineWidth = 2.4;
       ctx.beginPath();
-      ctx.moveTo(-9, -30);
-      ctx.lineTo(9, -30);
-      ctx.lineTo(13 - cloakWave, 2);
-      ctx.lineTo(-14 - cloakWave, 3);
+      ctx.moveTo(-10, -30);
+      ctx.lineTo(10, -30);
+      ctx.lineTo(14 - cloakWave, 3);
+      ctx.lineTo(-15 - cloakWave, 3);
       ctx.closePath();
       ctx.fill(); ctx.stroke();
 
-      ctx.fillStyle = '#17141f';
+      // Legs
+      ctx.fillStyle = subMeta.skeleton ? '#d6d3c4' : '#17141f';
       ctx.strokeStyle = '#040306';
       ctx.lineWidth = 2.2;
       ctx.fillRect(-7 + stride * 0.5, -12, 6, 14);
@@ -2181,13 +2363,28 @@
       ctx.fillRect(2 - stride * 0.5, -12, 6, 14);
       ctx.strokeRect(2 - stride * 0.5, -12, 6, 14);
 
-      ctx.fillStyle = '#282330';
+      // Torso / Ribcage / Shell Cuirass
+      ctx.fillStyle = subMeta.shellChest ? '#b45309' : (subMeta.sunShield ? '#a16207' : '#282330');
       ctx.strokeStyle = '#040306';
       ctx.lineWidth = 2.4;
       ctx.beginPath();
       ctx.roundRect(-10, -30, 20, 20, 3);
       ctx.fill(); ctx.stroke();
 
+      if (subMeta.skeleton) {
+        // Exposed Skeletal Ribcage lines (Undead Warrior Card)
+        ctx.strokeStyle = '#e5e5e5';
+        ctx.lineWidth = 1.6;
+        for (let r = -26; r <= -16; r += 4) {
+          ctx.beginPath(); ctx.moveTo(-6, r); ctx.lineTo(6, r); ctx.stroke();
+        }
+      } else if (subMeta.shellChest) {
+        // Fire Giant Silver Shell-Medallion on Chest
+        ctx.fillStyle = '#e2e8f0';
+        ctx.beginPath(); ctx.arc(0, -22, 6.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      }
+
+      // Head
       const headY = -39;
       const headR = 10.5;
       ctx.fillStyle = subMeta.skin;
@@ -2206,7 +2403,7 @@
         ctx.fillStyle = subMeta.skin;
         ctx.beginPath();
         ctx.moveTo(-headR + 1, headY - 1);
-        ctx.lineTo(-headR - 10, headY - 6);
+        ctx.lineTo(-headR - 10, headY - 7);
         ctx.lineTo(-headR + 2, headY + 3);
         ctx.closePath();
         ctx.fill(); ctx.stroke();
@@ -2217,13 +2414,13 @@
         ctx.moveTo(2, headY - 9);  ctx.lineTo(9, headY - 17);  ctx.lineTo(8, headY - 7);  ctx.closePath();
         ctx.fill(); ctx.stroke();
       } else if (subMeta.horns) {
-        ctx.fillStyle = '#f4dca6';
+        ctx.fillStyle = subMeta.tail ? '#38bdf8' : '#f4dca6';
         ctx.beginPath();
-        ctx.moveTo(-5, headY - 7); ctx.lineTo(-15, headY - 22); ctx.lineTo(-1, headY - 9); ctx.closePath();
-        ctx.moveTo(5, headY - 7);  ctx.lineTo(15, headY - 22);  ctx.lineTo(1, headY - 9);  ctx.closePath();
+        ctx.moveTo(-5, headY - 7); ctx.lineTo(-15, headY - 24); ctx.lineTo(-1, headY - 9); ctx.closePath();
+        ctx.moveTo(5, headY - 7);  ctx.lineTo(15, headY - 24);  ctx.lineTo(1, headY - 9);  ctx.closePath();
         ctx.fill(); ctx.stroke();
       } else {
-        ctx.fillStyle = p.hairColor || '#e5dccb';
+        ctx.fillStyle = subMeta.flamberge ? '#dc2626' : (p.hairColor || '#eab308');
         ctx.beginPath();
         ctx.moveTo(-11, headY - 3);
         ctx.lineTo(-7, headY - 15);
@@ -2234,27 +2431,142 @@
         ctx.fill(); ctx.stroke();
       }
 
+      // Glowing Eyes
       ctx.fillStyle = '#ff3838';
       ctx.fillRect(2, headY - 2, 2.5, 2.5);
       ctx.fillRect(6.5, headY - 2, 2.5, 2.5);
 
+      // Left-Hand Cobold King Blazing Sun-Eye Shield!
+      if (subMeta.sunShield) {
+        ctx.save();
+        ctx.translate(-9, -17);
+        ctx.fillStyle = '#facc15';
+        ctx.strokeStyle = '#040306';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 9, 13, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        // Crimson Eye in Center of Sun Shield
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath(); ctx.arc(0, 0, 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      // Sorceress Levitating Orb / Witch Flame
+      if (subMeta.orb || subMeta.witchFlame) {
+        ctx.fillStyle = subMeta.orb ? '#38bdf8' : '#c084fc';
+        ctx.beginPath();
+        ctx.arc(-14, -36 + Math.sin(timeSec * 6) * 4, 6, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+      }
+
+      // Right-Hand Weapon (Flamberge, Highlander Bow, or Scimitar/Katana)
       const swingRot = p.swingTimer > 0 ? Math.sin(p.swingTimer * 0.35) * 1.45 : (isMoving ? Math.sin(timeSec * 11) * 0.18 : 0);
       ctx.save();
       ctx.translate(10, -20);
       ctx.rotate(swingRot);
 
-      ctx.fillStyle = '#c89d54';
-      ctx.fillRect(-5, -3, 10, 3);
-      ctx.fillStyle = '#cbd5e1';
-      ctx.strokeStyle = '#040306';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(-3, -3); ctx.lineTo(-2, -38); ctx.lineTo(2, -42); ctx.lineTo(3, -3);
-      ctx.closePath();
-      ctx.fill(); ctx.stroke();
+      if (subMeta.bow) {
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, -10, 16, -Math.PI * 0.45, Math.PI * 0.45);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#c89d54';
+        ctx.fillRect(-5, -3, 10, 3);
+        ctx.fillStyle = subMeta.flamberge ? '#fb923c' : '#e2e8f0';
+        ctx.strokeStyle = '#040306';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-3, -3);
+        ctx.lineTo(-4, -40);
+        ctx.lineTo(2, -45);
+        ctx.lineTo(4, -3);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+      }
 
       ctx.restore();
       ctx.restore();
+      ctx.restore();
+    }
+
+    // Draw Card-Art Authentic Enemies in the 4 Outer Rooms
+    function drawCardArtHostile(ctx, en, timeSec, isTargeted) {
+      ctx.save();
+      ctx.translate(en.x, en.y);
+
+      if (isTargeted) {
+        ctx.strokeStyle = '#ff2a38';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 6, en.radius + 10, (en.radius + 10) * 0.45, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.68)';
+      ctx.beginPath(); ctx.ellipse(0, 6, en.radius, en.radius * 0.45, 0, 0, Math.PI * 2); ctx.fill();
+
+      const bob = Math.sin(timeSec * 6 + en.x) * 2.5;
+      ctx.translate(0, bob);
+      ctx.strokeStyle = '#040306';
+      ctx.lineWidth = 2.2;
+
+      if (en.kind === 'greater_demon') {
+        // Indigo Winged Gargoyle Demon (Card 4)
+        ctx.fillStyle = '#1e3a5f';
+        ctx.beginPath();
+        ctx.moveTo(0, -22); ctx.lineTo(-32, -44); ctx.lineTo(-22, -10);
+        ctx.moveTo(0, -22); ctx.lineTo(32, -44);  ctx.lineTo(22, -10);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#28517a';
+        ctx.beginPath(); ctx.roundRect(-14, -34, 28, 30, 5); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(-6, -34); ctx.lineTo(-14, -50); ctx.lineTo(-2, -36);
+        ctx.moveTo(6, -34);  ctx.lineTo(14, -50);  ctx.lineTo(2, -36);
+        ctx.fill(); ctx.stroke();
+      } else if (en.kind === 'fire_giant') {
+        // Flame-Haired Giant with Flamberge (Card 5)
+        ctx.fillStyle = '#b45309';
+        ctx.beginPath(); ctx.roundRect(-15, -36, 30, 32, 4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath(); ctx.arc(0, -42, 12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        // Wavy Flamberge
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath(); ctx.moveTo(14, -18); ctx.lineTo(28, -52); ctx.lineTo(20, -14); ctx.fill(); ctx.stroke();
+      } else if (en.kind === 'undead_warrior') {
+        // Skeletal Knight with Blue Cloak & Shield (Card 10)
+        ctx.fillStyle = '#2563eb';
+        ctx.beginPath(); ctx.moveTo(-12, -30); ctx.lineTo(12, -30); ctx.lineTo(16, 2); ctx.lineTo(-16, 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#e5e5e5';
+        ctx.beginPath(); ctx.roundRect(-9, -28, 18, 24, 2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, -35, 8.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#b45309';
+        ctx.beginPath(); ctx.ellipse(-12, -16, 7, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      } else {
+        // Cobold King / Highlander / Sorceress
+        ctx.fillStyle = en.color;
+        ctx.beginPath(); ctx.roundRect(-12, -28, 24, 26, 4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath(); ctx.arc(0, -35, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        if (en.kind === 'cobold_king') {
+          ctx.fillStyle = '#facc15';
+          ctx.beginPath(); ctx.ellipse(-12, -15, 8, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        }
+      }
+
+      const hpRatio = Math.max(0, en.hp / en.maxHp);
+      ctx.fillStyle = '#040306';
+      ctx.fillRect(-18, -en.radius - 28, 36, 6);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(-17, -en.radius - 27, 34 * hpRatio, 4);
+
+      ctx.font = '700 10px Cinzel, serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#fca5a5';
+      ctx.fillText(en.name, 0, -en.radius - 32);
       ctx.restore();
     }
 
@@ -2266,11 +2578,11 @@
     function updatePreview(now) {
       if (document.getElementById('char-modal').style.display !== 'none') {
         prevCtx.clearRect(0, 0, prevCanvas.width, prevCanvas.height);
-        prevCtx.fillStyle = '#140f17';
+        prevCtx.fillStyle = '#141824';
         prevCtx.strokeStyle = '#040306';
         prevCtx.lineWidth = 2.5;
         prevCtx.beginPath();
-        prevCtx.ellipse(120, 168, 54, 15, 0, 0, Math.PI * 2);
+        prevCtx.ellipse(120, 174, 54, 15, 0, 0, Math.PI * 2);
         prevCtx.fill(); prevCtx.stroke();
 
         if (previewSwing > 0) previewSwing--;
@@ -2284,12 +2596,12 @@
           isMoving: false,
           swingTimer: previewSwing
         };
-        drawOVACharacter(prevCtx, dummy, 120, 160, now * 0.001, 1.55, false);
+        drawOVACharacter(prevCtx, dummy, 120, 166, now * 0.001, 1.55, false);
       }
     }
 
     // =========================================================================
-    // 17. CHAT, HUD BUTTONS & AWAKEN HANDLER
+    // 14. CHAT, HUD BUTTONS & AWAKEN HANDLER
     // =========================================================================
     function sendChat() {
       const input = document.getElementById('chat-input');
@@ -2380,7 +2692,7 @@
     }
 
     // =========================================================================
-    // 18. MAIN 60 FPS GAME LOOP & SOULS-GOTHIC RENDERER
+    // 15. MAIN 60 FPS GAME LOOP & OVA DUNGEON MASONRY RENDERER
     // =========================================================================
     let lastTime = performance.now();
     let netTickTimer = 0;
@@ -2390,6 +2702,7 @@
       lastTime = now;
 
       updatePreview(now);
+      updateGatesAutoProximity();
 
       let moveX = 0, moveY = 0;
       if (keys['w'] || keys['arrowup']) moveY -= 1;
@@ -2425,7 +2738,6 @@
         localPlayer.isMoving = false;
       }
 
-      // Check Current Zone & Safezone Firepit Status
       const activeZone = isPointInWalkableDungeon(localPlayer.x, localPlayer.y);
       const inSafezone = isInsideFirepitSafezone(localPlayer.x, localPlayer.y);
       document.getElementById('shard-status').textContent = activeZone ? activeZone.name : 'Tartaria Labyrinth';
@@ -2443,7 +2755,6 @@
       }
       updateVitalsUI();
 
-      // Update Hostile AI (Blocked from entering the Central Firepit Safezone)
       enemies.forEach(en => {
         const distToPlayer = Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y);
         if (distToPlayer < 420 && distToPlayer > 32 && !inSafezone) {
@@ -2496,6 +2807,15 @@
         sp.life--;
         if (sp.life <= 0) bloodSparks.splice(i, 1);
       }
+      for (let i = flyingHeads.length - 1; i >= 0; i--) {
+        const fh = flyingHeads[i];
+        fh.x += fh.vx * dt;
+        fh.y += fh.vy * dt;
+        fh.vy += 420 * dt; // Gravity arc
+        fh.rot += fh.vRot * dt;
+        fh.life--;
+        if (fh.life <= 0) flyingHeads.splice(i, 1);
+      }
       for (let i = combatTexts.length - 1; i >= 0; i--) {
         const ct = combatTexts[i];
         ct.y -= 26 * dt;
@@ -2522,18 +2842,16 @@
       ctx.save();
       ctx.translate(-camX, -camY);
 
-      // Abyssal Void Background
       ctx.fillStyle = '#040307';
       ctx.fillRect(camX, camY, screenW, screenH);
 
-      // 1. Draw Walkable Dungeon Rooms, Connecting Hallways & Cobblestone Grids
+      // 1. Draw Walkable Dungeon Rooms with 1991 OVA Weathered Blue-Grey Stone Masonry
       WALKABLE_ZONES.forEach(z => {
         ctx.fillStyle = z.floor;
         ctx.fillRect(z.x, z.y, z.w, z.h);
 
-        // Gothic Stone Slab Grid Lines
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.05)';
+        ctx.lineWidth = 1.5;
         const step = 80;
         for (let gx = z.x; gx <= z.x + z.w; gx += step) {
           ctx.beginPath(); ctx.moveTo(gx, z.y); ctx.lineTo(gx, z.y + z.h); ctx.stroke();
@@ -2542,36 +2860,88 @@
           ctx.beginPath(); ctx.moveTo(z.x, gy); ctx.lineTo(z.x + z.w, gy); ctx.stroke();
         }
 
-        // Heavy Inked Outer Stone Walls
-        ctx.strokeStyle = z.safe ? '#6b532e' : '#4a1c24';
+        ctx.strokeStyle = z.safe ? '#64748b' : '#5c1d24';
         ctx.lineWidth = 6;
         ctx.strokeRect(z.x, z.y, z.w, z.h);
 
-        // Room Title Engraving on Stone Floor
         ctx.font = '900 13px Cinzel, serif';
         ctx.textAlign = 'center';
-        ctx.fillStyle = z.safe ? 'rgba(212, 175, 55, 0.45)' : 'rgba(217, 38, 38, 0.42)';
+        ctx.fillStyle = z.safe ? 'rgba(212, 175, 55, 0.5)' : 'rgba(239, 68, 68, 0.45)';
         ctx.fillText(z.name.toUpperCase(), z.x + z.w / 2, z.y + 28);
       });
 
-      // 2. Draw Stone Doorways Connecting Rooms & Hallways
-      DOORWAYS.forEach(d => {
+      // 2. Draw OVA Screenshot 1 Tavern Table & Tankards in NW Sanctum (1880, 1885)
+      ctx.save();
+      ctx.translate(1880, 1890);
+      ctx.fillStyle = '#452715';
+      ctx.strokeStyle = '#040306';
+      ctx.lineWidth = 2.5;
+      ctx.fillRect(-45, -18, 90, 36);
+      ctx.strokeRect(-45, -18, 90, 36);
+      // Wooden Mug Tankards with Foam
+      ctx.fillStyle = '#a16207';
+      ctx.fillRect(-20, -10, 9, 12);
+      ctx.fillRect(12, -6, 9, 12);
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(-20, -12, 9, 4);
+      ctx.fillRect(12, -8, 9, 4);
+      ctx.restore();
+
+      // 3. Draw Interactive Iron Portcullis Gates (Open = Green Passable Arch, Closed = Iron Bars)
+      GATES.forEach(g => {
         ctx.save();
-        ctx.translate(d.x, d.y);
-        ctx.fillStyle = '#2d2318';
-        ctx.strokeStyle = '#c89d54';
-        ctx.lineWidth = 2;
-        if (d.horiz) {
-          ctx.fillRect(-95, -10, 190, 20);
-          ctx.strokeRect(-95, -10, 190, 20);
+        ctx.translate(g.x, g.y);
+
+        // Stone Arch Pillars on either side
+        ctx.fillStyle = '#334155';
+        ctx.strokeStyle = '#040306';
+        ctx.lineWidth = 3;
+        if (g.horiz) {
+          ctx.fillRect(-125, -18, 26, 36); ctx.strokeRect(-125, -18, 26, 36);
+          ctx.fillRect(99, -18, 26, 36);   ctx.strokeRect(99, -18, 26, 36);
+
+          if (!g.isOpen) {
+            // Closed Iron Portcullis Bars
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+            ctx.fillRect(-98, -10, 196, 20);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 3;
+            for (let bx = -90; bx <= 90; bx += 18) {
+              ctx.beginPath(); ctx.moveTo(bx, -12); ctx.lineTo(bx, 12); ctx.stroke();
+            }
+          } else {
+            // Open Threshold Floor Carpet
+            ctx.strokeStyle = 'rgba(74, 222, 128, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-96, -8, 192, 16);
+          }
         } else {
-          ctx.fillRect(-10, -95, 20, 190);
-          ctx.strokeRect(-10, -95, 20, 190);
+          ctx.fillRect(-18, -125, 36, 26); ctx.strokeRect(-18, -125, 36, 26);
+          ctx.fillRect(-18, 99, 36, 26);   ctx.strokeRect(-18, 99, 36, 26);
+
+          if (!g.isOpen) {
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+            ctx.fillRect(-10, -98, 20, 196);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 3;
+            for (let by = -90; by <= 90; by += 18) {
+              ctx.beginPath(); ctx.moveTo(-12, by); ctx.lineTo(12, by); ctx.stroke();
+            }
+          } else {
+            ctx.strokeStyle = 'rgba(74, 222, 128, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-8, -96, 16, 192);
+          }
         }
+
+        ctx.font = '800 10px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = g.isOpen ? '#4ade80' : '#facc15';
+        ctx.fillText(`${g.label} [${g.isOpen ? 'OPEN' : 'APPROACH / PRESS E'}]`, 0, -24);
         ctx.restore();
       });
 
-      // 3. Draw Central Firepit Safezone Sanctuary Ring & Roaring Bonfire Sword
+      // 4. Draw Central Firepit Safezone Sanctuary
       ctx.save();
       ctx.strokeStyle = 'rgba(74, 222, 128, 0.28)';
       ctx.lineWidth = 3;
@@ -2594,7 +2964,6 @@
       ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, 340 + flicker, 0, Math.PI * 2);
       ctx.fill();
 
-      // Obsidian Firepit Basin
       ctx.fillStyle = '#1f1924';
       ctx.strokeStyle = '#c89d54';
       ctx.lineWidth = 4;
@@ -2602,7 +2971,6 @@
       ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.radius, 0, Math.PI * 2);
       ctx.fill(); ctx.stroke();
 
-      // Animated Flame Tongues + Coiled Souls Sword in the Firepit
       for (let f = 0; f < 7; f++) {
         const ang = (f / 7) * Math.PI * 2 + timeSec * 2;
         const r = 24 + Math.sin(timeSec * 8 + f) * 10;
@@ -2611,7 +2979,6 @@
         ctx.arc(FIREPIT_POS.x + Math.cos(ang) * r * 0.5, FIREPIT_POS.y + Math.sin(ang) * r * 0.5, 14, 0, Math.PI * 2);
         ctx.fill();
       }
-      // Coiled Iron Sword stuck in the embers
       ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 4;
       ctx.beginPath();
@@ -2620,23 +2987,23 @@
       ctx.stroke();
       ctx.restore();
 
-      // 4. Draw Solid Gothic Columns
+      // 5. Draw Solid Gothic Columns
       SOLID_PILLARS.forEach(pil => {
-        ctx.fillStyle = '#231d2b';
+        ctx.fillStyle = '#2c3545';
         ctx.strokeStyle = '#040306';
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.arc(pil.x, pil.y, pil.r, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
 
-        ctx.strokeStyle = '#57442b';
+        ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.arc(pil.x, pil.y, pil.r - 7, 0, Math.PI * 2);
         ctx.stroke();
       });
 
-      // 5. Draw Loot Chests & Full-Loot PvP Corpse Satchels
+      // 6. Draw Loot Chests & Corpse Satchels
       lootChests.forEach(ch => {
         ctx.save();
         ctx.translate(ch.x, ch.y);
@@ -2655,7 +3022,7 @@
         ctx.restore();
       });
 
-      // 6. Draw Tartaria NPC Denizens
+      // 7. Draw Tartaria NPC Denizens
       TARTARIA_NPCS.forEach(npc => {
         ctx.save();
         ctx.translate(npc.x, npc.y);
@@ -2666,7 +3033,7 @@
         ctx.strokeStyle = '#040306';
         ctx.lineWidth = 2.5;
         ctx.beginPath(); ctx.roundRect(-12, -30, 24, 30, 4); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#e5dccb';
+        ctx.fillStyle = npc.isWerdna ? '#eab308' : '#e5dccb';
         ctx.beginPath(); ctx.arc(0, -38, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
         ctx.font = '800 11px Cinzel, serif';
@@ -2679,53 +3046,12 @@
         ctx.restore();
       });
 
-      // 7. Draw Dungeon Hostiles
+      // 8. Draw Card-Art Dungeon Hostiles
       enemies.forEach(en => {
-        ctx.save();
-        ctx.translate(en.x, en.y);
-        if (en.id === localPlayer.targetEntityId) {
-          ctx.strokeStyle = '#ff2a38';
-          ctx.lineWidth = 2.5;
-          ctx.beginPath();
-          ctx.ellipse(0, 6, en.radius + 10, (en.radius + 10) * 0.45, 0, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-        ctx.fillStyle = 'rgba(0,0,0,0.65)';
-        ctx.beginPath(); ctx.ellipse(0, 6, en.radius, en.radius * 0.45, 0, 0, Math.PI * 2); ctx.fill();
-
-        const bob = Math.sin(timeSec * 6 + en.x) * 2.5;
-        ctx.translate(0, bob);
-        ctx.strokeStyle = '#040306';
-        ctx.lineWidth = 2.2;
-
-        if (en.kind === 'bunny') {
-          ctx.fillStyle = '#f8fafc';
-          ctx.beginPath(); ctx.ellipse(0, -8, 12, 10, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-          ctx.beginPath();
-          ctx.ellipse(-4, -22, 3, 9, -0.2, 0, Math.PI * 2);
-          ctx.ellipse(4, -22, 3, 9, 0.2, 0, Math.PI * 2);
-          ctx.fill(); ctx.stroke();
-        } else {
-          ctx.fillStyle = en.color;
-          ctx.beginPath(); ctx.roundRect(-12, -28, 24, 26, 4); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = '#fde68a';
-          ctx.beginPath(); ctx.arc(0, -35, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        }
-
-        const hpRatio = Math.max(0, en.hp / en.maxHp);
-        ctx.fillStyle = '#040306';
-        ctx.fillRect(-18, -en.radius - 26, 36, 6);
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(-17, -en.radius - 25, 34 * hpRatio, 4);
-
-        ctx.font = '700 10px Cinzel, serif';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#fca5a5';
-        ctx.fillText(en.name, 0, -en.radius - 30);
-        ctx.restore();
+        drawCardArtHostile(ctx, en, timeSec, en.id === localPlayer.targetEntityId);
       });
 
-      // 8. Draw Multi-Ring Spell Vortexes & Runes
+      // 9. Draw Spell Vortexes
       spellVortexes.forEach(vx => {
         ctx.save();
         ctx.translate(vx.x, vx.y);
@@ -2740,7 +3066,6 @@
         ctx.arc(0, 0, curR, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Inner Rotating Octagram Sigil
         ctx.rotate(timeSec * 4);
         ctx.strokeRect(-curR * 0.55, -curR * 0.55, curR * 1.1, curR * 1.1);
         ctx.rotate(Math.PI / 4);
@@ -2748,7 +3073,7 @@
         ctx.restore();
       });
 
-      // 9. Draw Players (Depth-Sorted)
+      // 10. Draw Players
       const allPlayers = [localPlayer, ...Array.from(remotePlayers.values())];
       allPlayers.sort((a, b) => a.y - b.y);
       allPlayers.forEach(p => {
@@ -2756,7 +3081,23 @@
         drawPlayerTag(ctx, p);
       });
 
-      // 10. Draw Slash Arcs, Blood Sparks & Floating Combat Text
+      // 11. Draw OVA Screenshot 2 Decapitated Flying Skulls & Green Ectoplasm!
+      flyingHeads.forEach(fh => {
+        ctx.save();
+        ctx.translate(fh.x, fh.y);
+        ctx.rotate(fh.rot);
+        ctx.fillStyle = '#a16207';
+        ctx.strokeStyle = '#040306';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        // Wide OVA White Eyes & Grinning Teeth
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(-6, -4, 4, 4);
+        ctx.fillRect(2, -4, 4, 4);
+        ctx.fillRect(-6, 3, 12, 4);
+        ctx.restore();
+      });
+
       slashArcs.forEach(arc => {
         ctx.save();
         const alpha = arc.life / arc.maxLife;
@@ -2770,7 +3111,7 @@
 
       bloodSparks.forEach(sp => {
         ctx.fillStyle = sp.color;
-        ctx.fillRect(sp.x, sp.y, 3.5, 3.5);
+        ctx.fillRect(sp.x, sp.y, 4, 4);
       });
 
       combatTexts.forEach(ct => {
