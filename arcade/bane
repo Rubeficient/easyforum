@@ -16,804 +16,274 @@
       --wiz-red: #dc2626;
       --ova-ectoplasm: #84cc16;
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: var(--ink-black);
-      font-family: 'Crimson Pro', 'Georgia', serif;
-      color: #e6dcc8;
-    }
-    canvas#gameCanvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      background: var(--tartaria-bg);
-      cursor: crosshair;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background-color: var(--ink-black); font-family: 'Crimson Pro', Georgia, serif; color: #e6dcc8; }
+    canvas#gameCanvas { display: block; width: 100vw; height: 100vh; background: var(--tartaria-bg); cursor: crosshair; }
 
     #crt-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 90;
-      background:
-        linear-gradient(rgba(14, 12, 18, 0) 50%, rgba(0, 0, 0, 0.26) 50%),
-        radial-gradient(circle at center, transparent 58%, rgba(2, 1, 5, 0.82) 100%);
+      position: fixed; inset: 0; pointer-events: none; z-index: 90;
+      background: linear-gradient(rgba(14,12,18,0) 50%, rgba(0,0,0,0.25) 50%), radial-gradient(circle at center, transparent 58%, rgba(2,1,5,0.82) 100%);
       background-size: 100% 3px, 100% 100%;
     }
-
     .tartaria-window {
-      background: linear-gradient(180deg, rgba(18, 16, 26, 0.93) 0%, rgba(7, 6, 12, 0.97) 100%);
-      border: 1.5px solid var(--tartaria-gold);
-      outline: 2px solid #000;
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.85),
-        inset 0 0 0 1px rgba(255, 230, 160, 0.12),
-        inset 0 0 22px rgba(0, 0, 0, 0.9);
+      background: linear-gradient(180deg, rgba(18,16,26,0.93) 0%, rgba(7,6,12,0.97) 100%);
+      border: 1.5px solid var(--tartaria-gold); outline: 2px solid #000;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,230,160,0.12), inset 0 0 22px rgba(0,0,0,0.9);
       border-radius: 3px;
     }
 
     /* Character Creation Modal */
     #char-modal {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 25%, rgba(45, 22, 32, 0.96) 0%, rgba(4, 3, 7, 0.99) 85%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 12px;
-      overflow-y: auto;
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 25%, rgba(45,22,32,0.96) 0%, rgba(4,3,7,0.99) 85%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100; padding: 12px; overflow-y: auto;
     }
-    .char-card {
-      width: 100%;
-      max-width: 900px;
-      padding: 18px 22px;
-      display: grid;
-      grid-template-columns: 1.28fr 0.72fr;
-      gap: 16px;
-    }
-    @media (max-width: 740px) {
-      .char-card { grid-template-columns: 1fr; }
-    }
-    .title-banner {
-      grid-column: 1 / -1;
-      text-align: center;
-      border-bottom: 2px solid #3a2818;
-      padding-bottom: 10px;
-    }
-    .wiz-logo-wrap {
-      position: relative;
-      display: inline-block;
-      padding: 0 46px;
-    }
+    .char-card { width: 100%; max-width: 900px; padding: 18px 22px; display: grid; grid-template-columns: 1.28fr 0.72fr; gap: 16px; }
+    @media (max-width: 740px) { .char-card { grid-template-columns: 1fr; } }
+    .title-banner { grid-column: 1 / -1; text-align: center; border-bottom: 2px solid #3a2818; padding-bottom: 10px; }
+    .wiz-logo-wrap { position: relative; display: inline-block; padding: 0 46px; }
     .wiz-logo-sword {
-      position: absolute;
-      top: 52%;
-      left: 0;
-      right: 0;
-      height: 4px;
+      position: absolute; top: 52%; left: 0; right: 0; height: 4px;
       background: linear-gradient(90deg, #ef4444 0%, #dc2626 85%, #facc15 100%);
-      box-shadow: 0 2px 0 #000;
-      z-index: 1;
+      box-shadow: 0 2px 0 #000; z-index: 1;
     }
-    .wiz-logo-sword::after {
-      content: '';
-      position: absolute;
-      right: 12px;
-      top: -9px;
-      width: 4px;
-      height: 22px;
-      background: #ef4444;
-      box-shadow: 1px 1px 0 #000;
-    }
+    .wiz-logo-sword::after { content: ''; position: absolute; right: 12px; top: -9px; width: 4px; height: 22px; background: #ef4444; box-shadow: 1px 1px 0 #000; }
     .title-banner h1 {
-      position: relative;
-      z-index: 2;
-      font-family: 'Cinzel', serif;
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: 7px;
-      text-transform: uppercase;
-      color: #ef4444;
-      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 18px rgba(220, 38, 38, 0.75);
+      position: relative; z-index: 2; font-family: 'Cinzel', serif; font-size: 32px; font-weight: 900;
+      letter-spacing: 7px; text-transform: uppercase; color: #ef4444;
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 18px rgba(220,38,38,0.75);
     }
-    .title-banner h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--tartaria-gold-bright);
-      margin-top: 4px;
-    }
+    .title-banner h2 { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--tartaria-gold-bright); margin-top: 4px; }
     .save-banner {
-      grid-column: 1 / -1;
-      background: rgba(20, 45, 25, 0.7);
-      border: 1px solid #4ade80;
-      color: #bbf7d0;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-family: 'Cinzel', serif;
-      display: none;
-      justify-content: space-between;
-      align-items: center;
+      grid-column: 1 / -1; background: rgba(20,45,25,0.7); border: 1px solid #4ade80; color: #bbf7d0;
+      padding: 6px 12px; font-size: 12px; font-family: 'Cinzel', serif; display: none; justify-content: space-between; align-items: center;
     }
-
     .form-col { display: flex; flex-direction: column; gap: 9px; }
     .preview-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      background: #07080d;
-      border: 2px solid #3a2818;
-      box-shadow: inset 0 0 28px rgba(0,0,0,0.95);
-      padding: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      background: #07080d; border: 2px solid #3a2818; box-shadow: inset 0 0 28px rgba(0,0,0,0.95); padding: 10px;
     }
-    #previewCanvas {
-      width: 240px;
-      height: 215px;
-      background: radial-gradient(circle at 50% 65%, #232a3b 0%, #050508 78%);
-      border: 1px solid #2d2016;
-    }
-    .lore-box {
-      font-size: 12px;
-      line-height: 1.35;
-      color: #d8c8b4;
-      font-style: italic;
-      text-align: center;
-      padding: 6px 8px;
-      background: rgba(12, 10, 16, 0.92);
-      border-left: 3px solid var(--tartaria-gold);
-      width: 100%;
-    }
+    #previewCanvas { width: 240px; height: 215px; background: radial-gradient(circle at 50% 65%, #232a3b 0%, #050508 78%); border: 1px solid #2d2016; }
+    .lore-box { font-size: 12px; line-height: 1.35; color: #d8c8b4; font-style: italic; text-align: center; padding: 6px 8px; background: rgba(12,10,16,0.92); border-left: 3px solid var(--tartaria-gold); width: 100%; }
     .form-group { display: flex; flex-direction: column; gap: 3px; }
-    label {
-      font-family: 'Cinzel', serif;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--tartaria-gold);
-      letter-spacing: 1px;
-    }
-    input[type="text"], select {
-      background: #050408;
-      border: 1.5px solid #4a3520;
-      color: #f3ebd6;
-      padding: 6px 10px;
-      border-radius: 2px;
-      font-family: 'Crimson Pro', serif;
-      font-size: 14px;
-      font-weight: 600;
-      outline: none;
-    }
+    label { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--tartaria-gold); letter-spacing: 1px; }
+    input[type="text"], select { background: #050408; border: 1.5px solid #4a3520; color: #f3ebd6; padding: 6px 10px; border-radius: 2px; font-family: 'Crimson Pro', serif; font-size: 14px; font-weight: 600; outline: none; }
     input[type="text"]:focus, select:focus { border-color: var(--tartaria-gold-bright); }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .name-row { display: flex; gap: 6px; }
     .name-row input { flex: 1; }
     .swatch-row { display: flex; gap: 6px; margin-top: 2px; }
-    .swatch {
-      width: 22px;
-      height: 22px;
-      border: 2px solid #000;
-      outline: 1px solid #574129;
-      cursor: pointer;
-    }
-    .swatch.active {
-      transform: scale(1.18);
-      outline: 2px solid var(--tartaria-gold-bright);
-    }
-
+    .swatch { width: 22px; height: 22px; border: 2px solid #000; outline: 1px solid #574129; cursor: pointer; }
+    .swatch.active { transform: scale(1.18); outline: 2px solid var(--tartaria-gold-bright); }
     .btn-spawn {
-      grid-column: 1 / -1;
-      background: linear-gradient(180deg, #991b1b 0%, #450a0a 100%);
-      border: 2px solid var(--tartaria-gold-bright);
-      outline: 2px solid #000;
-      color: #fff4db;
-      padding: 11px;
-      font-family: 'Cinzel', serif;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      text-shadow: 2px 2px 0 #000;
-      box-shadow: 3px 3px 0 #000;
+      grid-column: 1 / -1; background: linear-gradient(180deg, #991b1b 0%, #450a0a 100%);
+      border: 2px solid var(--tartaria-gold-bright); outline: 2px solid #000; color: #fff4db; padding: 11px;
+      font-family: 'Cinzel', serif; font-size: 14px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; text-shadow: 2px 2px 0 #000; box-shadow: 3px 3px 0 #000;
     }
     .btn-spawn:hover { filter: brightness(1.15); }
 
     /* =========================================================================
-       HUD ARCHITECTURE:
-       - TOP-LEFT: Player Profile + Party Mates Roster
-       - TOP-RIGHT: Cartography Auto-Map
-       - RIGHT-SIDE: 3-Weapon Stance Switcher (Prime 1, Side 2, Backup 3) + Loot Popup
-       - BOTTOM-CENTER: 1-9 Specials Grimoire Bar
+       HUD LAYOUT:
+       - Top-Left: Player Profile + Party Mates Portraits
+       - Right-Side: Auto-Map + 3-Weapon Rack (Prime 1, Side 2, Backup 3) & Stance
+       - Bottom-Center: 1-9 Specials Bar
        ========================================================================= */
-    #hud {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      display: none;
-      z-index: 50;
-    }
+    #hud { position: fixed; inset: 0; pointer-events: none; display: none; z-index: 50; }
     .interactive { pointer-events: auto; }
 
-    /* Top Ribbon */
     .top-ribbon {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 36px;
-      background: linear-gradient(180deg, rgba(12, 10, 18, 0.96) 0%, rgba(6, 5, 10, 0.92) 100%);
-      border-bottom: 1.5px solid var(--tartaria-gold);
-      box-shadow: 0 3px 12px rgba(0,0,0,0.85);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 12px;
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      z-index: 60;
+      position: absolute; top: 0; left: 0; right: 0; height: 34px;
+      background: linear-gradient(180deg, rgba(12,10,18,0.96) 0%, rgba(6,5,10,0.92) 100%);
+      border-bottom: 1.5px solid var(--tartaria-gold); box-shadow: 0 3px 12px rgba(0,0,0,0.85);
+      display: flex; justify-content: space-between; align-items: center; padding: 0 12px;
+      font-family: 'Cinzel', serif; font-size: 10.5px; z-index: 60;
     }
-    .ribbon-left, .ribbon-right {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
+    .ribbon-left, .ribbon-right { display: flex; align-items: center; gap: 6px; }
     .action-btn {
-      background: linear-gradient(180deg, #241b29 0%, #120d16 100%);
-      border: 1px solid var(--tartaria-gold);
-      color: var(--tartaria-gold-bright);
-      padding: 3px 8px;
-      font-family: 'Cinzel', serif;
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.7px;
-      cursor: pointer;
-      text-transform: uppercase;
-      border-radius: 2px;
-      transition: background 0.12s, transform 0.08s;
+      background: linear-gradient(180deg, #241b29 0%, #120d16 100%); border: 1px solid var(--tartaria-gold);
+      color: var(--tartaria-gold-bright); padding: 3px 8px; font-family: 'Cinzel', serif; font-size: 9px;
+      font-weight: 700; letter-spacing: 0.7px; cursor: pointer; text-transform: uppercase; border-radius: 2px;
     }
     .action-btn:hover { background: #382833; border-color: #fff; }
-    .action-btn:active { transform: scale(0.95); }
 
-    /* TOP-LEFT DOCK: Player Profile + Party Mates */
-    #top-left-dock {
-      position: absolute;
-      top: 44px;
-      left: 10px;
-      width: 256px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    /* TOP-LEFT DOCK: Player Profile + Party Mates Portraits */
+    #top-left-party-dock {
+      position: absolute; top: 40px; left: 10px; width: 252px;
+      display: flex; flex-direction: column; gap: 6px;
     }
-    .vitals-box {
-      padding: 9px 12px;
-      font-size: 10.5px;
-      backdrop-filter: blur(4px);
+    .profile-card { padding: 8px 10px; font-size: 10px; backdrop-filter: blur(4px); }
+    .profile-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .portrait-badge {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: radial-gradient(circle at 50% 40%, #4c1d24 0%, #09070d 100%);
+      border: 2px solid var(--tartaria-gold-bright); display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif; font-weight: 900; font-size: 15px; color: #fde047; flex-shrink: 0;
     }
     .bar-row { margin-top: 3px; }
-    .bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 9px;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .bar-container {
-      width: 100%;
-      height: 7px;
-      background: #050408;
-      border: 1px solid #3d2d1f;
-      margin-top: 1px;
-      overflow: hidden;
-      border-radius: 1px;
-    }
-    .bar-fill {
-      height: 100%;
-      width: 100%;
-      transition: width 0.12s linear;
-    }
+    .bar-label { display: flex; justify-content: space-between; font-size: 8.5px; font-family: 'JetBrains Mono', monospace; }
+    .bar-container { width: 100%; height: 6px; background: #050408; border: 1px solid #3d2d1f; margin-top: 1px; overflow: hidden; border-radius: 1px; }
+    .bar-fill { height: 100%; width: 100%; transition: width 0.12s linear; }
     #hp-fill { background: linear-gradient(90deg, #991b1b 0%, #ef4444 100%); }
     #mana-fill { background: linear-gradient(90deg, #1e40af 0%, #38bdf8 100%); }
     #atman-fill { background: linear-gradient(90deg, #b45309 0%, #fbbf24 60%, #fef08a 100%); }
     #xp-fill { background: linear-gradient(90deg, #854d0e 0%, #f4dca6 100%); }
 
-    /* Party Mates Box in Top-Left under Profile */
-    #party-box {
-      padding: 7px 10px;
-      font-size: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    #party-mates-box { padding: 6px 8px; font-size: 9.5px; display: flex; flex-direction: column; gap: 4px; }
     .party-member {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      background: rgba(5, 4, 9, 0.85);
-      border: 1px solid #3a2a18;
-      padding: 4px 6px;
-      border-radius: 2px;
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      background: rgba(5,4,9,0.85); border: 1px solid #3a2a18; padding: 4px 6px; border-radius: 2px;
     }
-    .party-member-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .mate-avatar {
+      width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #38bdf8; background: #111827;
+      display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 800; color: #38bdf8; flex-shrink: 0;
     }
-    .party-mini-hp {
-      width: 100%;
-      height: 4px;
-      background: #09060d;
-      border: 1px solid #2d1f18;
-      overflow: hidden;
-    }
-    .party-mini-hp-fill {
-      height: 100%;
-      background: #22c55e;
-    }
-    .party-warp-btn {
-      background: #1e293b;
-      border: 1px solid #64748b;
-      color: #e2e8f0;
-      font-family: 'Cinzel', serif;
-      font-size: 8.5px;
-      padding: 1px 5px;
-      cursor: pointer;
-    }
+    .party-warp-btn { background: #1e293b; border: 1px solid #64748b; color: #e2e8f0; font-family: 'Cinzel', serif; font-size: 8px; padding: 2px 5px; cursor: pointer; }
     .party-warp-btn:hover { border-color: var(--tartaria-gold-bright); color: var(--tartaria-gold-bright); }
 
-    /* TOP-RIGHT + RIGHT-SIDE DOCK: Auto-Map + 3-Weapon Stance Rack + Loot Inspector */
+    /* RIGHT-SIDE DOCK: Auto-Map + 3-Weapon Rack (Prime 1, Side 2, Backup 3) & Stance */
     #right-dock {
-      position: absolute;
-      top: 44px;
-      right: 10px;
-      width: 218px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
+      position: absolute; top: 40px; right: 10px; width: 214px;
+      display: flex; flex-direction: column; gap: 6px;
     }
-    #minimap-box {
-      padding: 7px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-    }
-    #minimapCanvas {
-      width: 200px;
-      height: 122px;
-      background: #050408;
-      border: 1px solid #4a3520;
-      cursor: pointer;
-    }
+    #minimap-box { padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    #minimapCanvas { width: 196px; height: 112px; background: #050408; border: 1px solid #4a3520; cursor: pointer; }
 
-    /* RIGHT-SIDE WEAPON STANCE RACK (Prime 1, Side 2, Backup 3) */
-    #weapon-stance-dock {
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
+    #weapon-stance-dock { padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+    .stance-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    .stance-btn {
+      background: #0b0912; border: 1px solid #4a3520; color: #a89984; padding: 4px 2px;
+      font-family: 'Cinzel', serif; font-size: 8px; font-weight: 800; text-align: center; cursor: pointer; border-radius: 2px;
+    }
+    .stance-btn.active {
+      background: linear-gradient(180deg, #5c1919 0%, #2a0a0a 100%); border-color: var(--tartaria-gold-bright);
+      color: #fff; box-shadow: 0 0 8px rgba(220,38,38,0.5);
     }
     .weapon-slot-card {
-      background: rgba(6, 5, 11, 0.88);
-      border: 1.5px solid #4a3520;
-      padding: 5px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.12s;
-      position: relative;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(6,5,10,0.9); border: 1.5px solid #42301b; padding: 5px 7px; border-radius: 3px; cursor: pointer;
     }
-    .weapon-slot-card:hover {
-      border-color: #d4af37;
-    }
+    .weapon-slot-card:hover { border-color: #cbd5e1; }
     .weapon-slot-card.active {
-      background: linear-gradient(90deg, rgba(124, 15, 15, 0.55) 0%, rgba(28, 22, 36, 0.92) 100%);
-      border-color: var(--tartaria-gold-bright);
-      box-shadow: 0 0 12px rgba(248, 226, 168, 0.3), inset 0 0 8px rgba(251, 191, 36, 0.2);
+      background: linear-gradient(90deg, rgba(95,52,18,0.72) 0%, rgba(16,12,22,0.95) 100%);
+      border-color: var(--tartaria-gold-bright); box-shadow: 0 0 12px rgba(248,226,168,0.3);
     }
-    .weapon-slot-card .w-key {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      font-weight: 800;
-      color: #000;
-      background: var(--tartaria-gold);
-      padding: 1px 4px;
-      border-radius: 2px;
-      margin-right: 5px;
-    }
-    .weapon-slot-card .w-title {
-      font-family: 'Cinzel', serif;
-      font-size: 10.5px;
-      font-weight: 800;
-      color: #f8e2a8;
-    }
-    .weapon-slot-card .w-sub {
-      font-size: 9.5px;
-      color: #cbd5e1;
-      display: block;
-    }
-    .dmg-badge {
-      font-family: 'Cinzel', serif;
-      font-size: 8.5px;
-      font-weight: 900;
-      padding: 2px 5px;
-      border-radius: 2px;
-      border: 1px solid #000;
-      text-transform: uppercase;
-    }
-    .dmg-SLASH { background: #991b1b; color: #fecaca; border-color: #f87171; }
-    .dmg-BLUNT { background: #854d0e; color: #fef08a; border-color: #facc15; }
-    .dmg-PIERCE { background: #166534; color: #bbf7d0; border-color: #4ade80; }
-    .dmg-ARCANE { background: #581c87; color: #e9d5ff; border-color: #c084fc; }
-
-    /* Interactive Nearby Loot Popup on Right Side */
-    #loot-inspector {
-      padding: 8px 10px;
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      border-color: #facc15;
-      box-shadow: 0 0 18px rgba(250, 204, 21, 0.35);
-    }
-    .loot-item-row {
-      background: rgba(5, 4, 9, 0.9);
-      border: 1px solid #4a3520;
-      padding: 4px 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 10px;
-      cursor: pointer;
-    }
-    .loot-item-row:hover { border-color: #fef08a; }
+    .wpn-key-badge { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; font-weight: 800; color: #000; background: var(--tartaria-gold); padding: 1px 4px; border-radius: 2px; margin-right: 5px; }
+    .wpn-dmg-tag { font-family: 'Cinzel', serif; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 2px; border: 1px solid #000; }
+    .tag-slash  { background: #7f1d1d; color: #fca5a5; }
+    .tag-blunt  { background: #78350f; color: #fde047; }
+    .tag-pierce { background: #1e3a8a; color: #93c5fd; }
 
     /* Top-Center Boss Health Bar */
     #boss-bar-wrap {
-      position: absolute;
-      top: 44px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 440px;
-      max-width: calc(100vw - 520px);
-      padding: 6px 12px;
-      display: none;
-      flex-direction: column;
-      gap: 3px;
-      z-index: 70;
-      pointer-events: none;
+      position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+      width: 420px; max-width: calc(100vw - 500px); padding: 6px 12px;
+      display: none; flex-direction: column; gap: 3px; z-index: 70; pointer-events: none;
     }
-    #boss-bar-title {
-      font-family: 'Cinzel', serif;
-      font-size: 11.5px;
-      font-weight: 900;
-      color: #fca5a5;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-shadow: 2px 2px 0 #000;
-    }
-    .boss-hp-track {
-      width: 100%;
-      height: 11px;
-      background: #090508;
-      border: 1.5px solid #cfa354;
-      overflow: hidden;
-    }
-    #boss-hp-fill {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, #7f1d1d 0%, #ef4444 50%, #f97316 100%);
-      transition: width 0.1s linear;
-    }
+    #boss-bar-title { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 900; color: #fca5a5; letter-spacing: 1.5px; text-align: center; text-shadow: 2px 2px 0 #000; }
+    .boss-hp-track { width: 100%; height: 10px; background: #090508; border: 1.5px solid #cfa354; overflow: hidden; }
+    #boss-hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #7f1d1d 0%, #ef4444 50%, #f97316 100%); transition: width 0.1s linear; }
 
-    /* Bottom-Left Compact Translucent Chat Box */
+    /* Bottom-Left Compact Chat */
     .chat-container {
-      position: absolute;
-      bottom: 74px;
-      left: 10px;
-      width: 300px;
-      max-width: calc(100vw - 24px);
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      opacity: 0.86;
-      transition: opacity 0.2s;
+      position: absolute; bottom: 68px; left: 10px; width: 290px; max-width: calc(100vw - 24px);
+      display: flex; flex-direction: column; gap: 3px; opacity: 0.86; transition: opacity 0.2s;
     }
     .chat-container:hover, .chat-container:focus-within { opacity: 1.0; }
-    .chat-log {
-      height: 82px;
-      padding: 6px 8px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      font-size: 11px;
-      background: rgba(8, 7, 14, 0.78);
-    }
-    .chat-msg {
-      word-break: break-word;
-      line-height: 1.22;
-      text-shadow: 1px 1px 0 #000;
-    }
-    .chat-msg .author {
-      color: var(--tartaria-gold-bright);
-      font-weight: 700;
-      font-family: 'Cinzel', serif;
-      margin-right: 4px;
-    }
+    .chat-log { height: 78px; padding: 5px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; font-size: 11px; background: rgba(8,7,14,0.78); }
+    .chat-msg { word-break: break-word; line-height: 1.22; text-shadow: 1px 1px 0 #000; }
+    .chat-msg .author { color: var(--tartaria-gold-bright); font-weight: 700; font-family: 'Cinzel', serif; margin-right: 4px; }
     .chat-input-row { display: flex; gap: 4px; }
-    .chat-input {
-      flex: 1;
-      background: rgba(5, 4, 8, 0.92);
-      border: 1.5px solid #4a3520;
-      padding: 4px 8px;
-      color: #f3ebd6;
-      font-size: 12px;
-      font-family: 'Crimson Pro', serif;
-      outline: none;
-    }
+    .chat-input { flex: 1; background: rgba(5,4,8,0.92); border: 1.5px solid #4a3520; padding: 4px 8px; color: #f3ebd6; font-size: 11.5px; font-family: 'Crimson Pro', serif; outline: none; }
 
-    /* Bottom-Center Action Dock: Specials 1-9 Only + Atman Orb */
+    /* Bottom-Center 1-9 Specials Dock */
     .bottom-action-dock {
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      background: rgba(8, 7, 13, 0.94);
-      border: 1.5px solid var(--tartaria-gold);
-      box-shadow: 0 4px 18px rgba(0,0,0,0.95);
-      border-radius: 4px;
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 6px; padding: 4px 8px;
+      background: rgba(8,7,13,0.94); border: 1.5px solid var(--tartaria-gold); box-shadow: 0 4px 18px rgba(0,0,0,0.95); border-radius: 4px;
     }
     .special-orb-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
+      width: 46px; height: 46px; border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #f59e0b 0%, #78350f 70%, #1c1917 100%);
-      border: 2px solid var(--tartaria-gold-bright);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
-      font-family: 'Cinzel', serif;
-      font-size: 8px;
-      font-weight: 900;
-      text-shadow: 1px 1px 0 #000;
+      border: 2px solid var(--tartaria-gold-bright); color: #fff; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 12px rgba(251,191,36,0.4);
+      font-family: 'Cinzel', serif; font-size: 7.5px; font-weight: 900; text-shadow: 1px 1px 0 #000;
     }
     .special-orb-btn:hover { filter: brightness(1.2); }
     .hotbar { display: flex; gap: 4px; }
     .hotkey-slot {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(180deg, #1b1724 0%, #09080d 100%);
-      border: 1.5px solid #6b532e;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      border-radius: 2px;
-      overflow: hidden;
+      width: 46px; height: 46px; background: linear-gradient(180deg, #1b1724 0%, #09080d 100%);
+      border: 1.5px solid #6b532e; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; border-radius: 2px; overflow: hidden;
     }
-    .hotkey-slot.locked {
-      opacity: 0.38;
-      border-color: #2e241d;
-      cursor: not-allowed;
-    }
-    .hotkey-slot:not(.locked):hover {
-      border-color: var(--tartaria-gold-bright);
-      box-shadow: inset 0 0 8px rgba(248, 226, 168, 0.25);
-    }
-    .hotkey-num {
-      position: absolute;
-      top: 1px;
-      left: 3px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 8.5px;
-      font-weight: 700;
-      color: var(--tartaria-gold);
-    }
-    .hotkey-mp {
-      position: absolute;
-      top: 1px;
-      right: 3px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 7.5px;
-      color: #38bdf8;
-    }
+    .hotkey-slot.locked { opacity: 0.38; border-color: #2e241d; cursor: not-allowed; }
+    .hotkey-slot:not(.locked):hover { border-color: var(--tartaria-gold-bright); box-shadow: inset 0 0 8px rgba(248,226,168,0.25); }
+    .hotkey-num { position: absolute; top: 1px; left: 3px; font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; color: var(--tartaria-gold); }
+    .hotkey-mp { position: absolute; top: 1px; right: 3px; font-family: 'JetBrains Mono', monospace; font-size: 7px; color: #38bdf8; }
     .hotkey-icon { font-size: 15px; margin-top: 3px; }
-    .hotkey-label {
-      font-family: 'Cinzel', serif;
-      font-size: 6.5px;
-      color: #dfd0ba;
-      text-transform: uppercase;
-      margin-top: 1px;
-      text-align: center;
-      max-width: 44px;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .cd-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 0%;
-      background: rgba(0, 0, 0, 0.72);
-      pointer-events: none;
-    }
+    .hotkey-label { font-family: 'Cinzel', serif; font-size: 6.5px; color: #dfd0ba; text-transform: uppercase; margin-top: 1px; text-align: center; max-width: 42px; overflow: hidden; white-space: nowrap; }
+    .cd-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 0%; background: rgba(0,0,0,0.72); pointer-events: none; }
 
-    /* Modals */
+    /* Interactive Multi-Item Chest Loot & Appraisal Modal */
+    #loot-modal {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 92%; max-width: 500px; background: rgba(12,10,18,0.95); backdrop-filter: blur(8px);
+      border: 2px solid var(--tartaria-gold-bright); outline: 2px solid #000;
+      box-shadow: 0 14px 45px rgba(0,0,0,0.95); padding: 14px 18px;
+      display: none; flex-direction: column; gap: 9px; z-index: 165;
+    }
+    .loot-item-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      background: rgba(5,4,8,0.92); border: 1px solid #4a3520; padding: 7px 10px; border-radius: 2px;
+    }
+    .rarity-common    { color: #e2e8f0; }
+    .rarity-rare      { color: #38bdf8; }
+    .rarity-epic      { color: #facc15; }
+    .rarity-legendary { color: #f87171; text-shadow: 0 0 8px rgba(248,113,113,0.45); }
+
     #werdna-modal {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 92%;
-      max-width: 520px;
-      background: #f5f0e1;
-      color: #111;
-      border: 4px solid #111;
-      outline: 3px solid var(--tartaria-gold);
-      box-shadow: 0 18px 55px rgba(0,0,0,0.95);
-      padding: 18px;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      z-index: 180;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 92%; max-width: 520px; background: #f5f0e1; color: #111; border: 4px solid #111;
+      outline: 3px solid var(--tartaria-gold); box-shadow: 0 18px 55px rgba(0,0,0,0.95);
+      padding: 18px; display: none; flex-direction: column; align-items: center; gap: 10px; z-index: 180;
     }
-    #werdna-modal p {
-      font-family: 'Crimson Pro', Georgia, serif;
-      font-size: 14.5px;
-      font-weight: 700;
-      line-height: 1.35;
-      text-align: justify;
-      color: #1a1615;
-    }
+    #werdna-modal p { font-family: 'Crimson Pro', Georgia, serif; font-size: 14.5px; font-weight: 700; line-height: 1.35; text-align: justify; color: #1a1615; }
 
     #inventory-modal, #grimoire-modal, #ascend-modal {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 92%;
-      max-width: 620px;
-      background: rgba(10, 8, 15, 0.94);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 2px solid var(--tartaria-gold);
-      outline: 2px solid #000;
-      box-shadow: 0 12px 45px rgba(0,0,0,0.95);
-      padding: 16px 20px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 150;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 92%; max-width: 620px; background: rgba(10,8,15,0.94); backdrop-filter: blur(8px);
+      border: 2px solid var(--tartaria-gold); outline: 2px solid #000; box-shadow: 0 12px 45px rgba(0,0,0,0.95);
+      padding: 16px 20px; display: none; flex-direction: column; gap: 11px; z-index: 150;
     }
-    .equip-grid-5 {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-    }
-    @media (max-width: 640px) {
-      .equip-grid-5 { grid-template-columns: repeat(2, 1fr); }
-    }
-    .equip-box {
-      background: rgba(5, 4, 8, 0.85);
-      border: 1px solid #574129;
-      padding: 6px;
-      text-align: center;
-      cursor: pointer;
-    }
+    .equip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .equip-box { background: rgba(5,4,8,0.85); border: 1px solid #574129; padding: 7px; text-align: center; cursor: pointer; }
     .equip-box:hover { border-color: var(--tartaria-gold-bright); }
-    .equip-box small {
-      display: block;
-      font-family: 'Cinzel', serif;
-      font-size: 8px;
-      color: #9c8462;
-      text-transform: uppercase;
-    }
-    .equip-box strong {
-      display: block;
-      font-family: 'Cinzel', serif;
-      font-size: 10.5px;
-      color: var(--tartaria-gold-bright);
-      margin-top: 2px;
-    }
+    .equip-box small { display: block; font-family: 'Cinzel', serif; font-size: 8.5px; color: #9c8462; text-transform: uppercase; }
+    .equip-box strong { display: block; font-family: 'Cinzel', serif; font-size: 11px; color: var(--tartaria-gold-bright); margin-top: 2px; }
     .equip-box span { font-size: 9.5px; color: #4ade80; }
     .bag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .bag-slot {
-      min-height: 64px;
-      background: rgba(5, 4, 8, 0.85);
-      border: 1px solid #3a2a18;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      cursor: pointer;
-    }
+    .bag-slot { min-height: 64px; background: rgba(5,4,8,0.82); border: 1px solid #3a2a18; padding: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
     .bag-slot:hover { border-color: var(--tartaria-gold-bright); }
-    .bag-slot .item-name {
-      font-family: 'Cinzel', serif;
-      font-size: 10px;
-      font-weight: 700;
-    }
-    .bag-slot .item-stat { font-size: 9.5px; color: #cbd5e1; margin-top: 2px; }
+    .bag-slot .item-name { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; }
+    .bag-slot .item-stat { font-size: 9px; color: #a89984; }
 
-    .spell-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      max-height: 260px;
-      overflow-y: auto;
-    }
-    .spell-card {
-      background: #060509;
-      border: 1px solid #4a3520;
-      padding: 8px 10px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .spell-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 260px; overflow-y: auto; }
+    .spell-card { background: #060509; border: 1px solid #4a3520; padding: 8px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .spell-card:hover { border-color: var(--tartaria-gold-bright); }
 
     #souls-banner {
-      position: absolute;
-      top: 22%;
-      left: 0;
-      right: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(10, 4, 6, 0.92) 25%, rgba(10, 4, 6, 0.92) 75%, transparent 100%);
-      border-top: 1px solid rgba(200, 157, 84, 0.45);
-      border-bottom: 1px solid rgba(200, 157, 84, 0.45);
-      padding: 12px 0;
-      text-align: center;
-      font-family: 'Cinzel', serif;
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: 5px;
-      color: #fbbf24;
-      text-shadow: 0 0 18px rgba(251, 191, 36, 0.75), 2px 2px 0 #000;
-      display: none;
-      z-index: 190;
-      pointer-events: none;
+      position: absolute; top: 22%; left: 0; right: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(10,4,6,0.92) 25%, rgba(10,4,6,0.92) 75%, transparent 100%);
+      border-top: 1px solid rgba(200,157,84,0.45); border-bottom: 1px solid rgba(200,157,84,0.45);
+      padding: 12px 0; text-align: center; font-family: 'Cinzel', serif; font-size: 22px; font-weight: 900;
+      letter-spacing: 5px; color: #fbbf24; text-shadow: 0 0 18px rgba(251,191,36,0.75), 2px 2px 0 #000;
+      display: none; z-index: 190; pointer-events: none;
     }
     #toast {
-      position: absolute;
-      top: 84px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 5px 16px;
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--tartaria-gold-bright);
-      letter-spacing: 1.2px;
-      display: none;
-      z-index: 200;
-      text-shadow: 1px 1px 0 #000;
+      position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+      padding: 5px 16px; font-family: 'Cinzel', serif; font-size: 11px; font-weight: 800;
+      color: var(--tartaria-gold-bright); letter-spacing: 1.2px; display: none; z-index: 200; text-shadow: 1px 1px 0 #000;
     }
   </style>
 </head>
@@ -825,9 +295,7 @@
   <!-- Top-Center Boss Health Bar -->
   <div id="boss-bar-wrap" class="tartaria-window">
     <div id="boss-bar-title">☠️ PETRIFIED STATUE OF FATHER ABESHU</div>
-    <div class="boss-hp-track">
-      <div id="boss-hp-fill"></div>
-    </div>
+    <div class="boss-hp-track"><div id="boss-hp-fill"></div></div>
   </div>
 
   <!-- Werdna 1981 Manual Art Portrait Modal -->
@@ -835,6 +303,20 @@
     <p>"Come, enter the World of Wizardry if you dare. I am sure I know you. You lead a small band of foolhardy adventurers that dares challenge me. Ha! My dark legions laugh at your exploits in my domain. But wait. You have yet to meet me and face the ultimate terrors of my wicked magic. You can still run away, fools! Ha, ha, ha!"</p>
     <canvas id="werdnaCanvas" width="260" height="230" style="border:2px solid #111; background:#f5f0e1;"></canvas>
     <button class="action-btn" onclick="document.getElementById('werdna-modal').style.display='none'" style="background:#7c0a0a; color:#fff; padding:6px 18px;">Defy Werdna [Close]</button>
+  </div>
+
+  <!-- Interactive Multi-Item Chest Loot & Wizardry Appraisal Modal -->
+  <div id="loot-modal" class="interactive">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3520; padding-bottom:6px;">
+      <span id="loot-modal-title" style="font-family:'Cinzel',serif; font-size:14px; font-weight:900; color:var(--tartaria-gold-bright);">🎁 RELIQUARY COFFER</span>
+      <span id="loot-modal-bonus" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#facc15;">+65g • +12 Atman</span>
+    </div>
+    <div style="font-size:11px; color:#b8a68e;">Appraise mystery `?` relics or equip weapons directly to Prime (`[Z]`), Side (`[X]`), or Backup (`[C]`):</div>
+    <div id="loot-items-list" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;"></div>
+    <div style="display:flex; justify-content:space-between; margin-top:4px;">
+      <button class="action-btn" id="btn-take-all-loot" style="background:#166534; border-color:#4ade80; color:#fff; padding:5px 12px;">✨ Take All & Close [E]</button>
+      <button class="action-btn" onclick="closeLootModal()">Close [ESC]</button>
+    </div>
   </div>
 
   <!-- Character Creation / 4-Player Shard Lobby -->
@@ -845,7 +327,7 @@
           <div class="wiz-logo-sword"></div>
           <h1>TARTARIA</h1>
         </div>
-        <h2>Tactical Weapon Stances • Rarity Loot & Appraisal • Dynamic Multi-Theme OST</h2>
+        <h2>Player-Mapped Procedural Labyrinth • Dragon Wars of Dilmun • Covenant of Atman</h2>
       </div>
 
       <div id="returning-save-banner" class="save-banner">
@@ -864,7 +346,7 @@
           </div>
           <div class="form-group">
             <label for="shard-code-input">4-Player Party Shard Code</label>
-            <input type="text" id="shard-code-input" maxlength="12" value="MAIN">
+            <input type="text" id="shard-code-input" maxlength="12" value="MAIN" title="Friends typing the same Shard Code share procedural map generation & Slots 1-4!">
           </div>
         </div>
 
@@ -883,14 +365,14 @@
           <div class="form-group">
             <label for="char-class">Core Calling (Lv.1)</label>
             <select id="char-class">
-              <option value="Fighter">Fighter (Lv.3 -> Warrior)</option>
-              <option value="Rogue">Rogue (Lv.3 -> Thief / OVA Ninja)</option>
-              <option value="Mage">Mage (Lv.3 -> Wizard / Sorceress)</option>
-              <option value="Cleric">Cleric (Lv.3 -> Priest / Sun-Cleric)</option>
+              <option value="Rogue">Rogue (Highlander Bow / OVA Ninja)</option>
+              <option value="Fighter">Fighter (Fire Giant Cleaver / Vanguard)</option>
+              <option value="Mage">Mage (Sorceress Orb / Dilmun High Mage)</option>
+              <option value="Cleric">Cleric (Gaiden Witch / Sun-Priest)</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="char-sect">Magic Tradition (Specials 1–9)</label>
+            <label for="char-sect">Magic Tradition (Wizardry & Dragon Wars)</label>
             <select id="char-sect">
               <option value="Classic">Llylgamyn Chants (Wizardry Classic)</option>
               <option value="Sun">Dilmun Sun Magic (Phoebus & Vrana)</option>
@@ -924,44 +406,47 @@
   </div>
 
   <!-- Quick Translucent Inventory & Equipment Popup [I] -->
-  <div id="inventory-modal">
+  <div id="inventory-modal" class="interactive">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3520; padding-bottom:6px;">
-      <span style="font-family:'Cinzel',serif; font-size:15px; font-weight:900; color:var(--tartaria-gold-bright);">🎒 SATURNINE SATCHEL & ARMORY [I]</span>
+      <span style="font-family:'Cinzel',serif; font-size:15px; font-weight:900; color:var(--tartaria-gold-bright);">🎒 SATURNINE ARMORY & 3-WEAPON RACK [I]</span>
       <span id="inv-gold" style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#facc15;">💰 150 Gold</span>
     </div>
 
-    <div style="font-size:10.5px; color:#b8a68e;">Equipped Loadout (Prime 1, Side 2, Backup 3, Armor & Relic):</div>
-    <div class="equip-grid-5">
-      <div class="equip-box" onclick="unequipSlot('prime')">
-        <small>I. Prime [Z]</small>
-        <strong id="eq-prime-name">Cobold Scimitar</strong>
-        <span id="eq-prime-stat">SLASH +18</span>
+    <div style="font-size:11px; color:#b8a68e;">Your 3 Active Weapon Slots (Match SLASH, BLUNT, or PIERCE to Enemy Weaknesses!):</div>
+    <div class="equip-grid">
+      <div class="equip-box" onclick="selectWeaponSlot(0)">
+        <small>Prime Melee 1 [Key Z]</small>
+        <strong id="eq-wpn1-name">Cobold Scimitar</strong>
+        <span id="eq-wpn1-stat">[SLASH] +18 ATK</span>
       </div>
-      <div class="equip-box" onclick="unequipSlot('side')">
-        <small>II. Side [X]</small>
-        <strong id="eq-side-name">Zhad Stone-Maul</strong>
-        <span id="eq-side-stat">BLUNT +18</span>
+      <div class="equip-box" onclick="selectWeaponSlot(1)">
+        <small>Side Weapon 2 [Key X]</small>
+        <strong id="eq-wpn2-name">Zhad Stone-Mace</strong>
+        <span id="eq-wpn2-stat">[BLUNT] +20 ATK</span>
       </div>
-      <div class="equip-box" onclick="unequipSlot('backup')">
-        <small>III. Backup [C]</small>
-        <strong id="eq-backup-name">Highlander Bow</strong>
-        <span id="eq-backup-stat">PIERCE +16</span>
+      <div class="equip-box" onclick="selectWeaponSlot(2)">
+        <small>Backup Weapon 3 [Key C]</small>
+        <strong id="eq-wpn3-name">Highlander Bow</strong>
+        <span id="eq-wpn3-stat">[PIERCE] +17 ATK</span>
       </div>
-      <div class="equip-box" onclick="unequipSlot('armor')">
-        <small>Torso Armor</small>
-        <strong id="eq-armor-name">Shinobi Shozoku</strong>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div class="equip-box">
+        <small>Torso Hauberk</small>
+        <strong id="eq-armor-name">OVA Shinobi Shozoku</strong>
         <span id="eq-armor-stat">+45 HP</span>
       </div>
-      <div class="equip-box" onclick="unequipSlot('relic')">
-        <small>Atman Relic</small>
-        <strong id="eq-relic-name">Sun-Eye Shield</strong>
-        <span id="eq-relic-stat">+45 HP +6 ATK</span>
+      <div class="equip-box">
+        <small>Atman Urn / Shield</small>
+        <strong id="eq-relic-name">Golden Sun-Eye Shield</strong>
+        <span id="eq-relic-stat">+50 HP +8 ATK</span>
       </div>
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <span style="font-family:'Cinzel',serif; font-size:11px; color:var(--tartaria-gold);">Backpack Satchel (Click `? Unidentified` to Appraise, or click Weapon to equip to Active Stance!):</span>
-      <span id="inv-stats-summary" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#4ade80;">ATK +24</span>
+      <span style="font-family:'Cinzel',serif; font-size:11px; color:var(--tartaria-gold);">Backpack Satchel (Click any item to equip to its matching Weapon/Armor slot):</span>
+      <span id="inv-stats-summary" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#4ade80;">ATK +26 | HP +295</span>
     </div>
     <div class="bag-grid" id="bag-grid"></div>
 
@@ -970,14 +455,14 @@
     </div>
   </div>
 
-  <!-- Regional Spell & Skill Grimoire Loadout Modal [G] -->
-  <div id="grimoire-modal" class="tartaria-window">
+  <!-- Regional Specials Grimoire Modal [G] -->
+  <div id="grimoire-modal" class="tartaria-window interactive">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3520; padding-bottom:6px;">
-      <span style="font-family:'Cinzel',serif; font-size:15px; font-weight:900; color:var(--tartaria-gold-bright);">📖 SPECIALS & CHANTS GRIMOIRE (SLOTS 1–9) [G]</span>
-      <span id="grimoire-slot-info" style="font-size:11px; color:#cfa354;">Unlocked Specials: 1 / 9</span>
+      <span style="font-family:'Cinzel',serif; font-size:15px; font-weight:900; color:var(--tartaria-gold-bright);">📖 1–9 SPECIALS & CHANTS GRIMOIRE [G]</span>
+      <span id="grimoire-slot-info" style="font-size:11px; color:#cfa354;">Unlocked Specials: 1 / 9 (1 per Level)</span>
     </div>
     <div style="font-size:11.5px; color:#d4c5b2;">
-      Select which Special Slot (`1`–`9`) to bind, then choose a Regional Power or Wizardry Chant below:
+      Select which unlocked Special Slot (`1`–`9`) to bind, then click any Regional Special or Wizardry Chant below:
     </div>
     <div style="display:flex; gap:6px; flex-wrap:wrap;" id="grimoire-slot-selector"></div>
     <div class="spell-list" id="grimoire-spell-list"></div>
@@ -986,2879 +471,9 @@
     </div>
   </div>
 
-  <!-- Level 3 Specialist & Level 6 Regional Prestige Ascension Modal -->
-  <div id="ascend-modal" class="tartaria-window">
+  <!-- Ascension Modal -->
+  <div id="ascend-modal" class="tartaria-window interactive">
     <div style="border-bottom:1px solid #4a3520; padding-bottom:6px;">
       <span id="ascend-title" style="font-family:'Cinzel',serif; font-size:16px; font-weight:900; color:var(--tartaria-gold-bright);">🔥 ATMAN ASCENSION</span>
     </div>
-    <div id="ascend-desc" style="font-size:12.5px; color:#e2d9c8;">Choose your path:</div>
-    <div id="ascend-options" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
-  </div>
-
-  <canvas id="gameCanvas"></canvas>
-
-  <!-- HUD -->
-  <div id="hud">
-    <!-- Top Ribbon -->
-    <div class="top-ribbon interactive">
-      <div class="ribbon-left">
-        <span id="zone-icon">🧭</span>
-        <span id="shard-status" style="color:#f8e2a8; font-weight:800;">Sector (0, 0): Central Firepit</span>
-        <span id="pvp-badge" style="color:#4ade80; font-weight:800;">[SAFEZONE]</span>
-        <span id="music-mode-badge" style="color:#c084fc; font-size:9.5px;">🎵 Llylgamyn Hearth</span>
-      </div>
-      <div class="ribbon-right">
-        <button id="btn-autoattack" class="action-btn" style="border-color:#4ade80; color:#4ade80;">⚔️ Auto-Stance: ON</button>
-        <button id="btn-gates" class="action-btn" title="Open/Close Nearest Gate">⛩️ Gate [E]</button>
-        <button id="btn-inv" class="action-btn">🎒 Bag [I]</button>
-        <button id="btn-grim" class="action-btn">📖 Specials [G]</button>
-        <button id="btn-audio" class="action-btn">🔊 Music: ON</button>
-        <button id="btn-crt" class="action-btn">📺 CRT</button>
-        <button id="btn-invite" class="action-btn">🔗 Invite</button>
-      </div>
-    </div>
-
-    <!-- TOP-LEFT DOCK: Player Profile + Party Mates Profiles -->
-    <div id="top-left-dock" class="interactive">
-      <div class="vitals-box tartaria-window">
-        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-          <div id="vitals-name" style="font-weight:900; font-size:13.5px; color:#f4dca6; font-family:'Cinzel',serif;">Hawkwind</div>
-          <span id="vitals-lvl" style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#cfa354;">LV.1</span>
-        </div>
-        <div style="font-size:10.5px; color:#d4a359; font-weight:bold;" id="vitals-race">Elf • Highlander Archer</div>
-        <div style="font-size:10px; color:#b8a68e; margin-bottom:3px; font-style:italic;" id="vitals-class">Core Rogue</div>
-
-        <div class="bar-row">
-          <div class="bar-label"><span>KRITA HP</span><span id="hp-txt">250/250</span></div>
-          <div class="bar-container"><div id="hp-fill" class="bar-fill"></div></div>
-        </div>
-
-        <div class="bar-row">
-          <div class="bar-label"><span>DILMUN MP</span><span id="mana-txt">90/90</span></div>
-          <div class="bar-container"><div id="mana-fill" class="bar-fill"></div></div>
-        </div>
-
-        <div class="bar-row">
-          <div class="bar-label" style="color:#fde047;"><span>⚱️ ATMAN URN [R]</span><span id="atman-txt">45/100</span></div>
-          <div class="bar-container"><div id="atman-fill" class="bar-fill" style="width:45%;"></div></div>
-        </div>
-
-        <div class="bar-row">
-          <div class="bar-label"><span>XP (<span id="gold-hud" style="color:#facc15;">150g</span>)</span><span id="xp-txt">0/100</span></div>
-          <div class="bar-container"><div id="xp-fill" class="bar-fill" style="width:0%;"></div></div>
-        </div>
-      </div>
-
-      <!-- Party Mates Profiles (Top-Left below main profile) -->
-      <div id="party-box" class="tartaria-window">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #3d2d1f; padding-bottom:2px;">
-          <span style="font-family:'Cinzel',serif; font-size:9.5px; color:#f4dca6; font-weight:800;">🛡️ PARTY MATES</span>
-          <span id="online-badge" style="font-size:8.5px; color:#38bdf8; font-family:'JetBrains Mono',monospace;">Shard MAIN (1/4)</span>
-        </div>
-        <div id="party-list" style="display:flex; flex-direction:column; gap:4px;"></div>
-      </div>
-    </div>
-
-    <!-- TOP-RIGHT & RIGHT-SIDE DOCK: Auto-Map + 3-Weapon Stance Rack + Nearby Loot Inspector -->
-    <div id="right-dock" class="interactive">
-      <div id="minimap-box" class="tartaria-window">
-        <div style="display:flex; justify-content:space-between; width:100%; font-family:'Cinzel',serif; font-size:9.5px; color:#f4dca6;">
-          <span>🗺️ ZHAD MAP</span>
-          <span id="mapped-count-txt" style="color:#4ade80;">5 Sectors</span>
-        </div>
-        <canvas id="minimapCanvas" width="200" height="122"></canvas>
-        <div id="sector-discoverer-txt" style="font-size:9px; color:#b8a68e; text-align:center;">Mapped by: House of Ra</div>
-      </div>
-
-      <!-- RIGHT-SIDE WEAPON RACK: Prime Melee 1, Side Weapon 2, Backup Weapon 3 -->
-      <div id="weapon-stance-dock" class="tartaria-window">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #3d2d1f; padding-bottom:2px;">
-          <span style="font-family:'Cinzel',serif; font-size:9.5px; color:#f8e2a8; font-weight:900;">⚔️ WEAPON STANCE [Q]</span>
-          <span style="font-size:8.5px; color:#94a3b8;">Match Weakness!</span>
-        </div>
-
-        <div class="weapon-slot-card active" id="wcard-prime" onclick="switchWeaponStance('prime')">
-          <div>
-            <span class="w-key">Z</span><span class="w-title" id="wname-prime">Cobold Scimitar</span>
-            <span class="w-sub">Prime Melee (Vs. Flesh/Giant)</span>
-          </div>
-          <span class="dmg-badge dmg-SLASH" id="wtype-prime">SLASH</span>
-        </div>
-
-        <div class="weapon-slot-card" id="wcard-side" onclick="switchWeaponStance('side')">
-          <div>
-            <span class="w-key">X</span><span class="w-title" id="wname-side">Zhad Stone-Maul</span>
-            <span class="w-sub">Side Weapon (Vs. Bone/Stone)</span>
-          </div>
-          <span class="dmg-badge dmg-BLUNT" id="wtype-side">BLUNT</span>
-        </div>
-
-        <div class="weapon-slot-card" id="wcard-backup" onclick="switchWeaponStance('backup')">
-          <div>
-            <span class="w-key">C</span><span class="w-title" id="wname-backup">Highlander Bow</span>
-            <span class="w-sub">Backup Ranged (Vs. Demon/Air)</span>
-          </div>
-          <span class="dmg-badge dmg-PIERCE" id="wtype-backup">PIERCE</span>
-        </div>
-      </div>
-
-      <!-- Interactive Nearby Chest / Corpse Loot Inspector -->
-      <div id="loot-inspector" class="tartaria-window">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3520; padding-bottom:2px;">
-          <span id="loot-box-title" style="font-family:'Cinzel',serif; font-size:10px; color:#fde047; font-weight:900;">🎁 NEARBY COFFER</span>
-          <button class="action-btn" onclick="lootAllNearbyChest()" style="padding:1px 6px; font-size:8.5px;">Take All [E]</button>
-        </div>
-        <div id="loot-items-list" style="display:flex; flex-direction:column; gap:4px;"></div>
-      </div>
-    </div>
-
-    <!-- Bottom-Left Compact Chat -->
-    <div class="chat-container interactive">
-      <div class="chat-log tartaria-window" id="chat-log">
-        <div class="chat-msg" style="color: #f4dca6;"><i>[Tactical Combat]: Enemies resist the wrong weapon type! Switch your Right-Side Weapon Stance with [Z] Prime (SLASH), [X] Side (BLUNT), or [C] Backup (PIERCE) to shatter enemy weaknesses for 175% damage! Keys [1–9] cast Special Grimoire Powers.</i></div>
-      </div>
-      <div class="chat-input-row">
-        <input type="text" id="chat-input" class="chat-input" placeholder="Press Enter to chat with your shard..." maxlength="100">
-      </div>
-    </div>
-
-    <!-- Bottom-Center Action Dock: [R] Atman Urn Orb + 1-9 SPECIALS ONLY + [Shift] Dodge -->
-    <div class="bottom-action-dock interactive">
-      <div class="special-orb-btn" onclick="triggerAtmanCymaticBurst()" title="Unleash Atman Cymatic Wave [Key R] (Costs 35 Atman)">
-        <span style="font-size:15px;">⚱️</span>
-        <span>ATMAN [R]</span>
-      </div>
-      <div class="hotbar" id="hotbar-container"></div>
-      <div class="special-orb-btn" onclick="triggerDodgeRoll()" style="background:radial-gradient(circle at 35% 35%, #38bdf8 0%, #1e3a8a 75%, #090d16 100%);" title="Shadow Dodge-Roll [Key Shift]">
-        <span style="font-size:14px;">💨</span>
-        <span>DODGE</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="tartaria-window">Notice</div>
-
-  <script>
-    // =========================================================================
-    // 1. WIZARDRY + DRAGON WARS + ATMAN LORE AUTO-NAME GENERATOR
-    // =========================================================================
-    const LORE_NAME_PREFIXES = [
-      'Hawkwind', 'Werdna', 'Trebor', 'Halito', 'Kadorto', 'Tiltowait', 'Muramasa', 'Llylgamyn',
-      'Lanac\'toor', 'Namis', 'Phoebus', 'Byzan', 'Dilmun', 'Myrrias', 'Ulrik', 'Nergal',
-      'Asura', 'Abeshu', 'Seshat', 'Zhad', 'Krita', 'Atman', 'Marduk', 'Shinobi', 'Vaelen'
-    ];
-    const LORE_NAME_TITLES = [
-      'of Dilmun', 'of Zhad', 'the Unaged', 'of Purgatory', 'of Llylgamyn', 'the Krita-Born',
-      'of Lanac\'toor', 'the Sun-Scribe', 'of the Maelstrom', 'the Kubi-Kiri', 'of House Ra', ''
-    ];
-
-    function generateLoreName() {
-      const p = LORE_NAME_PREFIXES[Math.floor(Math.random() * LORE_NAME_PREFIXES.length)];
-      const t = LORE_NAME_TITLES[Math.floor(Math.random() * LORE_NAME_TITLES.length)];
-      const combined = t ? `${p} ${t}` : p;
-      return combined.slice(0, 18);
-    }
-
-    document.getElementById('btn-roll-name').addEventListener('click', () => {
-      const newName = generateLoreName();
-      document.getElementById('char-name').value = newName;
-      localPlayer.name = newName;
-    });
-
-    // =========================================================================
-    // 2. SEAMLESS PLAYER-MAPPED PROCEDURAL ZONE ENGINE
-    // =========================================================================
-    const TILE_SIZE = 1000;
-    const FIREPIT_POS = { x: 500, y: 500, radius: 62, safeRadius: 390 };
-
-    const worldSectors = new Map();
-    const SOLID_PILLARS = [];
-    const WALL_TORCHES = [];
-    const GATES = [];
-    const gateSet = new Set();
-
-    function sectorKey(gx, gy) {
-      return `${gx},${gy}`;
-    }
-
-    function seededHash(gx, gy, salt = 0) {
-      let h = Math.imul(gx ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul(gy ^ 0xc2b2ae35, 0x27d4eb2f) ^ salt;
-      h ^= h >>> 16;
-      h = Math.imul(h, 0x85ebca6b);
-      h ^= h >>> 13;
-      return (h >>> 0) / 4294967296;
-    }
-
-    const SECTOR_ARCHETYPES = [
-      { kind: 'catacomb_hall',  floor: 'stone_slate',   titles: ['Narrow Shusi Passageway', 'Hall of the Krita Seeds', 'Dilmun Undercroft Corridor'] },
-      { kind: 'pillars_zhad',   floor: 'stone_violet',  titles: ['Pillars of Zhad Chamber', 'Cymatic Resonance Hall', 'Scribe\'s Kush Gallery'] },
-      { kind: 'purgatory_pit',  floor: 'stone_crimson', titles: ['Namis Purgatory Arena', 'Byzan Slaver Garrison', 'Quagmire Blood-Vault'] },
-      { kind: 'sunken_ruin',    floor: 'stone_moss',    titles: ['Sunken Ruin of Dilmun', 'Phoebus Sun-Dial Vault', 'Maelstrom Ossuary Crossing'] },
-      { kind: 'statue_sanctum', floor: 'stone_dark',    titles: ['☠️ Sanctum of Petrified Abeshu', '☠️ Citadel of Lanac\'toor', '☠️ Throne of Fire Giant Surtr', '☠️ Altar of Archmage Werdna'] }
-    ];
-
-    function getOrGenerateSector(gx, gy, discovererName = 'House of Ra', broadcastNew = true) {
-      const key = sectorKey(gx, gy);
-      if (worldSectors.has(key)) return worldSectors.get(key);
-
-      const depth = Math.abs(gx) + Math.abs(gy);
-      const wx = gx * TILE_SIZE;
-      const wy = gy * TILE_SIZE;
-      const cx = wx + TILE_SIZE / 2;
-      const cy = wy + TILE_SIZE / 2;
-
-      const rects = [
-        { x: wx + 340, y: wy - 90, w: 320, h: TILE_SIZE + 180, isSpine: true },
-        { x: wx - 90,  y: wy + 340, w: TILE_SIZE + 180, h: 320, isSpine: true }
-      ];
-
-      let sector = null;
-
-      if (gx === 0 && gy === 0) {
-        rects.push({ x: wx + 90, y: wy + 90, w: 820, h: 820, isMain: true });
-        sector = {
-          gx, gy, key, depth: 0,
-          name: 'Central Firepit Sanctum (0, 0)',
-          kind: 'sanctum_hub',
-          floor: 'stone_slate',
-          safe: true,
-          isBossRoom: false,
-          mappedBy: 'Founders of Ra',
-          rects
-        };
-      } else {
-        const rVal = seededHash(gx, gy, 11);
-        const isBoss = depth >= 2 && ((Math.abs(gx) + Math.abs(gy)) % 2 === 0 && rVal < 0.65);
-        const archIdx = isBoss ? 4 : Math.floor(seededHash(gx, gy, 22) * 4);
-        const arch = SECTOR_ARCHETYPES[archIdx];
-        const chosenTitle = arch.titles[Math.floor(seededHash(gx, gy, 33) * arch.titles.length)];
-
-        if (arch.kind === 'catacomb_hall') {
-          rects.push({ x: wx + 220, y: wy + 220, w: 560, h: 560, isMain: true });
-        } else {
-          rects.push({ x: wx + 110, y: wy + 110, w: 780, h: 780, isMain: true });
-        }
-
-        sector = {
-          gx, gy, key, depth,
-          name: `${chosenTitle} (${gx}, ${gy})`,
-          kind: arch.kind,
-          floor: arch.floor,
-          safe: false,
-          isBossRoom: isBoss,
-          mappedBy: discovererName,
-          rects
-        };
-      }
-
-      worldSectors.set(key, sector);
-
-      const pOffsets = [
-        [-240, -240], [240, -240], [-240, 240], [240, 240]
-      ];
-      pOffsets.forEach(([ox, oy], idx) => {
-        if (sector.kind === 'catacomb_hall' && idx > 1) return;
-        SOLID_PILLARS.push({
-          x: cx + ox,
-          y: cy + oy,
-          r: sector.isBossRoom ? 38 : 30,
-          isZhadPillar: sector.kind === 'pillars_zhad'
-        });
-      });
-
-      WALL_TORCHES.push(
-        { x: cx - 175, y: wy + 125 },
-        { x: cx + 175, y: wy + 125 },
-        { x: cx - 175, y: wy + 875 },
-        { x: cx + 175, y: wy + 875 }
-      );
-
-      const borderGates = [
-        { id: `gate-n-${gx}-${gy}`,   x: cx,             y: wy,             horiz: true,  gx1: gx, gy1: gy, gx2: gx,   gy2: gy-1, label: `North Gate (${gx},${gy-1})` },
-        { id: `gate-s-${gx}-${gy+1}`, x: cx,             y: wy + TILE_SIZE, horiz: true,  gx1: gx, gy1: gy, gx2: gx,   gy2: gy+1, label: `South Gate (${gx},${gy+1})` },
-        { id: `gate-w-${gx}-${gy}`,   x: wx,             y: cy,             horiz: false, gx1: gx, gy1: gy, gx2: gx-1, gy2: gy,   label: `West Gate (${gx-1},${gy})` },
-        { id: `gate-e-${gx+1}-${gy}`, x: wx + TILE_SIZE, y: cy,             horiz: false, gx1: gx, gy1: gy, gx2: gx+1, gy2: gy,   label: `East Gate (${gx+1},${gy})` }
-      ];
-      borderGates.forEach(bg => {
-        const gKey = `${Math.round(bg.x)},${Math.round(bg.y)}`;
-        if (!gateSet.has(gKey)) {
-          gateSet.add(gKey);
-          GATES.push({ ...bg, isOpen: false, openAnim: 0, manualLock: false });
-        }
-      });
-
-      if (depth > 0) {
-        spawnSectorEntities(sector);
-      }
-
-      const mappedEl = document.getElementById('mapped-count-txt');
-      if (mappedEl) mappedEl.textContent = `${worldSectors.size} Sectors`;
-
-      if (broadcastNew && depth > 0) {
-        triggerSoulsBanner(`NEW SECTOR MAPPED: ${sector.name.toUpperCase()}`);
-        appendChat('Cartography Engine', `🗺️ ${discovererName} carved & mapped ${sector.name} [Tier ${depth}]!`);
-        sendPacket({
-          type: 'sector_mapped',
-          id: localPlayer.id,
-          gx, gy,
-          discoverer: discovererName
-        });
-      }
-
-      return sector;
-    }
-
-    // =========================================================================
-    // 3. PROCEDURAL 2.5D TEXTURE GENERATOR
-    // =========================================================================
-    const floorPatterns = {};
-
-    function generateProceduralTextures(ctx) {
-      const palettes = {
-        'stone_slate':   { base: '#1b202b', slab1: '#232a38', slab2: '#171c26', mortar: '#0c0e14', accent: '#3b4963' },
-        'stone_dark':    { base: '#16141f', slab1: '#1e1b29', slab2: '#12101a', mortar: '#09070d', accent: '#352f4a' },
-        'stone_crimson': { base: '#211216', slab1: '#2b161b', slab2: '#1a0d11', mortar: '#0d0608', accent: '#592029' },
-        'stone_violet':  { base: '#171224', slab1: '#211a33', slab2: '#120e1c', mortar: '#08060d', accent: '#452f63' },
-        'stone_moss':    { base: '#131d1f', slab1: '#19272a', slab2: '#0f1719', mortar: '#070b0c', accent: '#25473a' }
-      };
-
-      Object.keys(palettes).forEach(key => {
-        const pal = palettes[key];
-        const off = document.createElement('canvas');
-        off.width = 160;
-        off.height = 160;
-        const oCtx = off.getContext('2d');
-
-        oCtx.fillStyle = pal.mortar;
-        oCtx.fillRect(0, 0, 160, 160);
-
-        const bw = 40, bh = 40;
-        for (let r = 0; r < 4; r++) {
-          for (let c = 0; c < 4; c++) {
-            const offset = (r % 2) * 20;
-            const sx = (c * bw + offset) % 160;
-            const sy = r * bh;
-
-            oCtx.fillStyle = (r + c) % 2 === 0 ? pal.slab1 : pal.slab2;
-            oCtx.fillRect(sx + 2, sy + 2, bw - 4, bh - 4);
-
-            oCtx.strokeStyle = pal.accent;
-            oCtx.lineWidth = 1;
-            oCtx.beginPath();
-            oCtx.moveTo(sx + 2, sy + bh - 3);
-            oCtx.lineTo(sx + 2, sy + 2);
-            oCtx.lineTo(sx + bw - 3, sy + 2);
-            oCtx.stroke();
-
-            oCtx.fillStyle = 'rgba(0,0,0,0.24)';
-            oCtx.fillRect(sx + 10, sy + 14, 3, 3);
-            oCtx.fillRect(sx + 26, sy + 24, 4, 2);
-          }
-        }
-        floorPatterns[key] = ctx.createPattern(off, 'repeat');
-      });
-    }
-
-    // =========================================================================
-    // 4. NON-HUMAN RACES & JUN SUEMI CARD ARCHETYPES
-    // =========================================================================
-    const ARMOR_PALETTE = ['#2b3d54', '#7c0a0a', '#1b3624', '#6b21a8', '#b45309', '#1f1e26'];
-    const HAIR_PALETTE  = ['#eab308', '#e5dccb', '#dc2626', '#121016', '#4a321d', '#38bdf8'];
-
-    const RACE_TREE = {
-      'Elf': {
-        desc: 'Ancient subterranean and twilight fey shaped from Krita seeds.',
-        subraces: {
-          'Highlander': { name: 'Elf (Highlander Archer)', scale: 1.0,  skin: '#e8cbb1', hpBonus: 40, speedMod: 1.15, ears: true, bow: true, projType: 'arrow', projColor: '#fde047', desc: '"Blonde elven Highlander in magenta & emerald tunic firing rapid recurve arrows."' },
-          'Sorceress':  { name: 'Elf (Gaiden Sorceress)',  scale: 0.99, skin: '#f3e5d8', hpBonus: 30, speedMod: 1.10, ears: true, orb: true, projType: 'orb',   projColor: '#38bdf8', desc: '"Draped in flowing silk robes firing levitating astral orbs."' },
-          'Witch':      { name: 'Elf (Gaiden Witch)',      scale: 0.99, skin: '#edd8c4', hpBonus: 35, speedMod: 1.09, ears: true, witchFlame: true, projType: 'flame', projColor: '#c084fc', desc: '"High-ponytail gothic hex-weaver launching spiritual curse flames."' },
-          'Drow':       { name: 'Elf (Drow)',              scale: 0.98, skin: '#645f82', hpBonus: 30, speedMod: 1.12, ears: true, projType: 'kunai', projColor: '#a855f7', desc: '"Obsidian-skinned subterranean spellblade of the Spider Vaults."' }
-        }
-      },
-      'Halfling': {
-        desc: 'Pint-sized subterranean kin—Cobold Kings, Imps, Goblins, Gnomes, and Deep Orcs.',
-        subraces: {
-          'Kobold': { name: 'Halfling (Cobold King)', scale: 0.92, skin: '#3f7d4c', hpBonus: 45, speedMod: 1.14, snout: true, ears: true, sunShield: true, projType: 'sunbeam', projColor: '#facc15', desc: '"Green-furred Cobold King bearing the blazing Golden Sun-Eye Shield & Scimitar."' },
-          'Imp':    { name: 'Halfling (Imp)',         scale: 0.82, skin: '#b83232', hpBonus: 25, speedMod: 1.18, wings: true, horns: true, projType: 'flame', projColor: '#f97316', desc: '"Barbed-tail firepit trickster hurling sulfur firebolts."' },
-          'Goblin': { name: 'Halfling (Goblin)',      scale: 0.86, skin: '#567d46', hpBonus: 35, speedMod: 1.14, ears: true, projType: 'kunai', projColor: '#84cc16', desc: '"Cutthroat corridor ambusher hurling poisoned daggers."' },
-          'Gnome':  { name: 'Halfling (Gnome)',       scale: 0.85, skin: '#c9a68a', hpBonus: 35, speedMod: 1.06, beard: true, projType: 'orb', projColor: '#60a5fa', desc: '"Deep-earth alchemist tossing volatile gem-bombs."' },
-          'Orc':    { name: 'Halfling (Deep Orc)',    scale: 0.96, skin: '#4f6346', hpBonus: 65, speedMod: 1.04, tusks: true, projType: 'axe', projColor: '#cbd5e1', desc: '"Boar-tusked subterranean vanguard hurling cleavers."' }
-        }
-      },
-      'Dwarf': {
-        desc: 'Unyielding stone-carvers and ash-bearded giants of the Pillars of Zhad.',
-        subraces: {
-          'Fire-Giant':     { name: 'Dwarf (Fire Giant)', scale: 1.25, skin: '#d98a6c', hpBonus: 110, speedMod: 0.95, beard: true, flamberge: true, shellChest: true, projType: 'magma', projColor: '#ef4444', desc: '"Flame-bearded colossus wearing the bronze shell-cuirass and launching Flamberge magma waves."' },
-          'Duergar':        { name: 'Dwarf (Duergar)',    scale: 0.88, skin: '#7d7580', hpBonus: 75,  speedMod: 0.96, beard: true, projType: 'axe', projColor: '#94a3b8', desc: '"Grim ash-skinned gray dwarf throwing iron hammers."' },
-          'Mountain Dwarf': { name: 'Dwarf (Ironpeak)',   scale: 0.90, skin: '#c99b78', hpBonus: 85,  speedMod: 0.95, beard: true, projType: 'axe', projColor: '#fbbf24', desc: '"Runed bronze-plate defender of the old gates."' }
-        }
-      },
-      'Meow': {
-        desc: 'Agile feline duelists (formerly Felpurr) with nine-lives reflexes.',
-        subraces: {
-          'Panther-Kin': { name: 'Meow (OVA Ninja-Cat)', scale: 0.98, skin: '#2b2833', hpBonus: 40, speedMod: 1.20, catEars: true, ninjaCowl: true, projType: 'kunai', projColor: '#84cc16', desc: '"Clad in indigo shinobi cowl—hurls lethal Kubi-Kiri shurikens."' },
-          'Lynx-Blade':  { name: 'Meow (Lynx-Blade)',    scale: 1.02, skin: '#c9975b', hpBonus: 45, speedMod: 1.15, catEars: true, projType: 'kunai', projColor: '#fde047', desc: '"Tufted-ear samuraic duelist from the Eastern Corridors."' }
-        }
-      },
-      'Goon': {
-        desc: 'Scaled dragon-blooded & abyssal gargoyle bruisers of Dilmun.',
-        subraces: {
-          'Greater-Demon': { name: 'Goon (Greater Demon)',    scale: 1.26, skin: '#28517a', hpBonus: 115, speedMod: 0.98, wings: true, horns: true, tail: true, projType: 'orb', projColor: '#38bdf8', desc: '"Indigo-blue winged Greater Demon from Bane of the Cosmic Forge."' },
-          'Wyrm-Thug':     { name: 'Goon (Dragon-Construct)', scale: 1.22, skin: '#3b6e4c', hpBonus: 95,  speedMod: 0.97, horns: true, snout: true, projType: 'flame', projColor: '#22c55e', desc: '"King Drake\'s scaled siege-enforcer from Dragon Wars."' }
-        }
-      },
-      'Arf': {
-        desc: 'Canine-folk (formerly Rawulf) of the Tartaria Hound-Pits.',
-        subraces: {
-          'Hound-Kin': { name: 'Arf (Hellhound-Kin)', scale: 1.06, skin: '#8c583a', hpBonus: 65, speedMod: 1.10, snout: true, ears: true, projType: 'axe', projColor: '#f97316', desc: '"Scarred pit-tracker who smells surface blood a mile off."' },
-          'Dire-Wolf': { name: 'Arf (Dire-Wolf)',     scale: 1.14, skin: '#575a61', hpBonus: 80, speedMod: 1.07, snout: true, ears: true, projType: 'orb', projColor: '#93c5fd', desc: '"Towering winter-mane alpha of the Northern Catacombs."' }
-        }
-      },
-      'Mook': {
-        desc: 'Enigmatic, shaggy psionic giants attuned to Atman cymatics.',
-        subraces: {
-          'Star-Walker': { name: 'Mook (Star-Fur)',    scale: 1.20, skin: '#8699ad', hpBonus: 70, speedMod: 1.02, projType: 'orb', projColor: '#38bdf8', desc: '"Silver-furred mystic firing astral crystal beams."' },
-          'Deep-Shag':   { name: 'Mook (Cavern-Yeti)', scale: 1.26, skin: '#cbd5e1', hpBonus: 95, speedMod: 0.96, projType: 'orb', projColor: '#bae6fd', desc: '"Colossal white-furred brute hurling frost spears."' }
-        }
-      },
-      'Vampire': {
-        desc: 'Undead nobles, Maelstrom skeleton knights & House of Ra Atman-Harvesters.',
-        subraces: {
-          'Undead-Warrior': { name: 'Vampire (Undead Warrior)',  scale: 1.04, skin: '#d6d3c4', hpBonus: 70, speedMod: 1.08, skeleton: true, projType: 'axe', projColor: '#38bdf8', desc: '"Skeletal knight draped in a tattered blue mantle with bronze round-shield."' },
-          'Blood-Scion':    { name: 'Vampire (Atman Harvester)', scale: 1.02, skin: '#d8d0e0', hpBonus: 55, speedMod: 1.12, fangs: true, projType: 'flame', projColor: '#fbbf24', desc: '"Gold-masked archon priest who inhales Atman from glass urns."' }
-        }
-      }
-    };
-
-    // =========================================================================
-    // 5. CLASS PROGRESSION & SPECIALS GRIMOIRE (1-9 ARE STRICTLY SPECIALS!)
-    // =========================================================================
-    const CLASS_PROGRESSION = {
-      'Fighter': { elite: 'Warrior', hp: 195, mana: 60,  focuses: ['Fire Giant Cleaver', 'Cobold Sun-Guard', 'Dilmun Gladiator'] },
-      'Rogue':   { elite: 'Thief',   hp: 150, mana: 85,  focuses: ['Highlander Marksman', 'OVA Kubi-Kiri Ninja', 'Purgatory Escapee'] },
-      'Mage':    { elite: 'Wizard',  hp: 125, mana: 165, focuses: ['Lanac\'toor High Mage', 'Gaiden Sorceress', 'Tiltowait Savant'] },
-      'Cleric':  { elite: 'Priest',  hp: 160, mana: 135, focuses: ['Phoebus Sun-Priest', 'Asura Atman-Nurse', 'Gaiden Witch'] }
-    };
-
-    const PRESTIGE_SETS = {
-      'Classic': ['Knight', 'Ranger', 'Druid', 'Bard'],
-      'Sun':     ['Sun-Templar of Phoebus', 'Archmage of Lanac\'toor', 'Druid of Quagmire', 'Byzan Justiciar'],
-      'North':   ['Barbarian', 'Hunter', 'Warlock', 'Shaman'],
-      'East':    ['Samurai', 'Ninja', 'Sorcerer', 'Monk'],
-      'West':    ['Architect of Zhad', 'Keeper of Krita', 'Jaguar Commando', 'Vulture Necro-Scribe']
-    };
-
-    // All 1-9 Specials carry a specific Damage Type (SLASH, BLUNT, PIERCE, ARCANE) to combo with Enemy Weaknesses!
-    const GRIMOIRE_SPELLS = [
-      { id: 'muramasa',   name: 'Kubi-Kiri Dash',     sect: 'East',    dmgType: 'SLASH',  icon: '🩸', mp: 12, cd: 1.1, type: 'dash',      count: 3, spread: 0.3,  speed: 660, dmg: 72, color: '#84cc16', chant: '"KUBI-KIRI!"',   desc: '[SLASH] Shadow-dash forward + 3 decapitating blades.' },
-      { id: 'zhad_stylus',name: 'Pillars of Zhad',    sect: 'West',    dmgType: 'BLUNT',  icon: '📐', mp: 14, cd: 1.3, type: 'proj_nova', count: 8, spread: 6.28, speed: 500, dmg: 64, color: '#fbbf24', chant: '"SHUSI & KUSH!"', desc: '[BLUNT] Cymatic sonic hammer-ring that shatters stone & skeletons.' },
-      { id: 'multishot',  name: 'Highlander Barrage', sect: 'Classic', dmgType: 'PIERCE', icon: '🏹', mp: 10, cd: 0.9, type: 'proj_fan',  count: 5, spread: 0.45, speed: 660, dmg: 55, color: '#4ade80', chant: '"SKY VOLLEY!"',   desc: '[PIERCE] 5-arrow armor-piercing fan that skewers winged demons.' },
-      { id: 'mahalito',   name: 'MAHALITO Fireball',  sect: 'Classic', dmgType: 'ARCANE', icon: '🔥', mp: 14, cd: 1.2, type: 'proj_aoe',  count: 1, spread: 0,    speed: 510, dmg: 74, color: '#f97316', chant: '"MAHALITO!!"',   desc: '[ARCANE] Classic Wizardry exploding fireball.' },
-      { id: 'madi',       name: 'MADI Restoration',   sect: 'Classic', dmgType: 'ARCANE', icon: '✨', mp: 16, cd: 2.0, type: 'heal',      count: 0, spread: 0,    speed: 0,   dmg: 95, color: '#22c55e', chant: '"MADI!!"',       desc: '[HEAL] Sacred Llylgamyn full-flesh mend.' },
-      { id: 'porfic',     name: 'PORFIC Sun-Shield',  sect: 'Classic', dmgType: 'ARCANE', icon: '🛡️', mp: 12, cd: 2.5, type: 'buff',      count: 0, spread: 0,    speed: 0,   dmg: 45, color: '#38bdf8', chant: '"PORFIC!"',      desc: '[BUFF] Raises Golden Sun-Eye barrier & +60% speed.' },
-      { id: 'vrana_sun',  name: 'Vrana\'s Sunfire',   sect: 'Sun',     dmgType: 'ARCANE', icon: '☀️', mp: 15, cd: 1.1, type: 'proj_fan',  count: 5, spread: 0.5,  speed: 580, dmg: 56, color: '#facc15', chant: '"PHOEBUS!!"',    desc: '[ARCANE] Dragon Wars Sun Magic 5-ray solar flare.' },
-      { id: 'lanactoor',  name: 'Lanac\'toor Lance',  sect: 'Sun',     dmgType: 'PIERCE', icon: '⚡', mp: 18, cd: 1.3, type: 'proj_aoe',  count: 2, spread: 0.15, speed: 650, dmg: 78, color: '#38bdf8', chant: '"HIGH MAGIC!"',  desc: '[PIERCE] Twin Dilmun High-Magic plasma lances.' },
-      { id: 'flamberge',  name: 'Surtr Cleave-Wave',  sect: 'North',   dmgType: 'SLASH',  icon: '🗡️', mp: 15, cd: 1.1, type: 'proj_fan',  count: 3, spread: 0.4,  speed: 530, dmg: 68, color: '#ef4444', chant: '"SURTR!"',       desc: '[SLASH] Hurls 3 wavy Flamberge magma crescents.' },
-      { id: 'dalto',      name: 'DALTO Jotun-Crush',  sect: 'North',   dmgType: 'BLUNT',  icon: '❄️', mp: 16, cd: 1.4, type: 'proj_nova', count: 8, spread: 6.28, speed: 460, dmg: 60, color: '#60a5fa', chant: '"DALTO!"',       desc: '[BLUNT] Heavy glacier boulders crushing all surrounding foes.' },
-      { id: 'tiltowait',  name: 'TILTOWAIT Eclipse',  sect: 'West',    dmgType: 'ARCANE', icon: '☄️', mp: 26, cd: 2.3, type: 'proj_nova', count: 12,spread: 6.28, speed: 540, dmg: 95, color: '#e879f9', chant: '"TILTOWAIT!!"',  desc: '[ARCANE] Cataclysmic 12-bolt nuclear sigil of Werdna.' }
-    ];
-
-    const TARTARIA_NPCS = [
-      { id: 'npc-hawk',  name: 'Hawkwind & Alex',      title: 'OVA Tavern Party',        x: 260, y: 260, color: '#3b82f6', dialog: '"Now, Alex, Hawkwind, what floor should we go to today? Switch your Right-Side Weapon Stance with [Z] SLASH, [X] BLUNT, or [C] PIERCE—enemies take very little damage if you hit them with the wrong weapon type!"' },
-      { id: 'npc-asura', name: 'High Architect Asura', title: 'Keeper of Krita & Atman', x: 740, y: 260, color: '#fbbf24', dialog: '"Our Petrified Father Statues and Undead Skeletons shrug off blades—switch to your [X] Side Weapon (BLUNT) to shatter their stone and bone!"' },
-      { id: 'npc-dilmun',name: 'Scribe of Dilmun',     title: 'Exile of Namis',          x: 500, y: 740, color: '#c084fc', isWerdna: true, dialog: '"Coffers now drop Rare, Epic, and ? Unidentified relics with glowing beams! Walk near any coffer to inspect or press [E] to Loot All."' }
-    ];
-
-    // Overhauled Rarity & Damage-Typed Loot Table
-    const RARITY_TIERS = [
-      { id: 'common',   name: 'Common',   color: '#cbd5e1', mult: 1.0 },
-      { id: 'uncommon', name: 'Uncommon', color: '#4ade80', mult: 1.25 },
-      { id: 'rare',     name: 'Rare',     color: '#38bdf8', mult: 1.55 },
-      { id: 'epic',     name: 'Epic',     color: '#c084fc', mult: 1.9 },
-      { id: 'mythic',   name: 'Mythic',   color: '#fbbf24', mult: 2.4 }
-    ];
-
-    const BASE_LOOT_Templates = [
-      // Prime Melee (SLASH)
-      { name: 'Muramasa Katana',         slot: 'prime',  dmgType: 'SLASH',  range: 'melee',  atk: 26, hp: 0,  mp: 0,  val: 210 },
-      { name: 'Fire Giant Flamberge',    slot: 'prime',  dmgType: 'SLASH',  range: 'melee',  atk: 24, hp: 25, mp: 0,  val: 195 },
-      { name: 'Cobold King Scimitar',    slot: 'prime',  dmgType: 'SLASH',  range: 'melee',  atk: 20, hp: 15, mp: 0,  val: 150 },
-      // Side Weapon (BLUNT)
-      { name: 'Cymatic Maul of Zhad',    slot: 'side',   dmgType: 'BLUNT',  range: 'melee',  atk: 27, hp: 30, mp: 15, val: 230 },
-      { name: 'Duergar Skull-Crusher',   slot: 'side',   dmgType: 'BLUNT',  range: 'melee',  atk: 22, hp: 20, mp: 0,  val: 175 },
-      { name: 'Dilmun Bronze Flail',     slot: 'side',   dmgType: 'BLUNT',  range: 'melee',  atk: 19, hp: 15, mp: 10, val: 145 },
-      // Backup Weapon (PIERCE / RANGED)
-      { name: 'Highlander Recurve Bow',  slot: 'backup', dmgType: 'PIERCE', range: 'ranged', atk: 23, hp: 15, mp: 15, val: 190 },
-      { name: 'OVA Shinobi Kunai-Pouch', slot: 'backup', dmgType: 'PIERCE', range: 'ranged', atk: 25, hp: 10, mp: 20, val: 205 },
-      { name: 'Lanac\'toor Sun-Javelin', slot: 'backup', dmgType: 'PIERCE', range: 'ranged', atk: 28, hp: 20, mp: 30, val: 240 },
-      // Armor & Relics
-      { name: 'Maelstrom Rib-Plate',     slot: 'armor',  atk: 0,  hp: 95, mp: 0,  val: 170 },
-      { name: 'Armor of King Drake',     slot: 'armor',  atk: 12, hp: 85, mp: 25, val: 230 },
-      { name: 'OVA Shinobi Shozoku',     slot: 'armor',  atk: 10, hp: 55, mp: 30, val: 165 },
-      { name: 'Vessel Urn of Atman',     slot: 'relic',  atk: 16, hp: 70, mp: 45, val: 290 },
-      { name: 'Golden Sun-Eye Shield',   slot: 'relic',  atk: 10, hp: 75, mp: 20, val: 240 },
-      { name: 'Amulet of Werdna',        slot: 'relic',  atk: 25, hp: 60, mp: 60, val: 350 }
-    ];
-
-    function rollProceduralLootItem(tier = 1, forceUnidentified = false) {
-      const base = BASE_LOOT_Templates[Math.floor(Math.random() * BASE_LOOT_Templates.length)];
-      const rRoll = Math.random() + (tier - 1) * 0.12;
-      let rarity = RARITY_TIERS[0];
-      if (rRoll > 1.15) rarity = RARITY_TIERS[4];
-      else if (rRoll > 0.92) rarity = RARITY_TIERS[3];
-      else if (rRoll > 0.65) rarity = RARITY_TIERS[2];
-      else if (rRoll > 0.35) rarity = RARITY_TIERS[1];
-
-      const isUnidentified = forceUnidentified || (rarity.mult >= 1.55 && Math.random() < 0.45);
-      return {
-        uid: 'it-' + Math.random().toString(36).slice(2, 8),
-        name: `${rarity.name} ${base.name}`,
-        trueName: `${rarity.name} ${base.name}`,
-        unidentified: isUnidentified,
-        rarityId: rarity.id,
-        rarityColor: rarity.color,
-        slot: base.slot,
-        dmgType: base.dmgType || null,
-        range: base.range || 'melee',
-        atk: Math.round((base.atk || 0) * rarity.mult),
-        hp:  Math.round((base.hp  || 0) * rarity.mult),
-        mp:  Math.round((base.mp  || 0) * rarity.mult),
-        val: Math.round((base.val || 100) * rarity.mult)
-      };
-    }
-
-    // =========================================================================
-    // 6. LOCAL PLAYER STATE (With 3 Weapon Stance Slots: Prime, Side, Backup)
-    // =========================================================================
-    let localPlayer = {
-      id: 'p-' + Math.random().toString(36).substring(2, 9),
-      slotNum: 1,
-      shardCode: 'MAIN',
-      name: 'Hawkwind',
-      raceCategory: 'Elf',
-      subraceKey: 'Highlander',
-      raceLabel: 'Elf (Highlander Archer)',
-      coreClass: 'Fighter',
-      regionalSect: 'Classic',
-      specialistFocus: null,
-      eliteClass: null,
-      prestigeSet: null,
-      prestigeClass: null,
-      armorColor: ARMOR_PALETTE[0],
-      hairColor: HAIR_PALETTE[0],
-      x: FIREPIT_POS.x,
-      y: FIREPIT_POS.y + 125,
-      targetX: null,
-      targetY: null,
-      aimAngle: 0,
-      facing: 1,
-      isMoving: false,
-      autoAttack: true,
-      activeWeaponSlot: 'prime', // 'prime' (1: SLASH), 'side' (2: BLUNT), 'backup' (3: PIERCE)
-      autoAttackCd: 0,
-      baseSpeed: 255,
-      speed: 255,
-      hp: 260,
-      maxHp: 260,
-      mana: 90,
-      maxMana: 90,
-      atman: 45,
-      maxAtman: 100,
-      level: 1,
-      xp: 0,
-      nextXp: 100,
-      gold: 150,
-      equipped: {
-        prime:  { name: 'Cobold Scimitar',        slot: 'prime',  dmgType: 'SLASH',  range: 'melee',  atk: 18, hp: 10, mp: 0,  rarityColor: '#4ade80' },
-        side:   { name: 'Zhad Stone-Maul',        slot: 'side',   dmgType: 'BLUNT',  range: 'melee',  atk: 19, hp: 20, mp: 0,  rarityColor: '#38bdf8' },
-        backup: { name: 'Highlander Recurve Bow', slot: 'backup', dmgType: 'PIERCE', range: 'ranged', atk: 17, hp: 10, mp: 10, rarityColor: '#fde047' },
-        armor:  { name: 'OVA Shinobi Shozoku',    slot: 'armor',  atk: 6,  hp: 45, mp: 15, rarityColor: '#4ade80' },
-        relic:  { name: 'Golden Sun-Eye Shield',  slot: 'relic',  atk: 6,  hp: 45, mp: 10, rarityColor: '#fbbf24' }
-      },
-      backpack: [
-        rollProceduralLootItem(2, true),
-        rollProceduralLootItem(1, false)
-      ],
-      spellBar: ['muramasa', 'zhad_stylus', 'multishot', 'mahalito', 'madi', 'porfic', 'vrana_sun', 'lanactoor', 'tiltowait'],
-      targetEntityId: null,
-      swingTimer: 0,
-      dodgeTimer: 0,
-      hitFlash: 0,
-      chatBubble: null,
-      chatTimer: 0
-    };
-
-    const SAVE_KEY = 'tartaria_v7_save';
-
-    function getActiveWeapon() {
-      return localPlayer.equipped[localPlayer.activeWeaponSlot] || localPlayer.equipped.prime || {
-        name: 'Bare Fists', slot: 'prime', dmgType: 'BLUNT', range: 'melee', atk: 8
-      };
-    }
-
-    function switchWeaponStance(slotKey) {
-      if (!['prime', 'side', 'backup'].includes(slotKey)) return;
-      localPlayer.activeWeaponSlot = slotKey;
-      ['prime', 'side', 'backup'].forEach(k => {
-        const card = document.getElementById(`wcard-${k}`);
-        if (card) card.classList.toggle('active', k === slotKey);
-      });
-      const w = getActiveWeapon();
-      playSfx('slash');
-      recalcEquipmentStats();
-      showToast(`Stance: ${w.name} [${w.dmgType} Damage]`);
-    }
-
-    function cycleWeaponStance() {
-      const order = ['prime', 'side', 'backup'];
-      const idx = order.indexOf(localPlayer.activeWeaponSlot);
-      switchWeaponStance(order[(idx + 1) % order.length]);
-    }
-
-    function recalcEquipmentStats() {
-      const subMeta = getSubraceMeta(localPlayer);
-      const classMeta = CLASS_PROGRESSION[localPlayer.coreClass] || CLASS_PROGRESSION['Fighter'];
-      const lvlBonusHp = (localPlayer.level - 1) * 32;
-      const lvlBonusMp = (localPlayer.level - 1) * 16;
-
-      const activeWep = getActiveWeapon();
-      let eqAtk = (localPlayer.level - 1) * 6 + (activeWep.atk || 10);
-      let eqHp = (activeWep.hp || 0);
-      let eqMp = (activeWep.mp || 0);
-
-      ['armor', 'relic'].forEach(k => {
-        const it = localPlayer.equipped[k];
-        if (it) {
-          eqAtk += it.atk || 0;
-          eqHp  += it.hp  || 0;
-          eqMp  += it.mp  || 0;
-        }
-      });
-
-      localPlayer.dmgBonus = eqAtk;
-      localPlayer.maxHp = classMeta.hp + subMeta.hpBonus + lvlBonusHp + eqHp;
-      localPlayer.maxMana = classMeta.mana + lvlBonusMp + eqMp;
-      localPlayer.hp = Math.min(localPlayer.hp, localPlayer.maxHp);
-      localPlayer.mana = Math.min(localPlayer.mana, localPlayer.maxMana);
-      localPlayer.speed = localPlayer.baseSpeed * subMeta.speedMod;
-
-      // Update Right-Side Weapon Stance Cards
-      ['prime', 'side', 'backup'].forEach(k => {
-        const w = localPlayer.equipped[k];
-        const nameEl = document.getElementById(`wname-${k}`);
-        const typeEl = document.getElementById(`wtype-${k}`);
-        if (nameEl && w) nameEl.textContent = w.name.replace(/^(Common|Uncommon|Rare|Epic|Mythic)\s+/, '');
-        if (typeEl && w) {
-          typeEl.textContent = w.dmgType || 'SLASH';
-          typeEl.className = `dmg-badge dmg-${w.dmgType || 'SLASH'}`;
-        }
-      });
-    }
-
-    function savePersistentProgress() {
-      try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify({
-          name: localPlayer.name,
-          raceCategory: localPlayer.raceCategory,
-          subraceKey: localPlayer.subraceKey,
-          raceLabel: localPlayer.raceLabel,
-          coreClass: localPlayer.coreClass,
-          regionalSect: localPlayer.regionalSect,
-          specialistFocus: localPlayer.specialistFocus,
-          eliteClass: localPlayer.eliteClass,
-          prestigeSet: localPlayer.prestigeSet,
-          prestigeClass: localPlayer.prestigeClass,
-          armorColor: localPlayer.armorColor,
-          hairColor: localPlayer.hairColor,
-          level: localPlayer.level,
-          xp: localPlayer.xp,
-          nextXp: localPlayer.nextXp,
-          gold: localPlayer.gold,
-          atman: localPlayer.atman,
-          activeWeaponSlot: localPlayer.activeWeaponSlot,
-          equipped: localPlayer.equipped,
-          backpack: localPlayer.backpack,
-          spellBar: localPlayer.spellBar
-        }));
-      } catch (e) {}
-    }
-
-    function checkExistingSave() {
-      try {
-        const raw = localStorage.getItem(SAVE_KEY);
-        if (!raw) return false;
-        const data = JSON.parse(raw);
-        if (data && data.name && RACE_TREE[data.raceCategory]?.subraces[data.subraceKey]) {
-          Object.assign(localPlayer, data);
-          document.getElementById('char-name').value = localPlayer.name;
-          document.getElementById('char-race').value = localPlayer.raceCategory;
-          document.getElementById('char-race').dispatchEvent(new Event('change'));
-          document.getElementById('char-subrace').value = localPlayer.subraceKey;
-          document.getElementById('char-class').value = localPlayer.coreClass;
-          document.getElementById('char-sect').value = localPlayer.regionalSect || 'Classic';
-
-          const banner = document.getElementById('returning-save-banner');
-          banner.style.display = 'flex';
-          document.getElementById('returning-save-txt').textContent =
-            `Vessel Found: ${localPlayer.name} (Lv.${localPlayer.level} ${localPlayer.raceLabel} • ${localPlayer.gold}g)`;
-          return true;
-        }
-      } catch (e) {}
-      return false;
-    }
-
-    document.getElementById('btn-reset-save').addEventListener('click', () => {
-      localStorage.removeItem(SAVE_KEY);
-      document.getElementById('returning-save-banner').style.display = 'none';
-      localPlayer.level = 1;
-      localPlayer.xp = 0;
-      localPlayer.nextXp = 100;
-      localPlayer.gold = 150;
-      localPlayer.atman = 45;
-      showToast('Saved Vessel Wiped.');
-    });
-
-    // =========================================================================
-    // 7. MULTI-THEME PROCEDURAL SOUNDTRACK ENGINE (Tavern, Labyrinth, Boss)
-    // =========================================================================
-    let audioCtx = null;
-    let bgmEnabled = true;
-    let bgmTimer = null;
-    let bgmTick = 0;
-    let currentMusicMode = 'tavern'; // 'tavern', 'dungeon', 'combat'
-
-    const MUSIC_THEMES = {
-      'tavern': {
-        label: '🎵 Llylgamyn Hearth',
-        tempoMs: 420,
-        bass:   [110.00, 110.00, 146.83, 146.83, 130.81, 130.81, 164.81, 146.83],
-        melody: [220.00, 261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 246.94, 220.00, 196.00, 220.00, 261.63, 293.66, 261.63, 220.00, 196.00],
-        leadWave: 'triangle',
-        bassWave: 'sine'
-      },
-      'dungeon': {
-        label: '🎵 Echoes of Dilmun',
-        tempoMs: 480,
-        bass:   [73.42, 73.42, 87.31, 82.41, 65.41, 65.41, 73.42, 69.30],
-        melody: [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 138.59, 146.83, 164.81, 174.61, 261.63, 233.08, 220.00, 174.61, 164.81, 146.83],
-        leadWave: 'sine',
-        bassWave: 'triangle'
-      },
-      'combat': {
-        label: '🎵 Cosmic Forge Battle',
-        tempoMs: 240,
-        bass:   [73.42, 73.42, 110.00, 73.42, 77.78, 73.42, 98.00, 87.31],
-        melody: [293.66, 311.13, 369.99, 293.66, 440.00, 369.99, 311.13, 293.66, 349.23, 311.13, 293.66, 261.63, 311.13, 293.66, 220.00, 293.66],
-        leadWave: 'sawtooth',
-        bassWave: 'sawtooth'
-      }
-    };
-
-    function initAudioEngine() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      if (!bgmTimer) {
-        scheduleNextMusicStep();
-      }
-    }
-
-    function scheduleNextMusicStep() {
-      const theme = MUSIC_THEMES[currentMusicMode] || MUSIC_THEMES['tavern'];
-      bgmTimer = setTimeout(() => {
-        if (bgmEnabled && audioCtx && document.getElementById('char-modal').style.display === 'none') {
-          playMusicStep(theme, bgmTick);
-          bgmTick++;
-        }
-        scheduleNextMusicStep();
-      }, theme.tempoMs);
-    }
-
-    function playMusicStep(theme, step) {
-      try {
-        const now = audioCtx.currentTime;
-        const dur = (theme.tempoMs / 1000) * 0.92;
-
-        // 1. Sub-Bass / Lute Root Note on every beat
-        if (step % 2 === 0 || currentMusicMode === 'combat') {
-          const bOsc = audioCtx.createOscillator();
-          const bGain = audioCtx.createGain();
-          bOsc.type = theme.bassWave;
-          const bFreq = theme.bass[(step >> 1) % theme.bass.length];
-          bOsc.frequency.setValueAtTime(bFreq, now);
-          bGain.gain.setValueAtTime(currentMusicMode === 'combat' ? 0.045 : 0.035, now);
-          bGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
-          bOsc.connect(bGain);
-          bGain.connect(audioCtx.destination);
-          bOsc.start(now);
-          bOsc.stop(now + dur);
-        }
-
-        // 2. Lead Harpsichord / Flute / Brass Voice
-        const lOsc = audioCtx.createOscillator();
-        const lGain = audioCtx.createGain();
-        lOsc.type = theme.leadWave;
-        const mFreq = theme.melody[step % theme.melody.length];
-        lOsc.frequency.setValueAtTime(mFreq, now);
-        lGain.gain.setValueAtTime(currentMusicMode === 'combat' ? 0.025 : 0.028, now);
-        lGain.gain.exponentialRampToValueAtTime(0.001, now + dur * 0.85);
-        lOsc.connect(lGain);
-        lGain.connect(audioCtx.destination);
-        lOsc.start(now);
-        lOsc.stop(now + dur);
-      } catch (e) {}
-    }
-
-    function playSfx(kind) {
-      if (!audioCtx || !bgmEnabled) return;
-      try {
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        if (kind === 'clank') {
-          // Metallic clang when hitting an enemy with the WRONG weapon damage type!
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(980, now);
-          osc.frequency.setValueAtTime(1420, now + 0.03);
-          gain.gain.setValueAtTime(0.14, now);
-          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.09);
-          osc.start(now); osc.stop(now + 0.09);
-        } else if (kind === 'crushing') {
-          // Heavy crunch when hitting an enemy's WEAKNESS!
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(190, now);
-          osc.frequency.exponentialRampToValueAtTime(42, now + 0.20);
-          gain.gain.setValueAtTime(0.24, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.20);
-          osc.start(now); osc.stop(now + 0.20);
-        } else if (kind === 'bow') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(500, now);
-          osc.frequency.exponentialRampToValueAtTime(140, now + 0.09);
-          gain.gain.setValueAtTime(0.14, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.09);
-          osc.start(now); osc.stop(now + 0.09);
-        } else if (kind === 'atman') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(110, now);
-          osc.frequency.exponentialRampToValueAtTime(880, now + 0.45);
-          gain.gain.setValueAtTime(0.22, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.45);
-          osc.start(now); osc.stop(now + 0.45);
-        } else if (kind === 'slash') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(310, now);
-          osc.frequency.exponentialRampToValueAtTime(65, now + 0.13);
-          gain.gain.setValueAtTime(0.14, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.13);
-          osc.start(now); osc.stop(now + 0.13);
-        } else if (kind === 'behead') {
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(540, now);
-          osc.frequency.exponentialRampToValueAtTime(85, now + 0.24);
-          gain.gain.setValueAtTime(0.22, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.24);
-          osc.start(now); osc.stop(now + 0.24);
-        } else if (kind === 'gate') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(95, now);
-          osc.frequency.linearRampToValueAtTime(140, now + 0.22);
-          gain.gain.setValueAtTime(0.18, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
-          osc.start(now); osc.stop(now + 0.22);
-        } else if (kind === 'spell') {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(180, now);
-          osc.frequency.exponentialRampToValueAtTime(720, now + 0.26);
-          gain.gain.setValueAtTime(0.14, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.26);
-          osc.start(now); osc.stop(now + 0.26);
-        } else if (kind === 'loot') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(523.25, now);
-          osc.frequency.setValueAtTime(659.25, now + 0.08);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.24);
-          osc.start(now); osc.stop(now + 0.24);
-        } else if (kind === 'death') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(130, now);
-          osc.frequency.linearRampToValueAtTime(38, now + 0.65);
-          gain.gain.setValueAtTime(0.24, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.65);
-          osc.start(now); osc.stop(now + 0.65);
-        }
-      } catch (e) {}
-    }
-
-    document.getElementById('btn-audio').addEventListener('click', (e) => {
-      bgmEnabled = !bgmEnabled;
-      e.currentTarget.textContent = bgmEnabled ? '🔊 Music: ON' : '🔇 Music: OFF';
-    });
-
-    // =========================================================================
-    // 8. UI INITIALIZATION & INVENTORY / LOOT INSPECTOR
-    // =========================================================================
-    function drawWerdna1981Portrait() {
-      const c = document.getElementById('werdnaCanvas');
-      if (!c) return;
-      const wCtx = c.getContext('2d');
-      wCtx.clearRect(0, 0, c.width, c.height);
-
-      wCtx.fillStyle = '#c81e56';
-      wCtx.strokeStyle = '#111';
-      wCtx.lineWidth = 2.5;
-      wCtx.beginPath();
-      wCtx.moveTo(40, 225);
-      wCtx.quadraticCurveTo(15, 130, 75, 95);
-      wCtx.lineTo(185, 95);
-      wCtx.quadraticCurveTo(245, 130, 220, 225);
-      wCtx.closePath();
-      wCtx.fill(); wCtx.stroke();
-
-      wCtx.fillStyle = '#d6336c';
-      wCtx.beginPath();
-      wCtx.moveTo(105, 65);
-      wCtx.lineTo(130, 12);
-      wCtx.lineTo(155, 65);
-      wCtx.closePath();
-      wCtx.fill(); wCtx.stroke();
-
-      wCtx.fillStyle = '#eab308';
-      wCtx.beginPath();
-      wCtx.arc(130, 78, 18, 0, Math.PI * 2);
-      wCtx.fill(); wCtx.stroke();
-
-      wCtx.fillStyle = '#f8fafc';
-      wCtx.beginPath();
-      wCtx.moveTo(112, 85);
-      wCtx.quadraticCurveTo(95, 165, 115, 220);
-      wCtx.quadraticCurveTo(135, 195, 155, 220);
-      wCtx.quadraticCurveTo(165, 155, 148, 85);
-      wCtx.closePath();
-      wCtx.fill(); wCtx.stroke();
-
-      wCtx.fillStyle = '#eab308';
-      wCtx.beginPath();
-      wCtx.arc(85, 112, 10, 0, Math.PI * 2);
-      wCtx.arc(175, 112, 10, 0, Math.PI * 2);
-      wCtx.fill(); wCtx.stroke();
-    }
-    drawWerdna1981Portrait();
-
-    function initCreationUI() {
-      const urlShard = new URLSearchParams(window.location.search).get('shard');
-      if (urlShard) {
-        document.getElementById('shard-code-input').value = urlShard.toUpperCase().slice(0, 12);
-      }
-
-      const raceSel = document.getElementById('char-race');
-      const subSel = document.getElementById('char-subrace');
-
-      Object.keys(RACE_TREE).forEach(rKey => {
-        const opt = document.createElement('option');
-        opt.value = rKey;
-        opt.textContent = rKey;
-        raceSel.appendChild(opt);
-      });
-
-      function populateSubraces() {
-        const rKey = raceSel.value;
-        const rObj = RACE_TREE[rKey];
-        subSel.innerHTML = '';
-        Object.keys(rObj.subraces).forEach(sKey => {
-          const sObj = rObj.subraces[sKey];
-          const opt = document.createElement('option');
-          opt.value = sKey;
-          opt.textContent = sObj.name;
-          subSel.appendChild(opt);
-        });
-        updateLore();
-      }
-
-      function updateLore() {
-        const rKey = raceSel.value;
-        const sKey = subSel.value;
-        const sObj = RACE_TREE[rKey]?.subraces[sKey];
-        if (sObj) document.getElementById('race-lore-box').textContent = sObj.desc;
-      }
-
-      raceSel.addEventListener('change', populateSubraces);
-      subSel.addEventListener('change', updateLore);
-      populateSubraces();
-
-      const armorRow = document.getElementById('armor-swatches');
-      ARMOR_PALETTE.forEach((col, i) => {
-        const s = document.createElement('div');
-        s.className = 'swatch' + (i === 0 ? ' active' : '');
-        s.style.backgroundColor = col;
-        s.onclick = () => {
-          localPlayer.armorColor = col;
-          armorRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
-          s.classList.add('active');
-        };
-        armorRow.appendChild(s);
-      });
-
-      const hairRow = document.getElementById('hair-swatches');
-      HAIR_PALETTE.forEach((col, i) => {
-        const s = document.createElement('div');
-        s.className = 'swatch' + (i === 0 ? ' active' : '');
-        s.style.backgroundColor = col;
-        s.onclick = () => {
-          localPlayer.hairColor = col;
-          hairRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
-          s.classList.add('active');
-        };
-        hairRow.appendChild(s);
-      });
-
-      checkExistingSave();
-    }
-    initCreationUI();
-
-    function getSubraceMeta(p) {
-      return RACE_TREE[p.raceCategory]?.subraces[p.subraceKey] || RACE_TREE['Elf'].subraces['Highlander'];
-    }
-
-    function getActiveClassTitle(p) {
-      if (p.prestigeClass) return `${p.prestigeClass} [${p.prestigeSet}]`;
-      if (p.eliteClass) return `${p.eliteClass} (${p.specialistFocus})`;
-      return `Core ${p.coreClass}`;
-    }
-
-    function renderHotbarUI() {
-      const container = document.getElementById('hotbar-container');
-      container.innerHTML = '';
-      const unlockedSlots = Math.min(9, localPlayer.level);
-
-      for (let i = 0; i < 9; i++) {
-        const spellId = localPlayer.spellBar[i] || 'muramasa';
-        const sp = GRIMOIRE_SPELLS.find(s => s.id === spellId) || GRIMOIRE_SPELLS[0];
-        const isLocked = (i + 1) > unlockedSlots;
-
-        const slot = document.createElement('div');
-        slot.className = 'hotkey-slot' + (isLocked ? ' locked' : '');
-        slot.title = isLocked
-          ? `Special Slot ${i + 1} unlocks at Level ${i + 1}`
-          : `[Key ${i + 1}] ${sp.name} (${sp.dmgType}) - ${sp.desc}`;
-        slot.innerHTML = `
-          <span class="hotkey-num">${i + 1}</span>
-          ${!isLocked && sp.mp > 0 ? `<span class="hotkey-mp">${sp.mp}</span>` : ''}
-          <span class="hotkey-icon">${isLocked ? '🔒' : sp.icon}</span>
-          <span class="hotkey-label">${isLocked ? 'Lv.' + (i + 1) : sp.name.split(' ')[0]}</span>
-          <div class="cd-overlay" id="cd-slot-${i}"></div>
-        `;
-        slot.onclick = () => {
-          if (isLocked) {
-            showToast(`Special Slot ${i + 1} unlocks at Level ${i + 1}!`);
-          } else {
-            triggerSpellSlot(i);
-          }
-        };
-        container.appendChild(slot);
-      }
-    }
-
-    function toggleInventory(forceState) {
-      const modal = document.getElementById('inventory-modal');
-      const open = typeof forceState === 'boolean' ? forceState : modal.style.display !== 'flex';
-      modal.style.display = open ? 'flex' : 'none';
-      if (open) renderInventoryUI();
-    }
-
-    function renderInventoryUI() {
-      recalcEquipmentStats();
-      document.getElementById('inv-gold').textContent = `💰 ${localPlayer.gold} Gold`;
-      document.getElementById('gold-hud').textContent = `${localPlayer.gold}g`;
-
-      ['prime', 'side', 'backup', 'armor', 'relic'].forEach(slotKey => {
-        const item = localPlayer.equipped[slotKey];
-        const nameEl = document.getElementById(`eq-${slotKey}-name`);
-        const statEl = document.getElementById(`eq-${slotKey}-stat`);
-        if (item) {
-          nameEl.textContent = item.name;
-          nameEl.style.color = item.rarityColor || '#f4dca6';
-          const parts = [];
-          if (item.dmgType) parts.push(item.dmgType);
-          if (item.atk) parts.push(`+${item.atk} ATK`);
-          if (item.hp)  parts.push(`+${item.hp} HP`);
-          statEl.textContent = parts.join(' ');
-        } else {
-          nameEl.textContent = 'Empty';
-          statEl.textContent = '—';
-        }
-      });
-
-      document.getElementById('inv-stats-summary').textContent =
-        `Active Stance: ${localPlayer.activeWeaponSlot.toUpperCase()} | ATK +${localPlayer.dmgBonus}`;
-
-      const grid = document.getElementById('bag-grid');
-      grid.innerHTML = '';
-      for (let i = 0; i < 8; i++) {
-        const it = localPlayer.backpack[i];
-        const cell = document.createElement('div');
-        cell.className = 'bag-slot';
-        if (it) {
-          if (it.unidentified) {
-            cell.innerHTML = `
-              <span class="item-name" style="color:#facc15;">🔍 ? Unidentified ${it.slot.toUpperCase()}</span>
-              <span class="item-stat" style="color:#a855f7;">Click to Appraise (Free)</span>
-            `;
-            cell.onclick = () => {
-              it.unidentified = false;
-              playSfx('loot');
-              showToast(`Appraised: ${it.trueName}!`);
-              savePersistentProgress();
-              renderInventoryUI();
-            };
-          } else {
-            const stats = [];
-            if (it.dmgType) stats.push(`[${it.dmgType}]`);
-            if (it.atk) stats.push(`+${it.atk} ATK`);
-            if (it.hp)  stats.push(`+${it.hp} HP`);
-            cell.innerHTML = `
-              <span class="item-name" style="color:${it.rarityColor || '#f4dca6'};">${it.name}</span>
-              <span class="item-stat">${stats.join(' ')}</span>
-            `;
-            cell.onclick = () => equipFromBag(i);
-          }
-        } else {
-          cell.innerHTML = `<span style="font-size:10px; color:#57493a;">Empty Slot</span>`;
-        }
-        grid.appendChild(cell);
-      }
-      updateVitalsUI();
-    }
-
-    function equipFromBag(idx) {
-      const item = localPlayer.backpack[idx];
-      if (!item) return;
-      const targetSlot = item.slot || 'prime';
-      const prevEquipped = localPlayer.equipped[targetSlot];
-      localPlayer.equipped[targetSlot] = item;
-      if (prevEquipped) {
-        localPlayer.backpack[idx] = prevEquipped;
-      } else {
-        localPlayer.backpack.splice(idx, 1);
-      }
-      if (['prime', 'side', 'backup'].includes(targetSlot)) {
-        switchWeaponStance(targetSlot);
-      }
-      playSfx('loot');
-      savePersistentProgress();
-      renderInventoryUI();
-      showToast(`Equipped ${item.name} into ${targetSlot.toUpperCase()}!`);
-    }
-
-    function unequipSlot(slotKey) {
-      const item = localPlayer.equipped[slotKey];
-      if (!item) return;
-      if (localPlayer.backpack.length >= 8) {
-        showToast('Backpack Satchel is full!');
-        return;
-      }
-      localPlayer.backpack.push(item);
-      localPlayer.equipped[slotKey] = null;
-      savePersistentProgress();
-      renderInventoryUI();
-    }
-
-    let selectedGrimoireSlot = 0;
-    function toggleGrimoire(forceState) {
-      const modal = document.getElementById('grimoire-modal');
-      const open = typeof forceState === 'boolean' ? forceState : modal.style.display !== 'flex';
-      modal.style.display = open ? 'flex' : 'none';
-      if (modal.style.display === 'flex') renderGrimoireModal();
-    }
-
-    function renderGrimoireModal() {
-      const unlocked = Math.min(9, localPlayer.level);
-      document.getElementById('grimoire-slot-info').textContent = `Unlocked Specials: ${unlocked} / 9 (1 per Level)`;
-
-      const selRow = document.getElementById('grimoire-slot-selector');
-      selRow.innerHTML = '';
-      for (let i = 0; i < unlocked; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'action-btn';
-        if (i === selectedGrimoireSlot) btn.style.background = '#5c1919';
-        btn.textContent = `Special [${i + 1}]`;
-        btn.onclick = () => {
-          selectedGrimoireSlot = i;
-          renderGrimoireModal();
-        };
-        selRow.appendChild(btn);
-      }
-
-      const list = document.getElementById('grimoire-spell-list');
-      list.innerHTML = '';
-      GRIMOIRE_SPELLS.forEach(sp => {
-        const card = document.createElement('div');
-        card.className = 'spell-card';
-        card.innerHTML = `
-          <div>
-            <div style="font-family:'Cinzel',serif; font-size:11.5px; color:#f4dca6; font-weight:700;">${sp.icon} ${sp.name} <span class="dmg-badge dmg-${sp.dmgType}">${sp.dmgType}</span></div>
-            <div style="font-size:10px; color:#a89984;">${sp.desc} (${sp.mp} MP)</div>
-          </div>
-          <span style="font-family:'Cinzel',serif; font-size:10px; color:#4ade80;">Bind -> [${selectedGrimoireSlot + 1}]</span>
-        `;
-        card.onclick = () => {
-          localPlayer.spellBar[selectedGrimoireSlot] = sp.id;
-          savePersistentProgress();
-          renderHotbarUI();
-          showToast(`Bound ${sp.name} to Special Slot [${selectedGrimoireSlot + 1}]`);
-        };
-        list.appendChild(card);
-      });
-    }
-
-    document.getElementById('btn-inv').onclick = () => toggleInventory();
-    document.getElementById('btn-grim').onclick = () => toggleGrimoire();
-    document.getElementById('btn-gates').onclick = () => toggleNearestGate();
-    document.getElementById('btn-autoattack').onclick = (e) => {
-      localPlayer.autoAttack = !localPlayer.autoAttack;
-      e.currentTarget.textContent = `⚔️ Auto-Stance: ${localPlayer.autoAttack ? 'ON' : 'OFF'}`;
-      e.currentTarget.style.color = localPlayer.autoAttack ? '#4ade80' : '#f87171';
-    };
-
-    function checkClassAscensionPrompt() {
-      const modal = document.getElementById('ascend-modal');
-      const title = document.getElementById('ascend-title');
-      const desc = document.getElementById('ascend-desc');
-      const opts = document.getElementById('ascend-options');
-
-      if (localPlayer.level >= 3 && !localPlayer.eliteClass) {
-        const cMeta = CLASS_PROGRESSION[localPlayer.coreClass] || CLASS_PROGRESSION['Fighter'];
-        title.textContent = `🔥 LEVEL 3 SPECIALIST FOCUS -> ELITE ${cMeta.elite.toUpperCase()}`;
-        desc.textContent = `Choose your Specialist Focus to lock into the Elite ${cMeta.elite} class:`;
-        opts.innerHTML = '';
-        cMeta.focuses.forEach(foc => {
-          const b = document.createElement('button');
-          b.className = 'action-btn';
-          b.style.padding = '10px';
-          b.textContent = `${foc} -> ${cMeta.elite}`;
-          b.onclick = () => {
-            localPlayer.specialistFocus = foc;
-            localPlayer.eliteClass = cMeta.elite;
-            modal.style.display = 'none';
-            savePersistentProgress();
-            updateVitalsUI();
-            triggerSoulsBanner(`ASCENDED: ELITE ${cMeta.elite.toUpperCase()}`);
-          };
-          opts.appendChild(b);
-        });
-        modal.style.display = 'flex';
-      } else if (localPlayer.level >= 6 && !localPlayer.prestigeClass) {
-        const sect = localPlayer.regionalSect || 'Classic';
-        const classes = PRESTIGE_SETS[sect] || PRESTIGE_SETS['Classic'];
-        title.textContent = `⚔️ LEVEL 6 REGIONAL PRESTIGE SET (${sect.toUpperCase()})`;
-        desc.textContent = `Choose your Regional Prestige Calling from Set ${sect}:`;
-        opts.innerHTML = '';
-        classes.forEach(pCls => {
-          const b = document.createElement('button');
-          b.className = 'action-btn';
-          b.style.padding = '10px';
-          b.textContent = `${pCls} [Set ${sect}]`;
-          b.onclick = () => {
-            localPlayer.prestigeSet = `Set ${sect}`;
-            localPlayer.prestigeClass = pCls;
-            modal.style.display = 'none';
-            savePersistentProgress();
-            updateVitalsUI();
-            triggerSoulsBanner(`PRESTIGE: ${pCls.toUpperCase()}`);
-          };
-          opts.appendChild(b);
-        });
-        modal.style.display = 'flex';
-      }
-    }
-
-    function triggerSoulsBanner(text) {
-      const b = document.getElementById('souls-banner');
-      b.textContent = text;
-      b.style.display = 'block';
-      clearTimeout(window._soulsBannerTimer);
-      window._soulsBannerTimer = setTimeout(() => { b.style.display = 'none'; }, 3100);
-    }
-
-    // =========================================================================
-    // 9. DYNAMIC SECTOR ENEMIES (WITH EXPLICIT WEAKNESSES!) & MULTI-ITEM COFFERS
-    // =========================================================================
-    const enemies = [];
-    const projectiles = [];
-    const atmanMotes = [];
-    const dodgeAfterimages = [];
-    const floorDecals = [];
-    const lootChests = [];
-    const spellVortexes = [];
-    const slashArcs = [];
-    const bloodSparks = [];
-    const flyingHeads = [];
-    const combatTexts = [];
-    let screenShake = 0;
-
-    function spawnSectorEntities(sector) {
-      const cx = sector.gx * TILE_SIZE + TILE_SIZE / 2;
-      const cy = sector.gy * TILE_SIZE + TILE_SIZE / 2;
-      const tier = Math.max(1, sector.depth);
-      const hpMult = 1 + (tier - 1) * 0.42;
-
-      if (sector.isBossRoom) {
-        const bossArchetypes = [
-          { name: 'PETRIFIED STATUE OF FATHER ABESHU', kind: 'abeshu_statue', weakness: 'BLUNT',  color: '#eab308', pattern: 'zhad_cymatic' },
-          { name: 'BAALZEBUL, GREATER DEMON SOVEREIGN',kind: 'greater_demon', weakness: 'PIERCE', color: '#28517a', pattern: 'demon_spiral' },
-          { name: 'SURTR, KING OF THE FIRE GIANTS',    kind: 'fire_giant',    weakness: 'SLASH',  color: '#ea580c', pattern: 'magma_fan' },
-          { name: 'GRAND ARCHMAGE WERDNA',             kind: 'werdna_boss',   weakness: 'ARCANE', color: '#c084fc', pattern: 'tiltowait_ring' }
-        ];
-        const bMeta = bossArchetypes[(Math.abs(sector.gx * 3 + sector.gy * 7)) % bossArchetypes.length];
-        const bossHp = Math.round(920 * hpMult);
-        enemies.push({
-          id: `boss-${sector.key}-${Math.random().toString(36).slice(2,6)}`,
-          isBoss: true,
-          name: `${bMeta.name}`,
-          weakness: bMeta.weakness,
-          x: cx,
-          y: cy,
-          hp: bossHp,
-          maxHp: bossHp,
-          radius: 38,
-          speed: 118 + tier * 4,
-          color: bMeta.color,
-          kind: bMeta.kind,
-          xpValue: 300 * tier,
-          tier,
-          pattern: bMeta.pattern,
-          hitFlash: 0,
-          shootCooldown: 1.3
-        });
-      }
-
-      const mobTemplates = [
-        { name: 'Maelstrom Undead Warrior', hp: 115, radius: 17, speed: 138, color: '#38bdf8', kind: 'undead_warrior', weakness: 'BLUNT',  xp: 60, ranged: false },
-        { name: 'House of Ra Stone-Statue', hp: 150, radius: 20, speed: 125, color: '#eab308', kind: 'abeshu_statue',  weakness: 'BLUNT',  xp: 75, ranged: true },
-        { name: 'Greater Demon Gargoyle',   hp: 160, radius: 22, speed: 138, color: '#28517a', kind: 'greater_demon',  weakness: 'PIERCE', xp: 80, ranged: true },
-        { name: 'Fire Giant Berserker',     hp: 145, radius: 20, speed: 135, color: '#dc2626', kind: 'fire_giant',     weakness: 'SLASH',  xp: 70, ranged: true },
-        { name: 'Cobold Sun-King Guard',    hp: 105, radius: 16, speed: 160, color: '#3f7d4c', kind: 'cobold_king',    weakness: 'SLASH',  xp: 55, ranged: true },
-        { name: 'Gaiden Sorceress Shade',   hp: 95,  radius: 16, speed: 150, color: '#a855f7', kind: 'sorceress',      weakness: 'ARCANE', xp: 65, ranged: true }
-      ];
-
-      const mobCount = sector.isBossRoom ? 3 : (3 + Math.min(4, tier));
-      for (let i = 0; i < mobCount; i++) {
-        const t = mobTemplates[Math.floor(Math.random() * mobTemplates.length)];
-        const mHp = Math.round(t.hp * hpMult);
-        enemies.push({
-          id: `mob-${sector.key}-${i}-${Math.random().toString(36).slice(2,6)}`,
-          isBoss: false,
-          name: `${t.name}`,
-          weakness: t.weakness,
-          x: cx + (Math.random() - 0.5) * 480,
-          y: cy + (Math.random() - 0.5) * 480,
-          hp: mHp,
-          maxHp: mHp,
-          radius: t.radius,
-          speed: t.speed + tier * 4,
-          color: t.color,
-          kind: t.kind,
-          xpValue: Math.round(t.xp * hpMult),
-          tier,
-          ranged: t.ranged,
-          hitFlash: 0,
-          shootCooldown: 1.5 + Math.random() * 1.8
-        });
-      }
-
-      // Spawn a Multi-Item Rarity Coffer in every newly discovered sector
-      const item1 = rollProceduralLootItem(tier);
-      const item2 = rollProceduralLootItem(tier + 1, true);
-      lootChests.push({
-        id: 'chest-' + sector.key,
-        x: cx + (Math.random() - 0.5) * 240,
-        y: cy + (Math.random() - 0.5) * 240,
-        label: sector.isBossRoom ? `👑 ${sector.name} Grand Treasury` : `Dilmun Reliquary [T${tier}]`,
-        isCorpse: false,
-        beamColor: item2.rarityColor || '#fbbf24',
-        gold: (55 + Math.floor(Math.random() * 55)) * tier,
-        items: [item1, item2]
-      });
-    }
-
-    // Initialize starting Sector (0, 0) AND pre-carve the 4 immediate N/S/E/W rooms
-    getOrGenerateSector(0, 0, 'House of Ra', false);
-    getOrGenerateSector(0, -1, 'House of Ra', false);
-    getOrGenerateSector(0, 1, 'House of Ra', false);
-    getOrGenerateSector(-1, 0, 'House of Ra', false);
-    getOrGenerateSector(1, 0, 'House of Ra', false);
-
-    // =========================================================================
-    // 10. SEAMLESS GATE PROXIMITY & COLLISION ENGINE
-    // =========================================================================
-    function updateGatesAutoProximity(dt) {
-      GATES.forEach(g => {
-        if (!g.manualLock) {
-          const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
-          if (d < 145 && !g.isOpen) {
-            g.isOpen = true;
-            playSfx('gate');
-            if (typeof g.gx2 === 'number') {
-              getOrGenerateSector(g.gx2, g.gy2, localPlayer.name, true);
-            }
-          } else if (d > 210 && g.isOpen) {
-            g.isOpen = false;
-          }
-        }
-        const targetAnim = g.isOpen ? 1 : 0;
-        g.openAnim = (g.openAnim || 0) + (targetAnim - (g.openAnim || 0)) * Math.min(1, dt * 10);
-      });
-    }
-
-    function toggleNearestGate() {
-      let nearest = null;
-      let minDist = 185;
-      GATES.forEach(g => {
-        const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
-        if (d < minDist) {
-          minDist = d;
-          nearest = g;
-        }
-      });
-
-      if (nearest) {
-        nearest.isOpen = !nearest.isOpen;
-        nearest.manualLock = !nearest.isOpen;
-        playSfx('gate');
-        if (nearest.isOpen && typeof nearest.gx2 === 'number') {
-          getOrGenerateSector(nearest.gx2, nearest.gy2, localPlayer.name, true);
-        }
-        showToast(`${nearest.label}: ${nearest.isOpen ? 'OPENED ⛩️' : 'LOCKED SHUT 🔒'}`);
-      } else {
-        showToast('Move closer to a Portcullis Gate to toggle it!');
-      }
-    }
-
-    function isNearOpenGateThreshold(px, py) {
-      for (const g of GATES) {
-        if (!g.isOpen) continue;
-        if (g.horiz) {
-          if (Math.abs(px - g.x) < 130 && Math.abs(py - g.y) < 95) return true;
-        } else {
-          if (Math.abs(px - g.x) < 95 && Math.abs(py - g.y) < 130) return true;
-        }
-      }
-      return false;
-    }
-
-    function isBlockedByClosedGate(px, py) {
-      for (const g of GATES) {
-        if (g.isOpen) continue;
-        if (g.horiz) {
-          if (Math.abs(px - g.x) < 120 && Math.abs(py - g.y) < 16) return true;
-        } else {
-          if (Math.abs(px - g.x) < 16 && Math.abs(py - g.y) < 120) return true;
-        }
-      }
-      return false;
-    }
-
-    function getWalkableSectorAt(px, py, allowAutoGenerate = false) {
-      if (isBlockedByClosedGate(px, py)) return null;
-
-      const gx = Math.floor(px / TILE_SIZE);
-      const gy = Math.floor(py / TILE_SIZE);
-      const key = sectorKey(gx, gy);
-
-      let sec = worldSectors.get(key);
-      if (!sec && allowAutoGenerate) {
-        sec = getOrGenerateSector(gx, gy, localPlayer.name, true);
-      }
-      if (!sec) return null;
-
-      if (isNearOpenGateThreshold(px, py)) {
-        return sec;
-      }
-
-      for (let i = 0; i < sec.rects.length; i++) {
-        const r = sec.rects[i];
-        if (px >= r.x + 8 && px <= r.x + r.w - 8 && py >= r.y + 8 && py <= r.y + r.h - 8) {
-          return sec;
-        }
-      }
-      return null;
-    }
-
-    function resolveDungeonMovement(entity, nextX, nextY, isLocalPlayer = false) {
-      if (getWalkableSectorAt(nextX, entity.y, isLocalPlayer)) {
-        entity.x = nextX;
-      }
-      if (getWalkableSectorAt(entity.x, nextY, isLocalPlayer)) {
-        entity.y = nextY;
-      }
-
-      for (let i = 0; i < SOLID_PILLARS.length; i++) {
-        const pil = SOLID_PILLARS[i];
-        const dist = Math.hypot(entity.x - pil.x, entity.y - pil.y);
-        const minR = pil.r + 14;
-        if (dist < minR && dist > 0.001) {
-          const ang = Math.atan2(entity.y - pil.y, entity.x - pil.x);
-          entity.x = pil.x + Math.cos(ang) * minR;
-          entity.y = pil.y + Math.sin(ang) * minR;
-        }
-      }
-
-      const fDist = Math.hypot(entity.x - FIREPIT_POS.x, entity.y - FIREPIT_POS.y);
-      if (fDist < FIREPIT_POS.radius + 14) {
-        const ang = Math.atan2(entity.y - FIREPIT_POS.y, entity.x - FIREPIT_POS.x);
-        entity.x = FIREPIT_POS.x + Math.cos(ang) * (FIREPIT_POS.radius + 14);
-        entity.y = FIREPIT_POS.y + Math.sin(ang) * (FIREPIT_POS.radius + 14);
-      }
-    }
-
-    function isInsideFirepitSafezone(x, y) {
-      return Math.hypot(x - FIREPIT_POS.x, y - FIREPIT_POS.y) <= FIREPIT_POS.safeRadius;
-    }
-
-    // =========================================================================
-    // 11. 4-PLAYER DETERMINISTIC AUTO-MESH MULTIPLAYER + TOP-LEFT PARTY PROFILES
-    // =========================================================================
-    const remotePlayers = new Map();
-    let peerInstance = null;
-    const peerConnections = new Map();
-    let localBroadcastChannel = null;
-
-    function getSlotPeerId(shard, slotNum) {
-      const cleanShard = String(shard || 'MAIN').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      return `tartaria-v7-${cleanShard}-slot-${slotNum}`;
-    }
-
-    function initFourPlayerMesh(shardCode) {
-      localPlayer.shardCode = String(shardCode || 'MAIN').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'MAIN';
-
-      try {
-        if (typeof BroadcastChannel !== 'undefined') {
-          if (localBroadcastChannel) localBroadcastChannel.close();
-          localBroadcastChannel = new BroadcastChannel('tartaria_v7_mesh_' + localPlayer.shardCode);
-          localBroadcastChannel.onmessage = (ev) => {
-            if (ev.data && ev.data.id !== localPlayer.id) handleNetworkPacket(ev.data);
-          };
-        }
-      } catch (e) {}
-
-      if (typeof Peer === 'undefined') return;
-
-      function tryClaimSlot(slotAttempt) {
-        if (slotAttempt > 4) {
-          createPeerWithId(undefined, 4);
-          return;
-        }
-        const candidateId = getSlotPeerId(localPlayer.shardCode, slotAttempt);
-        createPeerWithId(candidateId, slotAttempt);
-      }
-
-      function createPeerWithId(myPeerId, slotNum) {
-        try {
-          const p = myPeerId ? new Peer(myPeerId) : new Peer();
-          peerInstance = p;
-
-          p.on('open', () => {
-            localPlayer.slotNum = slotNum;
-            connectToAllOtherSlots();
-            updatePartyRosterUI();
-          });
-
-          p.on('connection', (conn) => { setupPeerConn(conn); });
-          p.on('error', (err) => {
-            if (err.type === 'unavailable-id' && myPeerId) tryClaimSlot(slotNum + 1);
-          });
-        } catch (err) {}
-      }
-
-      tryClaimSlot(1);
-
-      setInterval(() => {
-        connectToAllOtherSlots();
-        pruneStalePlayers();
-      }, 3500);
-    }
-
-    function connectToAllOtherSlots() {
-      if (!peerInstance || peerInstance.disconnected || peerInstance.destroyed) return;
-      for (let s = 1; s <= 4; s++) {
-        if (s === localPlayer.slotNum) continue;
-        const targetPeerId = getSlotPeerId(localPlayer.shardCode, s);
-        if (!peerConnections.has(targetPeerId)) {
-          try {
-            const conn = peerInstance.connect(targetPeerId, { reliable: false });
-            setupPeerConn(conn);
-          } catch (e) {}
-        }
-      }
-    }
-
-    function setupPeerConn(conn) {
-      conn.on('open', () => {
-        peerConnections.set(conn.peer, conn);
-        broadcastState();
-      });
-      conn.on('data', (data) => {
-        if (data && data.id !== localPlayer.id) handleNetworkPacket(data);
-      });
-      conn.on('close', () => { peerConnections.delete(conn.peer); });
-      conn.on('error', () => { peerConnections.delete(conn.peer); });
-    }
-
-    function sendPacket(packet) {
-      if (localBroadcastChannel) {
-        try { localBroadcastChannel.postMessage(packet); } catch (e) {}
-      }
-      peerConnections.forEach(conn => {
-        if (conn && conn.open) {
-          try { conn.send(packet); } catch (e) {}
-        }
-      });
-    }
-
-    function handleNetworkPacket(data) {
-      if (!data || !data.id || data.id === localPlayer.id) return;
-
-      if (data.type === 'state') {
-        let p = remotePlayers.get(data.id);
-        if (!p) {
-          p = { ...data, lastSeen: performance.now() };
-          remotePlayers.set(data.id, p);
-          appendChat('Party Shard', `⚔️ ${p.name} (${p.raceLabel}) joined Slot ${p.slotNum || '?'}!`);
-          updatePartyRosterUI();
-        } else {
-          Object.assign(p, data);
-          p.lastSeen = performance.now();
-        }
-        const rgx = Math.floor(p.x / TILE_SIZE);
-        const rgy = Math.floor(p.y / TILE_SIZE);
-        if (!worldSectors.has(sectorKey(rgx, rgy))) {
-          getOrGenerateSector(rgx, rgy, p.name, false);
-        }
-      } else if (data.type === 'sector_mapped') {
-        getOrGenerateSector(data.gx, data.gy, data.discoverer, false);
-      } else if (data.type === 'proj') {
-        projectiles.push({ ...data.proj, isRemote: true });
-      } else if (data.type === 'chat') {
-        appendChat(data.sender, data.text);
-      } else if (data.type === 'pvp_hit') {
-        if (data.targetId === localPlayer.id) {
-          if (isInsideFirepitSafezone(localPlayer.x, localPlayer.y)) return;
-          localPlayer.hp = Math.max(0, localPlayer.hp - data.dmg);
-          localPlayer.hitFlash = 8;
-          playSfx('slash');
-          spawnCombatText(localPlayer.x, localPlayer.y, `-${data.dmg} (${data.attackerName})`, '#ff2a38');
-          updateVitalsUI();
-          if (localPlayer.hp <= 0) handleFullLootDeath(data.attackerName);
-        }
-      } else if (data.type === 'corpse_drop') {
-        lootChests.push(data.chest);
-        appendChat('Full-Loot PvP', `💀 ${data.victimName} fell! Corpse Satchel dropped!`);
-      }
-    }
-
-    function pruneStalePlayers() {
-      const now = performance.now();
-      remotePlayers.forEach((p, id) => {
-        if (now - (p.lastSeen || 0) > 9000) remotePlayers.delete(id);
-      });
-      updatePartyRosterUI();
-    }
-
-    function updatePartyRosterUI() {
-      const listEl = document.getElementById('party-list');
-      if (!listEl) return;
-      listEl.innerHTML = '';
-
-      if (remotePlayers.size === 0) {
-        const emptyMsg = document.createElement('div');
-        emptyMsg.style.fontSize = '9.5px';
-        emptyMsg.style.color = '#94a3b8';
-        emptyMsg.textContent = 'No party mates in shard yet. Click [Invite] to summon up to 3 friends!';
-        listEl.appendChild(emptyMsg);
-      }
-
-      remotePlayers.forEach(rp => {
-        const rgx = Math.floor((rp.x || 500) / TILE_SIZE);
-        const rgy = Math.floor((rp.y || 500) / TILE_SIZE);
-        const hpPct = Math.max(0, Math.min(100, ((rp.hp || 100) / (rp.maxHp || 100)) * 100));
-        const row = document.createElement('div');
-        row.className = 'party-member';
-        row.innerHTML = `
-          <div class="party-member-top">
-            <strong style="color:#38bdf8; font-family:'Cinzel',serif; font-size:10px;">[S${rp.slotNum || '?'}] ${escapeHtml(rp.name)} <small style="color:#cfa354;">Lv.${rp.level || 1}</small></strong>
-            <button class="party-warp-btn" title="Teleport to ${escapeHtml(rp.name)}">⚡ Warp (${rgx},${rgy})</button>
-          </div>
-          <div class="party-mini-hp"><div class="party-mini-hp-fill" style="width:${hpPct}%;"></div></div>
-        `;
-        row.querySelector('button').onclick = () => {
-          getOrGenerateSector(rgx, rgy, rp.name, false);
-          localPlayer.x = rp.x + 35;
-          localPlayer.y = rp.y + 35;
-          localPlayer.targetX = null;
-          localPlayer.targetY = null;
-          playSfx('spell');
-          showToast(`Warped to ${rp.name} in Sector (${rgx}, ${rgy})!`);
-        };
-        listEl.appendChild(row);
-      });
-
-      document.getElementById('online-badge').textContent =
-        `Shard ${localPlayer.shardCode} (${remotePlayers.size + 1}/4)`;
-    }
-
-    function broadcastState() {
-      sendPacket({
-        type: 'state',
-        id: localPlayer.id,
-        slotNum: localPlayer.slotNum,
-        name: localPlayer.name,
-        raceCategory: localPlayer.raceCategory,
-        subraceKey: localPlayer.subraceKey,
-        raceLabel: localPlayer.raceLabel,
-        coreClass: localPlayer.coreClass,
-        eliteClass: localPlayer.eliteClass,
-        prestigeClass: localPlayer.prestigeClass,
-        prestigeSet: localPlayer.prestigeSet,
-        armorColor: localPlayer.armorColor,
-        hairColor: localPlayer.hairColor,
-        x: Math.round(localPlayer.x),
-        y: Math.round(localPlayer.y),
-        hp: Math.round(localPlayer.hp),
-        maxHp: localPlayer.maxHp,
-        aimAngle: Number(localPlayer.aimAngle.toFixed(2)),
-        facing: localPlayer.facing,
-        isMoving: localPlayer.isMoving,
-        swingTimer: localPlayer.swingTimer,
-        level: localPlayer.level,
-        chatBubble: localPlayer.chatBubble,
-        chatTimer: localPlayer.chatTimer
-      });
-    }
-
-    // =========================================================================
-    // 12. WEAPON STANCE AUTO-ATTACKS vs. 1-9 SPECIALS + DAMAGE TYPE RESISTANCE!
-    // =========================================================================
-    const slotCooldowns = new Array(9).fill(0);
-    const slotMaxCooldowns = new Array(9).fill(1);
-    let mouseScreenX = window.innerWidth / 2;
-    let mouseScreenY = window.innerHeight / 2;
-
-    // Calculate Damage Multiplier based on Attack Damage Type vs. Enemy Weakness!
-    function evaluateDamageVsEnemy(rawDmg, atkType, enemy) {
-      const weak = enemy.weakness || 'SLASH';
-      if (atkType === weak) {
-        // Crushing Weakness Hit (175% Damage!)
-        return {
-          finalDmg: Math.round(rawDmg * 1.75),
-          status: 'WEAKNESS',
-          color: '#84cc16',
-          label: `💥 -${Math.round(rawDmg * 1.75)} ${atkType} WEAKNESS!`
-        };
-      }
-      // ARCANE spells do 60% against physical-weak enemies so magic is never completely useless,
-      // but wrong physical weapon stances do only 15% glancing damage!
-      if (atkType === 'ARCANE') {
-        const d = Math.max(4, Math.round(rawDmg * 0.55));
-        return {
-          finalDmg: d,
-          status: 'PARTIAL',
-          color: '#c084fc',
-          label: `-${d} (Weak: ${weak})`
-        };
-      }
-      const glanced = Math.max(2, Math.round(rawDmg * 0.16));
-      return {
-        finalDmg: glanced,
-        status: 'RESISTED',
-        color: '#94a3b8',
-        label: `🛡️ -${glanced} RESISTED! [Need ${weak}]`
-      };
-    }
-
-    // Right-Side Weapon Stance Auto-Attack Execution
-    function executeWeaponStanceAttack(targetEnemy) {
-      const wep = getActiveWeapon();
-      const baseDmg = 22 + localPlayer.dmgBonus;
-      const angle = targetEnemy
-        ? Math.atan2(targetEnemy.y - localPlayer.y, targetEnemy.x - localPlayer.x)
-        : getAimAngle();
-
-      localPlayer.facing = Math.cos(angle) >= 0 ? 1 : -1;
-      localPlayer.aimAngle = angle;
-      localPlayer.swingTimer = 16;
-
-      if (wep.range === 'ranged' || wep.dmgType === 'PIERCE') {
-        playSfx('bow');
-        spawnProjectile({
-          ownerId: localPlayer.id,
-          isEnemy: false,
-          x: localPlayer.x + Math.cos(angle) * 18,
-          y: localPlayer.y - 18 + Math.sin(angle) * 18,
-          angle,
-          speed: 650,
-          dmg: baseDmg,
-          dmgType: wep.dmgType || 'PIERCE',
-          color: '#4ade80',
-          projType: 'arrow',
-          radius: 7
-        });
-      } else {
-        // Melee Cleave (Prime SLASH or Side BLUNT)
-        const arcColor = wep.dmgType === 'BLUNT' ? '#facc15' : '#f87171';
-        spawnSlashArc(localPlayer.x + localPlayer.facing * 28, localPlayer.y, localPlayer.facing, arcColor, 54);
-
-        let hitAny = false;
-        for (let i = enemies.length - 1; i >= 0; i--) {
-          const en = enemies[i];
-          if (Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y) <= en.radius + 95) {
-            hitAny = true;
-            const res = evaluateDamageVsEnemy(baseDmg, wep.dmgType || 'SLASH', en);
-            en.hp -= res.finalDmg;
-            en.hitFlash = 6;
-            playSfx(res.status === 'RESISTED' ? 'clank' : (res.status === 'WEAKNESS' ? 'crushing' : 'slash'));
-            spawnCombatText(en.x, en.y, res.label, res.color);
-
-            if (en.hp <= 0) {
-              if (res.status === 'WEAKNESS') spawnOvaDecapitation(en.x, en.y, localPlayer.facing);
-              handleEnemyKilled(en, i);
-            }
-          }
-        }
-        if (!hitAny) playSfx('slash');
-      }
-    }
-
-    function triggerAtmanCymaticBurst() {
-      initAudioEngine();
-      if (localPlayer.atman < 35) {
-        showToast('Need 35 Atman in your Urn! Slay foes to harvest golden Atman Motes.');
-        return;
-      }
-      localPlayer.atman = Math.max(0, localPlayer.atman - 35);
-      playSfx('atman');
-      screenShake = 14;
-      localPlayer.chatBubble = '"BY MY ATMAN & THE PILLARS OF ZHAD!!"';
-      localPlayer.chatTimer = 95;
-
-      const healAmt = Math.round(localPlayer.maxHp * 0.4);
-      localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + healAmt);
-      spawnCombatText(localPlayer.x, localPlayer.y - 20, `+${healAmt} CROWN-WORTHY ATMAN!`, '#fde047');
-
-      spawnSpellVortex(localPlayer.x, localPlayer.y, '#fbbf24', 240);
-      const burstDmg = 85 + localPlayer.dmgBonus * 2;
-
-      for (let i = 0; i < 16; i++) {
-        const ang = (i / 16) * Math.PI * 2;
-        spawnProjectile({
-          ownerId: localPlayer.id, isEnemy: false,
-          x: localPlayer.x, y: localPlayer.y - 18,
-          angle: ang, speed: 540,
-          dmg: burstDmg, dmgType: 'BLUNT', color: '#fbbf24', projType: 'orb', radius: 10, life: 1.5
-        });
-      }
-      savePersistentProgress();
-      updateVitalsUI();
-    }
-
-    function triggerDodgeRoll() {
-      if (localPlayer.dodgeTimer > 0) return;
-      initAudioEngine();
-      playSfx('bow');
-      localPlayer.dodgeTimer = 18;
-      const ang = getAimAngle();
-      for (let i = 1; i <= 4; i++) {
-        dodgeAfterimages.push({
-          x: localPlayer.x,
-          y: localPlayer.y,
-          facing: localPlayer.facing,
-          pRef: { ...localPlayer },
-          life: i * 4
-        });
-      }
-      const dashX = localPlayer.x + Math.cos(ang) * 130;
-      const dashY = localPlayer.y + Math.sin(ang) * 130;
-      resolveDungeonMovement(localPlayer, dashX, dashY, true);
-    }
-
-    function getAimAngle() {
-      let lock = enemies.find(e => e.id === localPlayer.targetEntityId);
-      if (!lock) {
-        let bestDist = 460;
-        enemies.forEach(en => {
-          const d = Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y);
-          if (d < bestDist) {
-            bestDist = d;
-            lock = en;
-          }
-        });
-      }
-      if (lock) {
-        localPlayer.facing = lock.x >= localPlayer.x ? 1 : -1;
-        return Math.atan2(lock.y - localPlayer.y, lock.x - localPlayer.x);
-      }
-      const camX = localPlayer.x - screenW / 2;
-      const camY = localPlayer.y - screenH / 2;
-      const worldMouseX = mouseScreenX + camX;
-      const worldMouseY = mouseScreenY + camY;
-      localPlayer.facing = worldMouseX >= localPlayer.x ? 1 : -1;
-      return Math.atan2(worldMouseY - localPlayer.y, worldMouseX - localPlayer.x);
-    }
-
-    function spawnProjectile(opts) {
-      const pObj = {
-        id: 'pj-' + Math.random().toString(36).slice(2, 8),
-        ownerId: opts.ownerId,
-        isEnemy: !!opts.isEnemy,
-        x: opts.x,
-        y: opts.y,
-        vx: Math.cos(opts.angle) * opts.speed,
-        vy: Math.sin(opts.angle) * opts.speed,
-        angle: opts.angle,
-        dmg: opts.dmg,
-        dmgType: opts.dmgType || 'PIERCE',
-        color: opts.color || '#fde047',
-        projType: opts.projType || 'arrow',
-        explosive: !!opts.explosive,
-        radius: opts.radius || 7,
-        life: opts.life || 1.35
-      };
-      projectiles.push(pObj);
-
-      if (opts.ownerId === localPlayer.id) {
-        sendPacket({ type: 'proj', id: localPlayer.id, proj: pObj });
-      }
-    }
-
-    // Keys 1-9 Trigger Specials Only
-    function triggerSpellSlot(slotIdx) {
-      initAudioEngine();
-      const unlocked = Math.min(9, localPlayer.level);
-      if (slotIdx + 1 > unlocked) {
-        showToast(`Special Slot ${slotIdx + 1} unlocks at Level ${slotIdx + 1}!`);
-        return;
-      }
-
-      const nowSec = performance.now() * 0.001;
-      if (nowSec < slotCooldowns[slotIdx]) return;
-
-      const spellId = localPlayer.spellBar[slotIdx] || 'muramasa';
-      const sp = GRIMOIRE_SPELLS.find(s => s.id === spellId) || GRIMOIRE_SPELLS[0];
-
-      if (localPlayer.mana < sp.mp) {
-        showToast(`Need ${sp.mp} MP for ${sp.name}!`);
-        return;
-      }
-
-      localPlayer.mana -= sp.mp;
-      slotCooldowns[slotIdx] = nowSec + sp.cd;
-      slotMaxCooldowns[slotIdx] = sp.cd;
-      localPlayer.swingTimer = 18;
-      localPlayer.chatBubble = sp.chant;
-      localPlayer.chatTimer = 60;
-
-      const baseAngle = getAimAngle();
-      localPlayer.aimAngle = baseAngle;
-      const totalPower = sp.dmg + localPlayer.dmgBonus;
-
-      if (sp.type === 'heal') {
-        playSfx('spell');
-        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + totalPower);
-        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 75);
-        spawnCombatText(localPlayer.x, localPlayer.y, `+${totalPower} ${sp.name}`, '#4ade80');
-      } else if (sp.type === 'buff') {
-        playSfx('spell');
-        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + sp.dmg);
-        localPlayer.speed = 420;
-        spawnSpellVortex(localPlayer.x, localPlayer.y, sp.color, 85);
-        setTimeout(() => { recalcEquipmentStats(); }, 2500);
-        showToast(`${sp.name} Active!`);
-      } else if (sp.type === 'dash') {
-        playSfx('slash');
-        const dashX = localPlayer.x + Math.cos(baseAngle) * 145;
-        const dashY = localPlayer.y + Math.sin(baseAngle) * 145;
-        resolveDungeonMovement(localPlayer, dashX, dashY, true);
-        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, sp.color, 85);
-        for (let c = 0; c < sp.count; c++) {
-          const offset = (c - (sp.count - 1) / 2) * (sp.spread / Math.max(1, sp.count - 1));
-          spawnProjectile({
-            ownerId: localPlayer.id, isEnemy: false,
-            x: localPlayer.x, y: localPlayer.y - 18,
-            angle: baseAngle + offset, speed: sp.speed,
-            dmg: totalPower, dmgType: sp.dmgType || 'SLASH', color: sp.color, projType: 'kunai', radius: 8
-          });
-        }
-      } else {
-        playSfx('spell');
-        const count = sp.count || 1;
-        for (let c = 0; c < count; c++) {
-          const offset = count === 1
-            ? 0
-            : (sp.type === 'proj_nova'
-                ? (c / count) * Math.PI * 2
-                : (c - (count - 1) / 2) * (sp.spread / (count - 1)));
-          spawnProjectile({
-            ownerId: localPlayer.id,
-            isEnemy: false,
-            x: localPlayer.x + Math.cos(baseAngle + offset) * 18,
-            y: localPlayer.y - 18 + Math.sin(baseAngle + offset) * 18,
-            angle: baseAngle + offset,
-            speed: sp.speed || 580,
-            dmg: totalPower,
-            dmgType: sp.dmgType || 'ARCANE',
-            color: sp.color,
-            projType: sp.dmgType === 'PIERCE' ? 'arrow' : (sp.type === 'proj_aoe' ? 'fireball' : 'orb'),
-            explosive: sp.type === 'proj_aoe',
-            radius: sp.type === 'proj_aoe' ? 12 : 7
-          });
-        }
-      }
-
-      updateVitalsUI();
-      broadcastState();
-    }
-
-    function spawnOvaDecapitation(x, y, facing) {
-      playSfx('behead');
-      screenShake = 8;
-      floorDecals.push({ x, y, r: 18 + Math.random() * 12, color: 'rgba(132, 204, 22, 0.38)' });
-      if (floorDecals.length > 65) floorDecals.shift();
-
-      flyingHeads.push({
-        x, y: y - 24,
-        vx: facing * (135 + Math.random() * 60),
-        vy: -165 - Math.random() * 45,
-        rot: 0,
-        vRot: facing * 8,
-        life: 48
-      });
-      for (let i = 0; i < 16; i++) {
-        bloodSparks.push({
-          x, y: y - 20,
-          vx: (Math.random() - 0.3) * facing * 240,
-          vy: -60 - Math.random() * 190,
-          color: i % 3 === 0 ? '#bef264' : '#84cc16',
-          life: 26
-        });
-      }
-    }
-
-    function handleEnemyKilled(en, idx) {
-      enemies.splice(idx, 1);
-      localPlayer.xp += en.xpValue || 55;
-      const goldDrop = en.isBoss ? 280 : (24 + Math.floor(Math.random() * 28));
-      localPlayer.gold += goldDrop;
-
-      const moteCount = en.isBoss ? 6 : 2;
-      for (let m = 0; m < moteCount; m++) {
-        atmanMotes.push({
-          x: en.x + (Math.random() - 0.5) * 40,
-          y: en.y - 12 + (Math.random() - 0.5) * 40,
-          val: en.isBoss ? 12 : 8
-        });
-      }
-
-      if (en.isBoss || Math.random() < 0.52) {
-        const drop1 = rollProceduralLootItem(en.tier || 1);
-        const drop2 = en.isBoss ? rollProceduralLootItem((en.tier || 1) + 2, true) : null;
-        lootChests.push({
-          id: 'chest-' + Math.random().toString(36).slice(2, 7),
-          x: en.x,
-          y: en.y,
-          label: en.isBoss ? `👑 ${en.name} GRAND URN` : `${en.name} Coffer`,
-          isCorpse: false,
-          beamColor: (drop2 || drop1).rarityColor,
-          gold: goldDrop,
-          items: drop2 ? [drop1, drop2] : [drop1]
-        });
-      }
-
-      if (en.isBoss) {
-        triggerSoulsBanner(`ARCHON STATUE SHATTERED: ${en.name}`);
-      }
-
-      if (localPlayer.xp >= localPlayer.nextXp) {
-        localPlayer.xp -= localPlayer.nextXp;
-        localPlayer.level++;
-        localPlayer.nextXp = Math.round(localPlayer.nextXp * 1.3);
-        recalcEquipmentStats();
-        localPlayer.hp = localPlayer.maxHp;
-        localPlayer.mana = localPlayer.maxMana;
-        document.getElementById('vitals-lvl').textContent = `LV.${localPlayer.level}`;
-        renderHotbarUI();
-        triggerSoulsBanner(`SOUL LEVEL ${localPlayer.level} — NEW SPECIAL SLOT UNLOCKED`);
-        checkClassAscensionPrompt();
-      }
-
-      savePersistentProgress();
-      if (localPlayer.targetEntityId === en.id) localPlayer.targetEntityId = null;
-      updateVitalsUI();
-    }
-
-    function handleFullLootDeath() {
-      playSfx('death');
-      spawnOvaDecapitation(localPlayer.x, localPlayer.y, -localPlayer.facing);
-      triggerSoulsBanner('VESSEL BROKEN — ATMAN RETURNED TO THE FIREPIT');
-
-      const droppedItems = localPlayer.backpack.length > 0
-        ? [...localPlayer.backpack]
-        : [rollProceduralLootItem(1)];
-      const lostGold = Math.floor(localPlayer.gold * 0.4);
-      localPlayer.gold = Math.max(0, localPlayer.gold - lostGold);
-      localPlayer.backpack = [];
-
-      const corpseChest = {
-        id: 'corpse-' + Math.random().toString(36).slice(2, 7),
-        x: localPlayer.x,
-        y: localPlayer.y,
-        label: `${localPlayer.name}'s Corpse Satchel`,
-        isCorpse: true,
-        beamColor: '#ef4444',
-        gold: lostGold + 25,
-        items: droppedItems
-      };
-      lootChests.push(corpseChest);
-      sendPacket({ type: 'corpse_drop', id: localPlayer.id, victimName: localPlayer.name, chest: corpseChest });
-
-      localPlayer.x = FIREPIT_POS.x;
-      localPlayer.y = FIREPIT_POS.y + 125;
-      localPlayer.targetX = null;
-      localPlayer.targetY = null;
-      recalcEquipmentStats();
-      localPlayer.hp = localPlayer.maxHp;
-      localPlayer.mana = localPlayer.maxMana;
-      savePersistentProgress();
-      updateVitalsUI();
-    }
-
-    function spawnSpellVortex(x, y, color, radius) {
-      spellVortexes.push({ x, y, color, radius, life: 28, maxLife: 28 });
-      for (let i = 0; i < 10; i++) {
-        const ang = (i / 10) * Math.PI * 2;
-        bloodSparks.push({
-          x, y: y - 14,
-          vx: Math.cos(ang) * (90 + Math.random() * 80),
-          vy: Math.sin(ang) * (90 + Math.random() * 80),
-          color,
-          life: 20
-        });
-      }
-    }
-
-    function spawnSlashArc(x, y, facing, color, radius) {
-      slashArcs.push({ x, y, facing, color, radius, life: 14, maxLife: 14 });
-    }
-
-    function spawnCombatText(x, y, text, color) {
-      combatTexts.push({ x, y: y - 28, text, color, life: 52, maxLife: 52 });
-    }
-
-    // =========================================================================
-    // 13. INTERACTIVE LOOT INSPECTOR & INPUTS
-    // =========================================================================
-    let activeLootChestIdx = -1;
-
-    function updateNearbyLootInspector() {
-      const box = document.getElementById('loot-inspector');
-      let bestIdx = -1;
-      let bestDist = 135;
-
-      for (let i = 0; i < lootChests.length; i++) {
-        const d = Math.hypot(localPlayer.x - lootChests[i].x, localPlayer.y - lootChests[i].y);
-        if (d < bestDist) {
-          bestDist = d;
-          bestIdx = i;
-        }
-      }
-
-      activeLootChestIdx = bestIdx;
-      if (bestIdx === -1) {
-        box.style.display = 'none';
-        return;
-      }
-
-      const ch = lootChests[bestIdx];
-      box.style.display = 'flex';
-      document.getElementById('loot-box-title').textContent = `🎁 ${ch.label} (${ch.gold || 0}g)`;
-
-      const list = document.getElementById('loot-items-list');
-      list.innerHTML = '';
-
-      const items = ch.items || (ch.item ? [ch.item] : []);
-      items.forEach((it, itemIdx) => {
-        const row = document.createElement('div');
-        row.className = 'loot-item-row';
-        const displayName = it.unidentified ? `? Unidentified ${it.slot.toUpperCase()}` : it.name;
-        const badge = it.dmgType ? `<span class="dmg-badge dmg-${it.dmgType}">${it.dmgType}</span>` : `<span style="color:#4ade80;">+${it.hp}HP</span>`;
-        row.innerHTML = `
-          <span style="color:${it.unidentified ? '#facc15' : (it.rarityColor || '#f4dca6')}; font-weight:700;">${displayName}</span>
-          ${badge}
-        `;
-        row.onclick = () => claimSingleLootItem(bestIdx, itemIdx);
-        list.appendChild(row);
-      });
-    }
-
-    function claimSingleLootItem(chestIdx, itemIdx) {
-      const ch = lootChests[chestIdx];
-      if (!ch) return;
-      const items = ch.items || (ch.item ? [ch.item] : []);
-      const it = items[itemIdx];
-      if (!it) return;
-
-      if (localPlayer.backpack.length >= 8) {
-        showToast('Backpack Satchel is full! Press [I] to equip or clear space.');
-        return;
-      }
-      it.unidentified = false; // Auto-appraise on selective pickup!
-      localPlayer.backpack.push(it);
-      items.splice(itemIdx, 1);
-
-      if (ch.gold > 0) {
-        localPlayer.gold += ch.gold;
-        ch.gold = 0;
-      }
-      playSfx('loot');
-      showToast(`Looted & Appraised: ${it.name}!`);
-
-      if (items.length === 0) {
-        lootChests.splice(chestIdx, 1);
-      }
-      savePersistentProgress();
-      updateVitalsUI();
-      updateNearbyLootInspector();
-    }
-
-    function lootAllNearbyChest() {
-      if (activeLootChestIdx === -1 || !lootChests[activeLootChestIdx]) return;
-      const ch = lootChests[activeLootChestIdx];
-      const items = ch.items || (ch.item ? [ch.item] : []);
-
-      playSfx('loot');
-      localPlayer.gold += ch.gold || 0;
-      localPlayer.atman = Math.min(localPlayer.maxAtman, localPlayer.atman + 15);
-
-      let picked = 0;
-      while (items.length > 0 && localPlayer.backpack.length < 8) {
-        const it = items.shift();
-        it.unidentified = false;
-        localPlayer.backpack.push(it);
-        picked++;
-      }
-
-      if (items.length === 0) {
-        lootChests.splice(activeLootChestIdx, 1);
-        showToast(`Looted ${picked} Relics & Gold!`);
-      } else {
-        showToast(`Looted ${picked} Relics (Backpack Full)!`);
-      }
-      savePersistentProgress();
-      updateVitalsUI();
-      updateNearbyLootInspector();
-    }
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let screenW = 0, screenH = 0;
-
-    function resizeCanvas() {
-      screenW = window.innerWidth;
-      screenH = window.innerHeight;
-      canvas.width = screenW;
-      canvas.height = screenH;
-      generateProceduralTextures(ctx);
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    window.addEventListener('mousemove', (e) => {
-      mouseScreenX = e.clientX;
-      mouseScreenY = e.clientY;
-    });
-
-    const keys = {};
-    window.addEventListener('keydown', (e) => {
-      if (document.activeElement === document.getElementById('chat-input')) {
-        if (e.key === 'Enter') sendChat();
-        return;
-      }
-      keys[e.key.toLowerCase()] = true;
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        executeWeaponStanceAttack(enemies.find(en => en.id === localPlayer.targetEntityId));
-      } else if (e.key.toLowerCase() === 'z') {
-        switchWeaponStance('prime');
-      } else if (e.key.toLowerCase() === 'x') {
-        switchWeaponStance('side');
-      } else if (e.key.toLowerCase() === 'c') {
-        switchWeaponStance('backup');
-      } else if (e.key.toLowerCase() === 'q') {
-        cycleWeaponStance();
-      } else if (e.key === 'Shift') {
-        e.preventDefault();
-        triggerDodgeRoll();
-      } else if (e.key.toLowerCase() === 'r') {
-        triggerAtmanCymaticBurst();
-      } else if (['1','2','3','4','5','6','7','8','9'].includes(e.key)) {
-        triggerSpellSlot(parseInt(e.key) - 1);
-      } else if (e.key.toLowerCase() === 'i') {
-        toggleInventory();
-      } else if (e.key.toLowerCase() === 'g') {
-        toggleGrimoire();
-      } else if (e.key.toLowerCase() === 'e') {
-        interactWithWorldObject();
-      } else if (e.key === 'Escape') {
-        toggleInventory(false);
-        toggleGrimoire(false);
-        document.getElementById('werdna-modal').style.display = 'none';
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        cycleTabTarget();
-      } else if (e.key === 'Enter') {
-        document.getElementById('chat-input').focus();
-      }
-    });
-
-    window.addEventListener('keyup', (e) => {
-      keys[e.key.toLowerCase()] = false;
-    });
-
-    canvas.addEventListener('mousedown', (e) => {
-      initAudioEngine();
-      mouseScreenX = e.clientX;
-      mouseScreenY = e.clientY;
-      const camX = localPlayer.x - screenW / 2;
-      const camY = localPlayer.y - screenH / 2;
-      const clickX = e.clientX + camX;
-      const clickY = e.clientY + camY;
-
-      for (const g of GATES) {
-        if (Math.hypot(clickX - g.x, clickY - g.y) < 55) {
-          g.isOpen = !g.isOpen;
-          g.manualLock = !g.isOpen;
-          playSfx('gate');
-          if (g.isOpen && typeof g.gx2 === 'number') {
-            getOrGenerateSector(g.gx2, g.gy2, localPlayer.name, true);
-          }
-          showToast(`${g.label}: ${g.isOpen ? 'OPENED ⛩️' : 'LOCKED SHUT 🔒'}`);
-          return;
-        }
-      }
-
-      for (let i = lootChests.length - 1; i >= 0; i--) {
-        const ch = lootChests[i];
-        if (Math.hypot(clickX - ch.x, clickY - ch.y) < 38) {
-          if (Math.hypot(localPlayer.x - ch.x, localPlayer.y - ch.y) < 135) {
-            activeLootChestIdx = i;
-            lootAllNearbyChest();
-          } else {
-            localPlayer.targetX = ch.x;
-            localPlayer.targetY = ch.y;
-          }
-          return;
-        }
-      }
-
-      for (const npc of TARTARIA_NPCS) {
-        if (Math.hypot(clickX - npc.x, clickY - npc.y) < 38) {
-          appendChat(npc.name, npc.dialog);
-          showToast(`${npc.name}: ${npc.dialog}`);
-          if (npc.isWerdna) document.getElementById('werdna-modal').style.display = 'flex';
-          return;
-        }
-      }
-
-      for (const en of enemies) {
-        if (Math.hypot(clickX - en.x, clickY - en.y) < en.radius + 24) {
-          localPlayer.targetEntityId = en.id;
-          executeWeaponStanceAttack(en);
-          return;
-        }
-      }
-
-      if (e.button === 2) {
-        executeWeaponStanceAttack(null);
-      } else {
-        localPlayer.targetX = clickX;
-        localPlayer.targetY = clickY;
-      }
-    });
-
-    canvas.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      executeWeaponStanceAttack(null);
-    });
-
-    function interactWithWorldObject() {
-      if (activeLootChestIdx !== -1) {
-        lootAllNearbyChest();
-        return;
-      }
-      for (const npc of TARTARIA_NPCS) {
-        if (Math.hypot(localPlayer.x - npc.x, localPlayer.y - npc.y) < 125) {
-          appendChat(npc.name, npc.dialog);
-          showToast(`${npc.name}: ${npc.dialog}`);
-          if (npc.isWerdna) document.getElementById('werdna-modal').style.display = 'flex';
-          return;
-        }
-      }
-      toggleNearestGate();
-    }
-
-    function cycleTabTarget() {
-      const candidates = [
-        ...enemies.map(e => ({ id: e.id, name: e.name, weakness: e.weakness, x: e.x, y: e.y })),
-        ...Array.from(remotePlayers.values()).map(p => ({ id: p.id, name: p.name, weakness: 'SLASH', x: p.x, y: p.y }))
-      ];
-      if (candidates.length === 0) return;
-      candidates.sort((a, b) =>
-        Math.hypot(a.x - localPlayer.x, a.y - localPlayer.y) - Math.hypot(b.x - localPlayer.x, b.y - localPlayer.y)
-      );
-      const curIdx = candidates.findIndex(c => c.id === localPlayer.targetEntityId);
-      const next = candidates[(curIdx + 1) % candidates.length];
-      localPlayer.targetEntityId = next.id;
-      showToast(`Target: ${next.name} [WEAKNESS: ${next.weakness}]`);
-    }
-
-    // =========================================================================
-    // 14. ARTICULATED 2.5D CHARACTER MODELS & WEAKNESS NAMEPLATES
-    // =========================================================================
-    function drawOVACharacter(ctx, p, cx, cy, timeSec, scaleOverride = 1.0, isTargeted = false, alphaOverride = 1.0) {
-      const subMeta = getSubraceMeta(p);
-      const sc = subMeta.scale * scaleOverride;
-      const facing = p.facing || 1;
-      const isMoving = p.isMoving;
-      const walkCycle = timeSec * 12;
-      const walkBob = isMoving ? Math.abs(Math.sin(walkCycle)) * -5 : Math.sin(timeSec * 3) * 1.8;
-      const legSwing = isMoving ? Math.sin(walkCycle) * 0.55 : 0;
-      const torsoLean = isMoving ? 0.12 : (p.swingTimer > 0 ? 0.22 : 0);
-
-      ctx.save();
-      ctx.globalAlpha = alphaOverride;
-      ctx.translate(cx, cy);
-
-      const auraGrad = ctx.createRadialGradient(0, 0, 4, 0, 0, 44 * sc);
-      auraGrad.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
-      auraGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = auraGrad;
-      ctx.beginPath();
-      ctx.arc(0, 0, 44 * sc, 0, Math.PI * 2);
-      ctx.fill();
-
-      if (isTargeted) {
-        ctx.strokeStyle = '#ff2a38';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.ellipse(0, 4, 28 * sc, 13 * sc, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
-      ctx.beginPath();
-      ctx.ellipse(0, 6, 20 * sc, 9 * sc, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.save();
-      ctx.scale(facing * sc, sc);
-      ctx.translate(0, walkBob);
-      ctx.rotate(torsoLean);
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-
-      if (subMeta.tail) {
-        ctx.strokeStyle = subMeta.skin;
-        ctx.lineWidth = 5;
-        ctx.beginPath();
-        ctx.moveTo(-6, -8);
-        ctx.quadraticCurveTo(-26, 2, -32, -12 + Math.sin(timeSec * 6) * 5);
-        ctx.stroke();
-      }
-
-      if (subMeta.wings) {
-        const flap = Math.sin(timeSec * 7) * 6;
-        ctx.fillStyle = subMeta.tail ? '#1e3a5f' : '#4a0808';
-        ctx.strokeStyle = '#040306';
-        ctx.lineWidth = 2.2;
-        ctx.beginPath();
-        ctx.moveTo(-4, -26);
-        ctx.lineTo(-38, -48 + flap);
-        ctx.lineTo(-28, -14);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-
-      const cloakWave = Math.sin(timeSec * 5.5 + (isMoving ? 2 : 0)) * (isMoving ? 8 : 3);
-      ctx.fillStyle = subMeta.skeleton ? '#2563eb' : (subMeta.sunShield ? '#1d4ed8' : (p.armorColor || '#2b3d54'));
-      ctx.strokeStyle = '#040306';
-      ctx.lineWidth = 2.4;
-      ctx.beginPath();
-      ctx.moveTo(-10, -31);
-      ctx.lineTo(10, -31);
-      ctx.lineTo(15 - cloakWave, 4);
-      ctx.lineTo(-16 - cloakWave, 4);
-      ctx.closePath();
-      ctx.fill(); ctx.stroke();
-
-      ctx.fillStyle = subMeta.skeleton ? '#d6d3c4' : '#17141f';
-      ctx.strokeStyle = '#040306';
-      ctx.lineWidth = 2.2;
-
-      ctx.save();
-      ctx.translate(-4, -12);
-      ctx.rotate(-legSwing);
-      ctx.fillRect(-3, 0, 6, 14);
-      ctx.strokeRect(-3, 0, 6, 14);
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(4, -12);
-      ctx.rotate(legSwing);
-      ctx.fillRect(-3, 0, 6, 14);
-      ctx.strokeRect(-3, 0, 6, 14);
-      ctx.restore();
-
-      const torsoGrad = ctx.createLinearGradient(-10, -30, 10, -10);
-      torsoGrad.addColorStop(0, p.hitFlash > 0 ? '#ffffff' : (subMeta.shellChest ? '#d97706' : (subMeta.bow ? '#be185d' : '#3b3347')));
-      torsoGrad.addColorStop(1, '#14111a');
-      ctx.fillStyle = torsoGrad;
-      ctx.strokeStyle = '#040306';
-      ctx.lineWidth = 2.4;
-      ctx.beginPath();
-      ctx.roundRect(-11, -31, 22, 21, 3);
-      ctx.fill(); ctx.stroke();
-
-      ctx.fillStyle = '#cfa354';
-      ctx.beginPath();
-      ctx.ellipse(-11, -28, 5.5, 4, -0.3, 0, Math.PI * 2);
-      ctx.ellipse(11, -28, 5.5, 4, 0.3, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      const headY = -40;
-      const headR = 10.5;
-      ctx.fillStyle = p.hitFlash > 0 ? '#ffffff' : subMeta.skin;
-      ctx.beginPath();
-      ctx.arc(0, headY, headR, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      if (subMeta.snout) {
-        ctx.fillStyle = subMeta.skin;
-        ctx.beginPath();
-        ctx.roundRect(4, headY - 2, 10, 7, 2);
-        ctx.fill(); ctx.stroke();
-      }
-
-      if (subMeta.ears) {
-        ctx.fillStyle = subMeta.skin;
-        ctx.beginPath();
-        ctx.moveTo(-headR + 1, headY - 1);
-        ctx.lineTo(-headR - 11, headY - 7);
-        ctx.lineTo(-headR + 2, headY + 3);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      } else if (subMeta.catEars) {
-        ctx.fillStyle = subMeta.skin;
-        ctx.beginPath();
-        ctx.moveTo(-8, headY - 7); ctx.lineTo(-10, headY - 18); ctx.lineTo(-2, headY - 9); ctx.closePath();
-        ctx.moveTo(2, headY - 9);  ctx.lineTo(9, headY - 18);  ctx.lineTo(8, headY - 7);  ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      } else if (subMeta.horns) {
-        ctx.fillStyle = subMeta.tail ? '#38bdf8' : '#f4dca6';
-        ctx.beginPath();
-        ctx.moveTo(-5, headY - 7); ctx.lineTo(-16, headY - 24); ctx.lineTo(-1, headY - 9); ctx.closePath();
-        ctx.moveTo(5, headY - 7);  ctx.lineTo(16, headY - 24);  ctx.lineTo(1, headY - 9);  ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      } else {
-        ctx.fillStyle = subMeta.flamberge ? '#dc2626' : (p.hairColor || '#eab308');
-        ctx.beginPath();
-        ctx.moveTo(-11, headY - 3);
-        ctx.lineTo(-7, headY - 16);
-        ctx.lineTo(0, headY - 12);
-        ctx.lineTo(6, headY - 16);
-        ctx.lineTo(11, headY - 4);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-
-      ctx.fillStyle = '#ff3838';
-      ctx.fillRect(2, headY - 2, 2.5, 2.5);
-      ctx.fillRect(6.5, headY - 2, 2.5, 2.5);
-
-      if (subMeta.sunShield) {
-        ctx.save();
-        ctx.translate(-10, -17);
-        ctx.fillStyle = '#facc15';
-        ctx.strokeStyle = '#040306';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 9, 13, 0, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#dc2626';
-        ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
-      }
-
-      // Render Weapon based on Active Stance (Prime SLASH, Side BLUNT Hammer, or Backup PIERCE Bow)
-      let swingRot = isMoving ? Math.sin(walkCycle) * 0.2 : 0;
-      if (p.swingTimer > 0) {
-        const phase = (18 - p.swingTimer) / 18;
-        swingRot = -0.85 + Math.sin(phase * Math.PI) * 2.2;
-      }
-
-      const stance = p.activeWeaponSlot || 'prime';
-      ctx.save();
-      ctx.translate(10, -21);
-      ctx.rotate(swingRot);
-
-      if (stance === 'backup') {
-        // Recurve Bow
-        ctx.strokeStyle = '#d97706';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(0, 0, 16, -Math.PI * 0.48, Math.PI * 0.48);
-        ctx.stroke();
-        const pullBack = p.swingTimer > 0 ? -8 : -3;
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.moveTo(1, -15); ctx.lineTo(pullBack, 0); ctx.lineTo(1, 15);
-        ctx.stroke();
-        ctx.strokeStyle = '#4ade80';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(pullBack, 0); ctx.lineTo(18, 0);
-        ctx.stroke();
-      } else if (stance === 'side') {
-        // Heavy Blunt Stone-Maul / Warhammer
-        ctx.fillStyle = '#78350f';
-        ctx.fillRect(-2, -38, 4, 38);
-        ctx.fillStyle = '#eab308';
-        ctx.strokeStyle = '#040306';
-        ctx.lineWidth = 2;
-        ctx.fillRect(-11, -44, 22, 12);
-        ctx.strokeRect(-11, -44, 22, 12);
-      } else {
-        // Prime Melee Scimitar / Flamberge Blade
-        ctx.fillStyle = '#cfa354';
-        ctx.fillRect(-5, -3, 10, 3);
-        ctx.fillStyle = '#e2e8f0';
-        ctx.strokeStyle = '#040306';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-3, -3);
-        ctx.lineTo(-4, -40);
-        ctx.lineTo(2, -45);
-        ctx.lineTo(4, -3);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-
-      ctx.restore();
-      ctx.restore();
-      ctx.restore();
-    }
-
-    function drawCardArtHostile(ctx, en, timeSec, isTargeted) {
-      const sc = en.isBoss ? 1.85 : 1.0;
-      ctx.save();
-      ctx.translate(en.x, en.y);
-
-      if (en.isBoss) {
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.ellipse(0, 8, en.radius * 1.4, en.radius * 0.65, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      if (isTargeted) {
-        ctx.strokeStyle = '#fde047';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.ellipse(0, 6, en.radius + 12, (en.radius + 12) * 0.48, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = 'rgba(0,0,0,0.72)';
-      ctx.beginPath(); ctx.ellipse(0, 6, en.radius, en.radius * 0.45, 0, 0, Math.PI * 2); ctx.fill();
-
-      const bob = Math.sin(timeSec * 6 + en.x) * 2.5;
-      ctx.save();
-      ctx.scale(sc, sc);
-      ctx.translate(0, bob);
-      ctx.strokeStyle = '#040306';
-      ctx.lineWidth = 2.2;
-
-      if (en.kind === 'abeshu_statue') {
-        ctx.fillStyle = en.hitFlash > 0 ? '#fff' : '#78716c';
-        ctx.beginPath(); ctx.roundRect(-16, -36, 32, 34, 3); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#eab308';
-        ctx.beginPath();
-        ctx.moveTo(-16, -34); ctx.lineTo(-12, -52); ctx.lineTo(12, -52); ctx.lineTo(16, -34);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#57534e';
-        ctx.beginPath(); ctx.arc(0, -41, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#fef08a';
-        ctx.fillRect(-5, -43, 3, 3); ctx.fillRect(2, -43, 3, 3);
-      } else if (en.kind === 'greater_demon') {
-        ctx.fillStyle = '#1e3a5f';
-        ctx.beginPath();
-        ctx.moveTo(0, -22); ctx.lineTo(-34, -46); ctx.lineTo(-24, -10);
-        ctx.moveTo(0, -22); ctx.lineTo(34, -46);  ctx.lineTo(24, -10);
-        ctx.fill(); ctx.stroke();
-        ctx.fillStyle = en.hitFlash > 0 ? '#fff' : '#28517a';
-        ctx.beginPath(); ctx.roundRect(-14, -34, 28, 30, 5); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#38bdf8';
-        ctx.beginPath();
-        ctx.moveTo(-6, -34); ctx.lineTo(-15, -52); ctx.lineTo(-2, -36);
-        ctx.moveTo(6, -34);  ctx.lineTo(15, -52);  ctx.lineTo(2, -36);
-        ctx.fill(); ctx.stroke();
-      } else if (en.kind === 'fire_giant') {
-        ctx.fillStyle = en.hitFlash > 0 ? '#fff' : '#b45309';
-        ctx.beginPath(); ctx.roundRect(-15, -36, 30, 32, 4); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#e2e8f0';
-        ctx.beginPath(); ctx.arc(0, -22, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#dc2626';
-        ctx.beginPath(); ctx.arc(0, -42, 12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#fde047';
-        ctx.beginPath(); ctx.moveTo(14, -18); ctx.lineTo(29, -54); ctx.lineTo(20, -14); ctx.fill(); ctx.stroke();
-      } else if (en.kind === 'werdna_boss') {
-        ctx.fillStyle = en.hitFlash > 0 ? '#fff' : '#c81e56';
-        ctx.beginPath(); ctx.moveTo(-18, 2); ctx.lineTo(-12, -34); ctx.lineTo(12, -34); ctx.lineTo(18, 2); ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#eab308';
-        ctx.beginPath(); ctx.arc(0, -40, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#f8fafc';
-        ctx.beginPath(); ctx.moveTo(-7, -36); ctx.lineTo(0, -6); ctx.lineTo(7, -36); ctx.closePath(); ctx.fill(); ctx.stroke();
-      } else {
-        ctx.fillStyle = en.hitFlash > 0 ? '#fff' : en.color;
-        ctx.beginPath(); ctx.roundRect(-12, -28, 24, 26, 4); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#fde68a';
-        ctx.beginPath(); ctx.arc(0, -35, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        if (en.kind === 'cobold_king') {
-          ctx.fillStyle = '#facc15';
-          ctx.beginPath(); ctx.ellipse(-12, -15, 8, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        }
-      }
-      ctx.restore();
-
-      const hpRatio = Math.max(0, en.hp / en.maxHp);
-      const barW = en.isBoss ? 76 : 42;
-      const topOffset = en.isBoss ? -92 : -en.radius - 28;
-      ctx.fillStyle = '#040306';
-      ctx.fillRect(-barW / 2, topOffset, barW, 7);
-      ctx.fillStyle = en.isBoss ? '#f97316' : '#ef4444';
-      ctx.fillRect(-barW / 2 + 1, topOffset + 1, (barW - 2) * hpRatio, 5);
-
-      // Draw Name + Explicit WEAKNESS Badge above every enemy!
-      ctx.font = en.isBoss ? '900 11.5px Cinzel, serif' : '700 9.5px Cinzel, serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = en.isBoss ? '#fde047' : '#fca5a5';
-      ctx.fillText(en.name, 0, topOffset - 14);
-
-      const wkColors = { 'SLASH': '#f87171', 'BLUNT': '#facc15', 'PIERCE': '#4ade80', 'ARCANE': '#c084fc' };
-      const wkKeyHint = { 'SLASH': '[Z] SLASH', 'BLUNT': '[X] BLUNT', 'PIERCE': '[C] PIERCE', 'ARCANE': '[1-9] ARCANE' };
-      ctx.font = '800 8.5px JetBrains Mono, monospace';
-      ctx.fillStyle = wkColors[en.weakness] || '#fde047';
-      ctx.fillText(`WEAK: ${wkKeyHint[en.weakness] || en.weakness}`, 0, topOffset - 3);
-      ctx.restore();
-    }
-
-    const mapCanvas = document.getElementById('minimapCanvas');
-    const mapCtx = mapCanvas.getContext('2d');
-
-    function renderCartographyMap() {
-      mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
-      const myGx = Math.floor(localPlayer.x / TILE_SIZE);
-      const myGy = Math.floor(localPlayer.y / TILE_SIZE);
-
-      const cellPx = 20;
-      const centerX = mapCanvas.width / 2;
-      const centerY = mapCanvas.height / 2;
-
-      worldSectors.forEach(sec => {
-        const dx = sec.gx - myGx;
-        const dy = sec.gy - myGy;
-        const rx = centerX + dx * cellPx - cellPx / 2;
-        const ry = centerY + dy * cellPx - cellPx / 2;
-
-        if (rx < -cellPx || rx > mapCanvas.width || ry < -cellPx || ry > mapCanvas.height) return;
-
-        mapCtx.fillStyle = sec.safe ? '#166534' : (sec.isBossRoom ? '#7f1d1d' : '#1e293b');
-        mapCtx.strokeStyle = sec.gx === myGx && sec.gy === myGy ? '#fde047' : '#cfa354';
-        mapCtx.lineWidth = sec.gx === myGx && sec.gy === myGy ? 2 : 1;
-        mapCtx.fillRect(rx + 1, ry + 1, cellPx - 2, cellPx - 2);
-        mapCtx.strokeRect(rx + 1, ry + 1, cellPx - 2, cellPx - 2);
-
-        if (sec.isBossRoom) {
-          mapCtx.fillStyle = '#fca5a5';
-          mapCtx.font = '8px sans-serif';
-          mapCtx.textAlign = 'center';
-          mapCtx.fillText('☠', rx + cellPx / 2, ry + cellPx / 2 + 3);
-        } else if (sec.safe) {
-          mapCtx.fillStyle = '#fde047';
-          mapCtx.font = '8px sans-serif';
-          mapCtx.textAlign = 'center';
-          mapCtx.fillText('🔥', rx + cellPx / 2, ry + cellPx / 2 + 3);
-        }
-      });
-
-      remotePlayers.forEach(rp => {
-        const dx = (rp.x - localPlayer.x) / TILE_SIZE;
-        const dy = (rp.y - localPlayer.y) / TILE_SIZE;
-        mapCtx.fillStyle = '#38bdf8';
-        mapCtx.beginPath();
-        mapCtx.arc(centerX + dx * cellPx, centerY + dy * cellPx, 3, 0, Math.PI * 2);
-        mapCtx.fill();
-      });
-
-      mapCtx.fillStyle = '#ffffff';
-      mapCtx.beginPath();
-      mapCtx.arc(centerX, centerY, 3.5, 0, Math.PI * 2);
-      mapCtx.fill();
-    }
-
-    const prevCanvas = document.getElementById('previewCanvas');
-    const prevCtx = prevCanvas.getContext('2d');
-    let previewSwing = 0;
-    prevCanvas.addEventListener('mousedown', () => { previewSwing = 18; });
-
-    function updatePreview(now) {
-      if (document.getElementById('char-modal').style.display !== 'none') {
-        prevCtx.clearRect(0, 0, prevCanvas.width, prevCanvas.height);
-        prevCtx.fillStyle = '#141824';
-        prevCtx.strokeStyle = '#040306';
-        prevCtx.lineWidth = 2.5;
-        prevCtx.beginPath();
-        prevCtx.ellipse(120, 174, 54, 15, 0, 0, Math.PI * 2);
-        prevCtx.fill(); prevCtx.stroke();
-
-        if (previewSwing > 0) previewSwing--;
-        const dummy = {
-          raceCategory: document.getElementById('char-race').value,
-          subraceKey: document.getElementById('char-subrace').value,
-          coreClass: document.getElementById('char-class').value,
-          armorColor: localPlayer.armorColor,
-          hairColor: localPlayer.hairColor,
-          activeWeaponSlot: 'prime',
-          facing: 1,
-          isMoving: false,
-          swingTimer: previewSwing
-        };
-        drawOVACharacter(prevCtx, dummy, 120, 166, now * 0.001, 1.55, false);
-      }
-    }
-
-    // =========================================================================
-    // 15. CHAT, HUD BUTTONS & AWAKEN HANDLER
-    // =========================================================================
-    function sendChat() {
-      const input = document.getElementById('chat-input');
-      const val = input.value.trim();
-      if (!val) { input.blur(); return; }
-      appendChat(localPlayer.name, val);
-      localPlayer.chatBubble = val;
-      localPlayer.chatTimer =
+    <div id="ascend-desc" style="font-size:12.5
