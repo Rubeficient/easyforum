@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Undercities: Neverwinter Lite - Personal Hell Shards</title>
+  <title>Undercities: Neverwinter Lite - 90s Dark Anime Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Crimson+Pro:ital,wght@0,500;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --ink-black: #08060c;
+      --cel-gold: #d6a85a;
+      --cel-gold-bright: #f4d28c;
+      --cel-blood: #a82028;
+      --cel-slate: #1c1826;
+      --cel-violet: #8b42b8;
+    }
     * {
       box-sizing: border-box;
       margin: 0;
@@ -16,106 +25,202 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #050308;
-      font-family: 'Cinzel', 'Georgia', serif;
-      color: #dfd0e5;
+      background-color: var(--ink-black);
+      font-family: 'Crimson Pro', 'Georgia', serif;
+      color: #e6dac8;
     }
-    canvas {
+    canvas#gameCanvas {
       display: block;
       width: 100vw;
       height: 100vh;
-      background: #09050d;
+      background: #0d0a14;
+      cursor: crosshair;
     }
 
-    /* Modal / Character Screen */
+    /* Late 90s Anime Cel-Animation CRT Scanline & Film Grain Overlay */
+    #crt-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.24) 50%),
+        radial-gradient(circle at center, transparent 58%, rgba(5, 3, 8, 0.72) 100%);
+      background-size: 100% 3px, 100% 100%;
+    }
+
+    /* 90s JRPG / Lodoss Framed Window Styling */
+    .anime-window {
+      background: linear-gradient(180deg, rgba(28, 23, 38, 0.96) 0%, rgba(12, 10, 18, 0.98) 100%);
+      border: 2px solid var(--cel-gold);
+      outline: 2px solid #060408;
+      box-shadow:
+        4px 4px 0px #060408,
+        inset 0 0 0 2px #3b2d22,
+        inset 0 0 18px rgba(0, 0, 0, 0.85);
+      border-radius: 3px;
+    }
+
+    /* Character Creation Modal */
     #char-modal {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(16, 8, 24, 0.97) 0%, rgba(4, 2, 8, 0.99) 100%);
+      background:
+        radial-gradient(circle at 50% 35%, rgba(46, 24, 54, 0.94) 0%, rgba(8, 6, 12, 0.99) 85%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 100;
-      padding: 16px;
+      padding: 14px;
       overflow-y: auto;
     }
     .char-card {
-      background: rgba(12, 8, 18, 0.96);
-      border: 2px solid #6b2d7d;
-      box-shadow: 0 0 45px rgba(0, 0, 0, 0.95), 0 0 20px rgba(168, 50, 168, 0.3);
       width: 100%;
-      max-width: 560px;
-      padding: 24px;
-      border-radius: 6px;
+      max-width: 760px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) {
+      .char-card {
+        grid-template-columns: 1fr;
+      }
+    }
+    .title-banner {
+      grid-column: 1 / -1;
+      text-align: center;
+      border-bottom: 2px solid #4a3723;
+      padding-bottom: 10px;
+    }
+    .title-banner h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cel-gold-bright);
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 14px rgba(214, 168, 90, 0.45);
+    }
+    .title-banner h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #b89872;
+      margin-top: 2px;
+    }
+
+    .form-col {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
     }
-    .char-card h1 {
-      font-size: 22px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
+    .preview-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      background: #0b0811;
+      border: 2px solid #4a3723;
+      box-shadow: inset 0 0 24px rgba(0,0,0,0.9);
+      padding: 12px;
+      border-radius: 3px;
+    }
+    #previewCanvas {
+      width: 240px;
+      height: 220px;
+      background: radial-gradient(circle at 50% 60%, #241730 0%, #09060e 75%);
+      border: 1px solid #3c2a1e;
+    }
+    .lore-box {
+      font-size: 13px;
+      line-height: 1.35;
+      color: #d6c5ad;
+      font-style: italic;
       text-align: center;
-      color: #d182df;
-      border-bottom: 1px solid #3d1c4d;
-      padding-bottom: 8px;
+      padding: 6px 8px;
+      background: rgba(18, 14, 24, 0.9);
+      border-left: 3px solid var(--cel-gold);
+      width: 100%;
     }
-    .char-card h2 {
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #9374a8;
-      text-align: center;
-    }
+
     .form-group {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
     label {
+      font-family: 'Cinzel', serif;
       font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
-      color: #bda2cc;
+      color: var(--cel-gold);
       letter-spacing: 1px;
+      text-shadow: 1px 1px 0 #000;
     }
     input[type="text"], select {
-      background: #07040a;
-      border: 1px solid #523166;
-      color: #f5e6ff;
-      padding: 8px 12px;
-      border-radius: 4px;
-      font-family: inherit;
-      font-size: 13px;
+      background: #09070e;
+      border: 2px solid #574128;
+      color: #f5ebd6;
+      padding: 8px 10px;
+      border-radius: 2px;
+      font-family: 'Crimson Pro', serif;
+      font-size: 15px;
+      font-weight: 600;
       outline: none;
+      box-shadow: inset 2px 2px 0 rgba(0,0,0,0.8);
     }
     input[type="text"]:focus, select:focus {
-      border-color: #cb51cf;
-      box-shadow: 0 0 8px rgba(203, 81, 207, 0.4);
+      border-color: var(--cel-gold-bright);
     }
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+    .swatch-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .swatch {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #000;
+      outline: 1px solid #6b5335;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .swatch.active {
+      transform: scale(1.2);
+      outline: 2px solid var(--cel-gold-bright);
+    }
+
     .btn-spawn {
-      background: linear-gradient(180deg, #451c5e 0%, #200a2e 100%);
-      border: 1px solid #cb51cf;
-      color: #fae3ff;
+      grid-column: 1 / -1;
+      background: linear-gradient(180deg, #8f1d24 0%, #4d0d12 100%);
+      border: 2px solid var(--cel-gold-bright);
+      outline: 2px solid #000;
+      color: #fff4db;
       padding: 12px;
-      border-radius: 4px;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 2px;
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
       cursor: pointer;
-      margin-top: 6px;
-      transition: all 0.2s;
+      text-shadow: 2px 2px 0 #000;
+      box-shadow: 3px 3px 0 #000;
+      transition: transform 0.1s, filter 0.15s;
     }
     .btn-spawn:hover {
-      background: linear-gradient(180deg, #5b267d 0%, #2c0e3f 100%);
-      box-shadow: 0 0 16px rgba(203, 81, 207, 0.5);
+      filter: brightness(1.18);
+    }
+    .btn-spawn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 #000;
     }
 
     /* HUD Overlay */
@@ -124,6 +229,7 @@
       inset: 0;
       pointer-events: none;
       display: none;
+      z-index: 50;
     }
     .interactive {
       pointer-events: auto;
@@ -139,62 +245,58 @@
       justify-content: space-between;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .panel {
-      background: rgba(10, 6, 16, 0.88);
-      border: 1px solid #4a2d59;
-      border-radius: 4px;
       padding: 6px 12px;
-      font-size: 12px;
+      font-size: 13px;
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+      font-family: 'Cinzel', serif;
     }
     .action-btn {
-      background: #251233;
-      border: 1px solid #b84cb3;
-      color: #f1c2ff;
+      background: #2b1824;
+      border: 1px solid var(--cel-gold);
+      color: var(--cel-gold-bright);
       padding: 4px 10px;
-      border-radius: 3px;
-      font-family: inherit;
+      font-family: 'Cinzel', serif;
       font-size: 11px;
+      font-weight: 700;
       letter-spacing: 1px;
       cursor: pointer;
       text-transform: uppercase;
+      box-shadow: 2px 2px 0 #000;
     }
     .action-btn:hover {
-      background: #3b1b52;
+      background: #47243b;
     }
 
     /* Player Vitals Bar (Top Left) */
     .vitals-box {
       position: absolute;
-      top: 54px;
+      top: 56px;
       left: 12px;
-      background: rgba(10, 6, 16, 0.9);
-      border: 1px solid #4a2d59;
-      padding: 8px 12px;
-      border-radius: 4px;
-      width: 210px;
-      font-size: 11px;
+      padding: 10px 14px;
+      width: 245px;
+      font-size: 12px;
     }
     .bar-container {
       width: 100%;
-      height: 8px;
-      background: #1c1024;
-      border: 1px solid #3d214a;
-      border-radius: 2px;
+      height: 11px;
+      background: #09060d;
+      border: 2px solid #000;
+      outline: 1px solid #59432a;
       margin-top: 3px;
       overflow: hidden;
     }
     .bar-fill {
       height: 100%;
       width: 100%;
-      transition: width 0.1s linear;
+      transition: width 0.12s linear;
     }
-    #hp-fill { background: linear-gradient(90deg, #8b2626, #cf3636); }
-    #mana-fill { background: linear-gradient(90deg, #26548b, #3685cf); }
+    #hp-fill { background: linear-gradient(180deg, #e03c3c 0%, #851616 100%); }
+    #mana-fill { background: linear-gradient(180deg, #479be8 0%, #1b4985 100%); }
 
     /* Action Hotbar */
     .hotbar {
@@ -203,70 +305,77 @@
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
     .hotkey-slot {
-      width: 52px;
-      height: 52px;
-      background: rgba(12, 8, 18, 0.92);
-      border: 1px solid #59326b;
-      border-radius: 4px;
+      width: 58px;
+      height: 58px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       position: relative;
-      transition: transform 0.1s, border-color 0.1s;
+      transition: transform 0.08s;
+    }
+    .hotkey-slot:hover {
+      border-color: var(--cel-gold-bright);
     }
     .hotkey-slot:active {
-      transform: scale(0.94);
-      border-color: #e282ff;
+      transform: translate(2px, 2px);
     }
     .hotkey-num {
       position: absolute;
       top: 2px;
-      left: 4px;
-      font-size: 9px;
-      color: #9a76ab;
+      left: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--cel-gold);
+      text-shadow: 1px 1px 0 #000;
     }
     .hotkey-icon {
-      font-size: 18px;
+      font-size: 20px;
+      filter: drop-shadow(2px 2px 0 #000);
+    }
+    .hotkey-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      color: #d6c5ad;
+      text-transform: uppercase;
+      margin-top: 2px;
     }
 
     /* Chat Frame */
     .chat-container {
       position: absolute;
-      bottom: 76px;
+      bottom: 84px;
       left: 12px;
-      width: 320px;
+      width: 340px;
       max-width: calc(100vw - 24px);
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
     .chat-log {
-      height: 110px;
-      background: rgba(6, 4, 10, 0.82);
-      border: 1px solid #331d40;
-      border-radius: 4px;
-      padding: 8px;
+      height: 115px;
+      padding: 8px 10px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      font-size: 11px;
-      font-family: sans-serif;
+      font-size: 13px;
     }
     .chat-msg {
       word-break: break-word;
-      line-height: 1.3;
+      line-height: 1.25;
+      text-shadow: 1px 1px 0 #000;
     }
     .chat-msg .author {
-      color: #d882df;
-      font-weight: bold;
+      color: var(--cel-gold-bright);
+      font-weight: 700;
       font-family: 'Cinzel', serif;
-      margin-right: 4px;
+      margin-right: 5px;
     }
     .chat-input-row {
       display: flex;
@@ -274,83 +383,109 @@
     }
     .chat-input {
       flex: 1;
-      background: rgba(8, 5, 12, 0.88);
-      border: 1px solid #522e66;
-      border-radius: 3px;
+      background: rgba(9, 7, 14, 0.94);
+      border: 2px solid #59432a;
       padding: 6px 10px;
-      color: #f1e4f8;
-      font-size: 11px;
+      color: #f5ebd6;
+      font-size: 13px;
+      font-family: 'Crimson Pro', serif;
       outline: none;
-      font-family: sans-serif;
     }
 
     /* Toast Notification */
     #toast {
       position: absolute;
-      top: 60px;
+      top: 64px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(14, 8, 20, 0.96);
-      border: 1px solid #cb51cf;
-      color: #f4c2ff;
-      padding: 6px 16px;
-      border-radius: 20px;
+      padding: 6px 18px;
+      font-family: 'Cinzel', serif;
       font-size: 12px;
-      letter-spacing: 1px;
+      font-weight: 800;
+      color: var(--cel-gold-bright);
+      letter-spacing: 1.5px;
       display: none;
-      box-shadow: 0 0 12px rgba(0,0,0,0.85);
       z-index: 200;
+      text-shadow: 1px 1px 0 #000;
     }
   </style>
 </head>
 <body>
 
+  <!-- Late 90s Anime Cel Scanline & Vignette Filter -->
+  <div id="crt-overlay"></div>
+
   <!-- Character Creation Screen -->
   <div id="char-modal">
-    <div class="char-card">
-      <h1>Undercities</h1>
-      <h2>Forge Your Personal Hell Shard</h2>
-
-      <div class="form-group">
-        <label for="char-name">Character Name</label>
-        <input type="text" id="char-name" maxlength="16" placeholder="Enter name..." value="Malakor">
+    <div class="char-card anime-window">
+      <div class="title-banner">
+        <h1>Undercities: Blood & Obsidian</h1>
+        <h2>Late-90s Low-Fantasy Underdark Shard MMO</h2>
       </div>
 
-      <div class="grid-2">
+      <!-- Left Column: Controls -->
+      <div class="form-col">
         <div class="form-group">
-          <label for="char-race">Race / Sub-Race</label>
-          <select id="char-race">
-            <optgroup label="Human Lineage">
-              <option value="Human-Torta">Human (Torta: Large Brawler Female)</option>
-              <option value="Human-Edgar">Human (Edgar: Thin Tactical Scholar)</option>
-              <option value="Human-Standard">Human (Standard)</option>
-            </optgroup>
-            <optgroup label="Underdark & Demonic">
-              <option value="Demon-Succubus">Demon (Fiendish Noble)</option>
-              <option value="Demon-Balor">Demon (Abyssal Terror)</option>
-              <option value="Drow">Drow Elf</option>
-              <option value="Duergar">Duergar Dwarf</option>
-            </optgroup>
-          </select>
+          <label for="char-name">Mercenary / Scion Name</label>
+          <input type="text" id="char-name" maxlength="16" placeholder="Enter name..." value="Malakor">
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="char-race">Lineage / Sub-Race</label>
+            <select id="char-race">
+              <optgroup label="Human Bloodlines">
+                <option value="Human-Torta">Human (Torta • Heavy Brawler)</option>
+                <option value="Human-Edgar">Human (Edgar • Thin Blade Scholar)</option>
+                <option value="Human-Standard">Human (Midland Mercenary)</option>
+              </optgroup>
+              <optgroup label="Abyssal & Underdark">
+                <option value="Demon-Succubus">Demon (Nocturne Fiend)</option>
+                <option value="Demon-Balor">Demon (Arch-Balor Titan)</option>
+                <option value="Drow">Drow (Obsidian High-Elf)</option>
+                <option value="Duergar">Duergar (Ash-Beard Dwarf)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="char-class">Martial Calling</label>
+            <select id="char-class">
+              <option value="Fighter">Black Swordsman (Fighter)</option>
+              <option value="Rogue">Shadow Dagger (Rogue)</option>
+              <option value="Mage">High Sorcerer (Mage)</option>
+              <option value="Healer">Blood Cleric (Healer)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Cloak & Armor Dye</label>
+            <div class="swatch-row" id="armor-swatches"></div>
+          </div>
+          <div class="form-group">
+            <label>Hair / Crest Tint</label>
+            <div class="swatch-row" id="hair-swatches"></div>
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="char-class">Calling (Class)</label>
-          <select id="char-class">
-            <option value="Fighter">Hell Knight</option>
-            <option value="Healer">Soul Cleric</option>
-            <option value="Mage">Abyssal Wizard</option>
-            <option value="Rogue">Shadow Assassin</option>
-          </select>
+          <label for="hell-name">Your Personal Hell Shard Citadel</label>
+          <input type="text" id="hell-name" maxlength="24" value="Eclipse Bastion of Dis">
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="hell-name">Your Personal Hell Shard Domain Name</label>
-        <input type="text" id="hell-name" maxlength="24" value="Abyssal Bastion of Pain">
+      <!-- Right Column: Live 90s Cel-Shaded Sprite Preview -->
+      <div class="preview-col">
+        <span style="font-family:'Cinzel',serif; font-size:11px; color:#d6a85a; letter-spacing:1.5px;">CEL VISAGE PREVIEW (CLICK TO SLASH)</span>
+        <canvas id="previewCanvas" width="240" height="220"></canvas>
+        <div class="lore-box" id="race-lore-box">
+          "A powerhouse Torta brawler of the lower wards—unstoppable poise and crushing physical bulk."
+        </div>
       </div>
 
-      <button id="btn-awaken" class="btn-spawn">Descend Into Personal Hell</button>
+      <button id="btn-awaken" class="btn-spawn">⚔️ Enter the Eclipse Shard</button>
     </div>
   </div>
 
@@ -360,81 +495,166 @@
   <!-- HUD Layer -->
   <div id="hud">
     <div class="top-bar">
-      <div class="panel">
-        <span style="color:#cb51cf;">●</span>
-        <span id="shard-status">Shard: Personal Domain</span>
-        <span id="player-count">(1 Online)</span>
+      <div class="panel anime-window">
+        <span style="color:#e03c3c;">◆</span>
+        <span id="shard-status">Citadel: Eclipse Bastion</span>
+        <span id="player-count" style="color:#d6a85a;">(1 Mercenary)</span>
       </div>
-      <div class="panel interactive">
-        <button id="btn-copy-invite" class="action-btn">🔗 Copy Shard Invite</button>
-        <button id="btn-home-shard" class="action-btn" title="Return to your own Hell Shard">🏠 Home Shard</button>
+      <div class="panel anime-window interactive">
+        <button id="btn-toggle-crt" class="action-btn" title="Toggle 90s CRT Scanlines">📺 CRT: ON</button>
+        <button id="btn-copy-invite" class="action-btn">🔗 Invite Friend</button>
+        <button id="btn-home-shard" class="action-btn" title="Return to your own Hell Shard">🏰 My Shard</button>
       </div>
     </div>
 
     <!-- Vitals Bar -->
-    <div class="vitals-box">
-      <div id="vitals-name" style="font-weight:bold; color:#e2a8ff; font-family:'Cinzel',serif;">Malakor</div>
-      <div style="font-size:10px; color:#a285b8; margin-bottom:4px;" id="vitals-subtitle">Human-Torta Hell Knight</div>
-      <div>HP: <span id="hp-txt">100/100</span></div>
+    <div class="vitals-box anime-window">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div id="vitals-name" style="font-weight:900; font-size:14px; color:#f4d28c; font-family:'Cinzel',serif;">Malakor</div>
+        <span id="vitals-lvl" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#d6a85a;">LV.1</span>
+      </div>
+      <div style="font-size:11px; color:#b89872; margin-bottom:5px; font-style:italic;" id="vitals-subtitle">Human-Torta Black Swordsman</div>
+      <div style="display:flex; justify-content:space-between; font-size:11px;">
+        <span>VITALITY</span><span id="hp-txt" style="font-family:'JetBrains Mono',monospace;">200/200</span>
+      </div>
       <div class="bar-container"><div id="hp-fill" class="bar-fill"></div></div>
-      <div style="margin-top:4px;">Mana: <span id="mana-txt">50/50</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:5px;">
+        <span>OD / ASTRAL</span><span id="mana-txt" style="font-family:'JetBrains Mono',monospace;">50/50</span>
+      </div>
       <div class="bar-container"><div id="mana-fill" class="bar-fill"></div></div>
     </div>
 
     <!-- Chat -->
     <div class="chat-container interactive">
-      <div class="chat-log" id="chat-log">
-        <div class="chat-msg" style="color: #9374a8;"><i>System: Welcome to your Hell Shard. Press [TAB] to target nearest threat, [1-4] for combat abilities, or click to move/attack.</i></div>
+      <div class="chat-log anime-window" id="chat-log">
+        <div class="chat-msg" style="color: #d6a85a;"><i>[Chronicle]: Press [TAB] to lock onto the nearest Apostle, [1-4] for techniques, or Click to move & cleave.</i></div>
       </div>
       <div class="chat-input-row">
-        <input type="text" id="chat-input" class="chat-input" placeholder="Type message or press Enter..." maxlength="100">
+        <input type="text" id="chat-input" class="chat-input" placeholder="Press Enter to speak..." maxlength="100">
       </div>
     </div>
 
     <!-- Hotbar -->
     <div class="hotbar interactive">
-      <div class="hotkey-slot" onclick="triggerAbility(1)" title="Primary Strike (Key 1)">
+      <div class="hotkey-slot anime-window" onclick="triggerAbility(1)" title="Heavy Cleave (Key 1)">
         <span class="hotkey-num">1</span>
-        <span class="hotkey-icon">⚔️</span>
+        <span class="hotkey-icon">🗡️</span>
+        <span class="hotkey-label">Cleave</span>
       </div>
-      <div class="hotkey-slot" onclick="triggerAbility(2)" title="Signature Power (Key 2)">
+      <div class="hotkey-slot anime-window" onclick="triggerAbility(2)" title="Blood Art Nova (Key 2)">
         <span class="hotkey-num">2</span>
-        <span class="hotkey-icon">🔮</span>
+        <span class="hotkey-icon">🩸</span>
+        <span class="hotkey-label">Eclipse</span>
       </div>
-      <div class="hotkey-slot" onclick="triggerAbility(3)" title="Shadow Sprint (Key 3)">
+      <div class="hotkey-slot anime-window" onclick="triggerAbility(3)" title="Gale Dash (Key 3)">
         <span class="hotkey-num">3</span>
         <span class="hotkey-icon">💨</span>
+        <span class="hotkey-label">Strider</span>
       </div>
-      <div class="hotkey-slot" onclick="triggerAbility(4)" title="Soul Mend (Key 4)">
+      <div class="hotkey-slot anime-window" onclick="triggerAbility(4)" title="Elf Dust Mend (Key 4)">
         <span class="hotkey-num">4</span>
-        <span class="hotkey-icon">🖤</span>
+        <span class="hotkey-icon">✨</span>
+        <span class="hotkey-label">Mend</span>
       </div>
     </div>
   </div>
 
-  <div id="toast">Invite link copied to clipboard!</div>
+  <div id="toast" class="anime-window">Invite link copied!</div>
 
   <script>
     // --- WORLD & DOMAIN CONFIGURATION ---
-    const WORLD_SIZE = 3600;
-    const DOMAIN_CORE = { x: 1800, y: 1800, radius: 90 };
+    const WORLD_SIZE = 3200;
+    const DOMAIN_CORE = { x: 1600, y: 1600, radius: 92 };
 
-    // --- RACE & SUB-RACE ATTRIBUTES ---
+    // --- 90s ANIME LOW-FANTASY PALETTES ---
+    const ARMOR_PALETTE = ['#7a1c24', '#1d293d', '#233b29', '#422a1d', '#3b1e47', '#26262e'];
+    const HAIR_PALETTE  = ['#141218', '#d9d2c5', '#8c2d24', '#c99b42', '#493222', '#4a5c7a'];
+
+    // --- RACE & SUB-RACE ATTRIBUTES & SILHOUETTES ---
     const RACES = {
-      'Human-Torta': { name: 'Human (Torta)', scale: 1.35, hpBonus: 60, speedMod: 0.92, desc: 'Large brawler female with massive physical strength.' },
-      'Human-Edgar': { name: 'Human (Edgar)', scale: 0.88, hpBonus: -10, speedMod: 1.08, desc: 'Thin tactical scholar with keen arcane insight.' },
-      'Human-Standard': { name: 'Human', scale: 1.0, hpBonus: 0, speedMod: 1.0, desc: 'Balanced baseline mortal.' },
-      'Demon-Succubus': { name: 'Demon (Succubus)', scale: 1.05, hpBonus: 20, speedMod: 1.06, desc: 'Fiendish noble gifted in shadow manipulation.' },
-      'Demon-Balor': { name: 'Demon (Balor)', scale: 1.45, hpBonus: 100, speedMod: 0.88, desc: 'Towering abyssal terror clad in hellfire.' },
-      'Drow': { name: 'Drow Elf', scale: 0.95, hpBonus: 10, speedMod: 1.04, desc: 'Underdark assassin of cold grace.' },
-      'Duergar': { name: 'Duergar', scale: 0.85, hpBonus: 40, speedMod: 0.94, desc: 'Gray dwarf hardened by sulfur.' }
+      'Human-Torta': {
+        name: 'Human (Torta)',
+        scale: 1.24,
+        torsoW: 26,
+        torsoH: 22,
+        skin: '#e0b18c',
+        hpBonus: 75,
+        speedMod: 0.94,
+        desc: '"A powerhouse Torta brawler of the lower wards—unstoppable poise, wide curves, hoop earrings, and crushing physical strength."'
+      },
+      'Human-Edgar': {
+        name: 'Human (Edgar)',
+        scale: 0.96,
+        torsoW: 14,
+        torsoH: 21,
+        skin: '#d9ac86',
+        hpBonus: 0,
+        speedMod: 1.12,
+        desc: '"A lean, sharp-eyed Edgar tactician sporting the iconic straight-cut fringe bowl cut and lethal footwork."'
+      },
+      'Human-Standard': {
+        name: 'Human (Midlander)',
+        scale: 1.0,
+        torsoW: 18,
+        torsoH: 20,
+        skin: '#e3bc9a',
+        hpBonus: 20,
+        speedMod: 1.0,
+        desc: '"A battle-scarred Midland mercenary tempered by a hundred subterranean sieges."'
+      },
+      'Demon-Succubus': {
+        name: 'Demon (Nocturne)',
+        scale: 1.04,
+        torsoW: 17,
+        torsoH: 20,
+        skin: '#c49fd1',
+        hpBonus: 30,
+        speedMod: 1.08,
+        wings: true,
+        horns: 'curved',
+        desc: '"Aristocratic fiend of the velvet abyss, bearing bat-like nocturnal wings and lethal grace."'
+      },
+      'Demon-Balor': {
+        name: 'Demon (Arch-Balor)',
+        scale: 1.38,
+        torsoW: 28,
+        torsoH: 24,
+        skin: '#9e2a2b',
+        hpBonus: 110,
+        speedMod: 0.90,
+        wings: true,
+        horns: 'bull',
+        desc: '"Towering horned apostle of the deep pit, wreathed in ancient 90s OVA hellfire."'
+      },
+      'Drow': {
+        name: 'Drow (Obsidian Elf)',
+        scale: 0.98,
+        torsoW: 16,
+        torsoH: 21,
+        skin: '#6c688c',
+        hpBonus: 15,
+        speedMod: 1.07,
+        ears: true,
+        desc: '"Long-eared subterranean high elf with Record of Lodoss War shoulder pauldrons and silver hair."'
+      },
+      'Duergar': {
+        name: 'Duergar (Ash Dwarf)',
+        scale: 0.88,
+        torsoW: 23,
+        torsoH: 18,
+        skin: '#877f85',
+        hpBonus: 55,
+        speedMod: 0.93,
+        beard: true,
+        desc: '"Stout iron-forged gray dwarf of the deep magma foundries."'
+      }
     };
 
     const CLASSES = {
-      'Fighter': { name: 'Hell Knight', hp: 140, mana: 40, color: '#cb3636' },
-      'Healer': { name: 'Soul Cleric', hp: 100, mana: 90, color: '#36cb85' },
-      'Mage': { name: 'Abyssal Wizard', hp: 80, mana: 120, color: '#3685cf' },
-      'Rogue': { name: 'Shadow Assassin', hp: 95, mana: 60, color: '#b836cf' }
+      'Fighter': { name: 'Black Swordsman', hp: 150, mana: 45, color: '#c92a2a' },
+      'Rogue':   { name: 'Shadow Dagger',   hp: 105, mana: 65, color: '#9c36b5' },
+      'Mage':    { name: 'High Sorcerer',   hp: 90,  mana: 120, color: '#3b82f6' },
+      'Healer':  { name: 'Blood Cleric',    hp: 115, mana: 95,  color: '#10b981' }
     };
 
     // --- GAME STATE ---
@@ -443,18 +663,24 @@
       name: 'Malakor',
       race: 'Human-Torta',
       className: 'Fighter',
-      domainName: 'Abyssal Bastion of Pain',
-      x: DOMAIN_CORE.x + 160,
-      y: DOMAIN_CORE.y + 160,
+      armorColor: ARMOR_PALETTE[0],
+      hairColor: HAIR_PALETTE[0],
+      domainName: 'Eclipse Bastion of Dis',
+      x: DOMAIN_CORE.x + 150,
+      y: DOMAIN_CORE.y + 150,
       targetX: null,
       targetY: null,
-      speed: 215,
-      hp: 200,
-      maxHp: 200,
-      mana: 40,
-      maxMana: 40,
+      facing: 1,
+      isMoving: false,
+      speed: 220,
+      hp: 225,
+      maxHp: 225,
+      mana: 45,
+      maxMana: 45,
       level: 1,
+      kills: 0,
       targetEntityId: null,
+      swingTimer: 0,
       actionEffect: null,
       actionTimer: 0,
       chatBubble: null,
@@ -464,20 +690,379 @@
     const remotePlayers = new Map();
     const enemies = [];
     const combatTexts = [];
+    const slashArcs = [];
+    const bloodSparks = [];
 
-    // --- SPAWN INITIAL HELL MONSTERS (Imps, Hellhounds, Shadow Fiends) ---
+    // --- UI SWATCH PICKERS & PREVIEW ---
+    function initCreationUI() {
+      const armorRow = document.getElementById('armor-swatches');
+      ARMOR_PALETTE.forEach((col, i) => {
+        const s = document.createElement('div');
+        s.className = 'swatch' + (i === 0 ? ' active' : '');
+        s.style.backgroundColor = col;
+        s.onclick = () => {
+          localPlayer.armorColor = col;
+          armorRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+          s.classList.add('active');
+        };
+        armorRow.appendChild(s);
+      });
+
+      const hairRow = document.getElementById('hair-swatches');
+      HAIR_PALETTE.forEach((col, i) => {
+        const s = document.createElement('div');
+        s.className = 'swatch' + (i === 0 ? ' active' : '');
+        s.style.backgroundColor = col;
+        s.onclick = () => {
+          localPlayer.hairColor = col;
+          hairRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+          s.classList.add('active');
+        };
+        hairRow.appendChild(s);
+      });
+
+      const raceSel = document.getElementById('char-race');
+      raceSel.addEventListener('change', () => {
+        const r = RACES[raceSel.value];
+        if (r) document.getElementById('race-lore-box').textContent = r.desc;
+        if (raceSel.value === 'Drow') localPlayer.hairColor = '#d9d2c5';
+      });
+    }
+    initCreationUI();
+
+    // --- 90s ANIME CEL-SHADED CHARACTER RENDERER ---
+    function drawAnimeCharacter(ctx, p, cx, cy, timeSec, scaleOverride = 1.0, isTargeted = false) {
+      const raceMeta = RACES[p.race] || RACES['Human-Standard'];
+      const sc = raceMeta.scale * scaleOverride;
+      const facing = p.facing || 1;
+      const isMoving = p.isMoving;
+      const walkBob = isMoving ? Math.abs(Math.sin(timeSec * 11)) * -5 : Math.sin(timeSec * 2.6) * 1.5;
+      const stride = isMoving ? Math.sin(timeSec * 11) * 6 : 0;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Target Reticle (Crimson Anime Crosshair Ring)
+      if (isTargeted) {
+        ctx.save();
+        ctx.strokeStyle = '#ff2a38';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 4, 28 * sc, 13 * sc, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Ground Cel Drop Shadow
+      ctx.fillStyle = 'rgba(4, 2, 8, 0.72)';
+      ctx.beginPath();
+      ctx.ellipse(0, 5, 20 * sc, 9 * sc, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.scale(facing * sc, sc);
+      ctx.translate(0, walkBob);
+
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // 1. Demonic Wings (if Succubus or Balor)
+      if (raceMeta.wings) {
+        const flap = Math.sin(timeSec * 4.5) * 4;
+        ctx.fillStyle = p.race === 'Demon-Balor' ? '#4a0e12' : '#281536';
+        ctx.strokeStyle = '#050308';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(-4, -24);
+        ctx.lineTo(-32, -44 + flap);
+        ctx.lineTo(-26, -16);
+        ctx.lineTo(-14, -20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // 2. Flowing 90s Anime Tattered Cloak (Behind body)
+      const cloakWave = Math.sin(timeSec * 5 + (isMoving ? 2 : 0)) * (isMoving ? 7 : 2.5);
+      ctx.fillStyle = p.armorColor || '#7a1c24';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(-raceMeta.torsoW * 0.45, -30);
+      ctx.lineTo(raceMeta.torsoW * 0.45, -30);
+      ctx.lineTo(raceMeta.torsoW * 0.65 - cloakWave, 2);
+      ctx.lineTo(0 - cloakWave * 0.8, -3);
+      ctx.lineTo(-raceMeta.torsoW * 0.75 - cloakWave, 3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // 3. Boots & Legs
+      ctx.fillStyle = '#1b1621';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2.2;
+      ctx.fillRect(-7 + stride * 0.5, -12, 6, 14);
+      ctx.strokeRect(-7 + stride * 0.5, -12, 6, 14);
+      ctx.fillRect(2 - stride * 0.5, -12, 6, 14);
+      ctx.strokeRect(2 - stride * 0.5, -12, 6, 14);
+
+      // 4. Torso & Sub-Race Silhouette (Torta vs Edgar vs Standard)
+      const tw = raceMeta.torsoW;
+      const th = raceMeta.torsoH;
+      ctx.fillStyle = '#262130';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2.4;
+
+      if (p.race === 'Human-Torta') {
+        // Stylized wide curvy brawler silhouette + crop chestplate
+        ctx.beginPath();
+        ctx.roundRect(-tw / 2, -30, tw, th, 8);
+        ctx.fill();
+        ctx.stroke();
+        // Hard cel-shaded highlight on armor
+        ctx.fillStyle = p.armorColor || '#7a1c24';
+        ctx.fillRect(-tw / 2 + 2, -29, tw - 4, 11);
+      } else {
+        ctx.beginPath();
+        ctx.roundRect(-tw / 2, -30, tw, th, 3);
+        ctx.fill();
+        ctx.stroke();
+        // Diagonal Sword Belt
+        ctx.strokeStyle = '#8c6239';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-tw / 2 + 1, -28);
+        ctx.lineTo(tw / 2 - 1, -12);
+        ctx.stroke();
+      }
+
+      // 5. Lodoss-Style Exaggerated Shoulder Pauldrons
+      ctx.fillStyle = '#9ca3af';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.ellipse(-tw / 2 - 2, -27, 7, 4.5, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(tw / 2 + 2, -27, 7, 4.5, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // 6. Head & Anime Facial Features
+      const headY = -39;
+      const headR = 10.5;
+      ctx.fillStyle = raceMeta.skin;
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(0, headY, headR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Long 90s Elf Ears for Drow
+      if (raceMeta.ears) {
+        ctx.fillStyle = raceMeta.skin;
+        ctx.beginPath();
+        ctx.moveTo(-headR + 1, headY - 1);
+        ctx.lineTo(-headR - 11, headY - 6);
+        ctx.lineTo(-headR + 2, headY + 3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // Gold Hoop Earrings for Torta
+      if (p.race === 'Human-Torta') {
+        ctx.strokeStyle = '#f4d28c';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(-headR - 1, headY + 3, 3.5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Sharp 90s Anime Eyes
+      ctx.fillStyle = '#050308';
+      ctx.fillRect(1, headY - 3, 4, 1.5);
+      ctx.fillRect(6, headY - 3, 3.5, 1.5);
+      ctx.fillStyle = (p.race.startsWith('Demon') || p.race === 'Drow') ? '#ff3b4e' : '#ffffff';
+      ctx.fillRect(2, headY - 2, 2.2, 2.2);
+      ctx.fillRect(6.5, headY - 2, 2.2, 2.2);
+
+      // Duergar Braided Beard
+      if (raceMeta.beard) {
+        ctx.fillStyle = p.hairColor || '#d9d2c5';
+        ctx.beginPath();
+        ctx.moveTo(-6, headY + 3);
+        ctx.lineTo(8, headY + 3);
+        ctx.lineTo(5, headY + 16);
+        ctx.lineTo(-4, headY + 16);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // 7. Sub-Race Specific Hair & Horns
+      ctx.fillStyle = p.hairColor || '#141218';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2;
+
+      if (p.race === 'Human-Edgar') {
+        // Iconic Edgar high-fade straight fringe bowl cut
+        ctx.beginPath();
+        ctx.arc(0, headY - 2, headR + 1.5, Math.PI * 0.95, Math.PI * 2.05);
+        ctx.lineTo(headR + 2, headY - 3);
+        ctx.lineTo(-headR - 2, headY - 3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (p.race === 'Human-Torta') {
+        // Voluminous dark hair with side bangs
+        ctx.beginPath();
+        ctx.arc(0, headY - 2, headR + 2, Math.PI * 0.8, Math.PI * 2.2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(-headR, headY + 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (raceMeta.horns) {
+        // Curved Demon Horns
+        ctx.fillStyle = '#d6c5ad';
+        ctx.beginPath();
+        ctx.moveTo(-6, headY - 7);
+        ctx.quadraticCurveTo(-19, headY - 16, -14, headY - 25);
+        ctx.lineTo(-4, headY - 9);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(6, headY - 7);
+        ctx.quadraticCurveTo(19, headY - 16, 14, headY - 25);
+        ctx.lineTo(4, headY - 9);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        // Spiky 90s Anime Swordsman Hair
+        ctx.beginPath();
+        ctx.moveTo(-headR - 2, headY - 2);
+        ctx.lineTo(-8, headY - 15);
+        ctx.lineTo(-3, headY - 11);
+        ctx.lineTo(2, headY - 16);
+        ctx.lineTo(7, headY - 11);
+        ctx.lineTo(headR + 3, headY - 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // 8. Class Weapon (Dragon-Slayer Greatsword / Runestaff / Twin Daggers)
+      const swingRot = p.swingTimer > 0 ? Math.sin(p.swingTimer * 0.35) * 1.45 : (isMoving ? Math.sin(timeSec * 11) * 0.18 : 0);
+      ctx.save();
+      ctx.translate(tw * 0.48, -20);
+      ctx.rotate(swingRot);
+
+      if (p.className === 'Fighter') {
+        // Massive Berserk-style Slab Greatsword
+        ctx.fillStyle = '#4a3525';
+        ctx.fillRect(-1.5, 0, 3, 7);
+        ctx.fillStyle = '#d6a85a';
+        ctx.fillRect(-5, -3, 10, 3);
+        ctx.fillStyle = '#333942';
+        ctx.strokeStyle = '#050308';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-4, -3);
+        ctx.lineTo(-4, -36);
+        ctx.lineTo(0, -43);
+        ctx.lineTo(4, -36);
+        ctx.lineTo(4, -3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Metallic edge highlight
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(1.5, -35, 1.5, 31);
+      } else if (p.className === 'Mage' || p.className === 'Healer') {
+        // Ornate Skull/Crescent Staff
+        ctx.fillStyle = '#5c3a21';
+        ctx.strokeStyle = '#050308';
+        ctx.lineWidth = 2;
+        ctx.fillRect(-1.5, -34, 3, 40);
+        ctx.strokeRect(-1.5, -34, 3, 40);
+        ctx.fillStyle = p.className === 'Mage' ? '#38bdf8' : '#10b981';
+        ctx.beginPath();
+        ctx.arc(0, -37, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        // Reverse-grip Crimson Kris Dagger
+        ctx.fillStyle = '#cbd5e1';
+        ctx.strokeStyle = '#050308';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-2, -2);
+        ctx.lineTo(0, -22);
+        ctx.lineTo(3, -2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // --- PREVIEW CANVAS LOOP ---
+    const prevCanvas = document.getElementById('previewCanvas');
+    const prevCtx = prevCanvas.getContext('2d');
+    let previewSwing = 0;
+    prevCanvas.addEventListener('mousedown', () => { previewSwing = 20; });
+
+    function updatePreview(now) {
+      if (document.getElementById('char-modal').style.display !== 'none') {
+        prevCtx.clearRect(0, 0, prevCanvas.width, prevCanvas.height);
+
+        // Draw Gothic Stone Pedestal
+        prevCtx.fillStyle = '#181321';
+        prevCtx.strokeStyle = '#050308';
+        prevCtx.lineWidth = 2.5;
+        prevCtx.beginPath();
+        prevCtx.ellipse(120, 175, 56, 16, 0, 0, Math.PI * 2);
+        prevCtx.fill();
+        prevCtx.stroke();
+
+        if (previewSwing > 0) previewSwing--;
+
+        const previewDummy = {
+          race: document.getElementById('char-race').value,
+          className: document.getElementById('char-class').value,
+          armorColor: localPlayer.armorColor,
+          hairColor: localPlayer.hairColor,
+          facing: 1,
+          isMoving: false,
+          swingTimer: previewSwing
+        };
+        drawAnimeCharacter(prevCtx, previewDummy, 120, 168, now * 0.001, 1.65, false);
+      }
+    }
+
+    // --- SPAWN INITIAL HELL MONSTERS (Apostles, Gargoyles, Hellhounds) ---
     function spawnHellEnemies() {
       enemies.length = 0;
       const types = [
-        { name: 'Abyssal Imp', hp: 45, maxHp: 45, radius: 14, speed: 130, color: '#cf5136', type: 'imp' },
-        { name: 'Hellhound', hp: 80, maxHp: 80, radius: 18, speed: 175, color: '#cf8236', type: 'hound' },
-        { name: 'Shadow Fiend', hp: 60, maxHp: 60, radius: 15, speed: 150, color: '#9136cf', type: 'fiend' }
+        { name: 'Crimson Behelit Imp', hp: 50, maxHp: 50, radius: 15, speed: 125, color: '#b82832', type: 'imp' },
+        { name: 'Abyssal Hellhound',   hp: 85, maxHp: 85, radius: 18, speed: 170, color: '#4a1525', type: 'hound' },
+        { name: 'Obsidian Apostle',    hp: 120, maxHp: 120, radius: 22, speed: 110, color: '#5c2d7a', type: 'apostle' }
       ];
 
-      for (let i = 0; i < 16; i++) {
-        const t = types[Math.floor(Math.random() * types.length)];
-        const ang = Math.random() * Math.PI * 2;
-        const dist = 320 + Math.random() * 1400;
+      for (let i = 0; i < 18; i++) {
+        const t = types[i % types.length];
+        const ang = (i / 18) * Math.PI * 2 + (Math.random() * 0.3);
+        const dist = 390 + Math.random() * 1100;
         enemies.push({
           id: 'mob-' + i,
           name: t.name,
@@ -489,25 +1074,23 @@
           speed: t.speed,
           color: t.color,
           type: t.type,
-          targetX: null,
-          targetY: null,
           attackCooldown: 0
         });
       }
     }
     spawnHellEnemies();
 
-    // --- CAVERN PILLARS & HELLISH PROP GENERATION ---
+    // --- CAVERN PROPS (Broken Gothic Pillars, Braziers, Skull Piles) ---
     const hellProps = [];
-    for (let i = 0; i < 350; i++) {
-      const gx = Math.random() * WORLD_SIZE;
-      const gy = Math.random() * WORLD_SIZE;
-      if (Math.hypot(gx - DOMAIN_CORE.x, gy - DOMAIN_CORE.y) > 130) {
+    for (let i = 0; i < 280; i++) {
+      const gx = 100 + Math.random() * (WORLD_SIZE - 200);
+      const gy = 100 + Math.random() * (WORLD_SIZE - 200);
+      if (Math.hypot(gx - DOMAIN_CORE.x, gy - DOMAIN_CORE.y) > 160) {
         hellProps.push({
           x: gx,
           y: gy,
-          type: Math.random() > 0.45 ? 'spire' : 'sulfur_vent',
-          size: 14 + Math.random() * 26
+          type: i % 3 === 0 ? 'brazier' : 'pillar',
+          size: 16 + Math.random() * 20
         });
       }
     }
@@ -529,6 +1112,10 @@
     // --- INPUT CONTROLS & LAPTOP TOUCHPAD OPTIMIZATION ---
     const keys = {};
     window.addEventListener('keydown', (e) => {
+      if (document.activeElement === document.getElementById('chat-input')) {
+        if (e.key === 'Enter') sendChat();
+        return;
+      }
       keys[e.key.toLowerCase()] = true;
       if (['1','2','3','4'].includes(e.key)) {
         triggerAbility(parseInt(e.key));
@@ -538,12 +1125,7 @@
         cycleTabTarget();
       }
       if (e.key === 'Enter') {
-        const chatInput = document.getElementById('chat-input');
-        if (document.activeElement === chatInput) {
-          sendChat();
-        } else {
-          chatInput.focus();
-        }
+        document.getElementById('chat-input').focus();
       }
     });
 
@@ -559,7 +1141,7 @@
 
       let clickedEnemy = null;
       for (const en of enemies) {
-        if (Math.hypot(clickX - en.x, clickY - en.y) < en.radius + 15) {
+        if (Math.hypot(clickX - en.x, clickY - en.y) < en.radius + 18) {
           clickedEnemy = en;
           break;
         }
@@ -567,14 +1149,13 @@
 
       if (clickedEnemy) {
         localPlayer.targetEntityId = clickedEnemy.id;
-        if (Math.hypot(localPlayer.x - clickedEnemy.x, localPlayer.y - clickedEnemy.y) < 75) {
+        if (Math.hypot(localPlayer.x - clickedEnemy.x, localPlayer.y - clickedEnemy.y) < 95) {
           executePrimaryStrike(clickedEnemy);
         } else {
           localPlayer.targetX = clickedEnemy.x;
           localPlayer.targetY = clickedEnemy.y;
         }
       } else {
-        localPlayer.targetEntityId = null;
         localPlayer.targetX = clickX;
         localPlayer.targetY = clickY;
       }
@@ -582,20 +1163,17 @@
 
     // --- TAB TARGETING SYSTEM ---
     function cycleTabTarget() {
-      const allTargets = [...enemies];
-      if (allTargets.length === 0) return;
-
-      allTargets.sort((a, b) => {
-        const distA = Math.hypot(a.x - localPlayer.x, a.y - localPlayer.y);
-        const distB = Math.hypot(b.x - localPlayer.x, b.y - localPlayer.y);
-        return distA - distB;
+      if (enemies.length === 0) {
+        spawnHellEnemies();
+        return;
+      }
+      const sorted = [...enemies].sort((a, b) => {
+        return Math.hypot(a.x - localPlayer.x, a.y - localPlayer.y) - Math.hypot(b.x - localPlayer.x, b.y - localPlayer.y);
       });
-
-      const currentIdx = allTargets.findIndex(t => t.id === localPlayer.targetEntityId);
-      const nextIdx = (currentIdx + 1) % allTargets.length;
-      localPlayer.targetEntityId = allTargets[nextIdx].id;
-
-      showToast(`Target: ${allTargets[nextIdx].name}`);
+      const currentIdx = sorted.findIndex(t => t.id === localPlayer.targetEntityId);
+      const nextIdx = (currentIdx + 1) % sorted.length;
+      localPlayer.targetEntityId = sorted[nextIdx].id;
+      showToast(`Locked On: ${sorted[nextIdx].name}`);
     }
 
     // --- MULTIPLAYER & PERSONAL HELL SHARDS ---
@@ -606,7 +1184,7 @@
     let localBroadcastChannel = null;
     try {
       if (typeof BroadcastChannel !== 'undefined') {
-        localBroadcastChannel = new BroadcastChannel('undercity_hell_v3_' + (joinShardId || 'main'));
+        localBroadcastChannel = new BroadcastChannel('undercity_hell_v4_' + (joinShardId || 'main'));
         localBroadcastChannel.onmessage = (ev) => {
           if (ev.data && ev.data.id !== localPlayer.id) {
             handleIncomingPacket(ev.data);
@@ -624,11 +1202,13 @@
     function initNetworking() {
       const shardStatus = document.getElementById('shard-status');
       if (isHost) {
-        shardStatus.textContent = `Domain: ${localPlayer.domainName}`;
-        const newUrl = `${window.location.origin}${window.location.pathname}?shard=hell-shard-${localPlayer.id}`;
-        window.history.replaceState(null, '', newUrl);
+        shardStatus.textContent = `Citadel: ${localPlayer.domainName}`;
+        try {
+          const newUrl = `${window.location.origin}${window.location.pathname}?shard=hell-${localPlayer.id}`;
+          window.history.replaceState(null, '', newUrl);
+        } catch(e) {}
       } else {
-        shardStatus.textContent = `Visiting Shard`;
+        shardStatus.textContent = `Visiting Ally Shard`;
       }
 
       try {
@@ -647,9 +1227,7 @@
           } catch(err) {}
         };
         ws.onerror = () => { socketConnected = false; };
-      } catch(err) {
-        console.warn('WebSocket relay fallback active (Local / BroadcastChannel mode)');
-      }
+      } catch(err) {}
     }
 
     function handleIncomingPacket(data) {
@@ -660,20 +1238,9 @@
         if (!p) {
           p = { ...data };
           remotePlayers.set(data.id, p);
-          appendChat('Hell Shard', `${p.name} the ${p.race} stepped through the sulfur portal.`);
+          appendChat('Chronicle', `${p.name} (${p.race}) crossed the Astral Rift.`);
         } else {
-          p.x = data.x;
-          p.y = data.y;
-          p.name = data.name;
-          p.race = data.race;
-          p.className = data.className;
-          p.domainName = data.domainName;
-          p.hp = data.hp;
-          p.maxHp = data.maxHp;
-          p.actionEffect = data.actionEffect;
-          p.actionTimer = data.actionTimer;
-          p.chatBubble = data.chatBubble;
-          p.chatTimer = data.chatTimer;
+          Object.assign(p, data);
         }
         updateRosterCount();
       } else if (data.type === 'chat') {
@@ -681,20 +1248,23 @@
       }
     }
 
-    function broadcastState(immediate = false) {
+    function broadcastState() {
       const packet = {
         type: 'state',
         id: localPlayer.id,
         name: localPlayer.name,
         race: localPlayer.race,
         className: localPlayer.className,
+        armorColor: localPlayer.armorColor,
+        hairColor: localPlayer.hairColor,
         domainName: localPlayer.domainName,
         x: Math.round(localPlayer.x),
         y: Math.round(localPlayer.y),
+        facing: localPlayer.facing,
+        isMoving: localPlayer.isMoving,
+        swingTimer: localPlayer.swingTimer,
         hp: localPlayer.hp,
         maxHp: localPlayer.maxHp,
-        actionEffect: localPlayer.actionEffect,
-        actionTimer: localPlayer.actionTimer,
         chatBubble: localPlayer.chatBubble,
         chatTimer: localPlayer.chatTimer
       };
@@ -702,7 +1272,6 @@
       if (localBroadcastChannel) {
         try { localBroadcastChannel.postMessage(packet); } catch(e) {}
       }
-
       if (activeSocket && socketConnected && activeSocket.readyState === WebSocket.OPEN) {
         try { activeSocket.send(JSON.stringify(packet)); } catch(e) {}
       }
@@ -715,11 +1284,9 @@
         sender: localPlayer.name,
         text: text
       };
-
       if (localBroadcastChannel) {
         try { localBroadcastChannel.postMessage(packet); } catch(e) {}
       }
-
       if (activeSocket && socketConnected && activeSocket.readyState === WebSocket.OPEN) {
         try { activeSocket.send(JSON.stringify(packet)); } catch(e) {}
       }
@@ -727,98 +1294,123 @@
 
     function updateRosterCount() {
       const el = document.getElementById('player-count');
-      if (el) {
-        el.textContent = `(${remotePlayers.size + 1} Online)`;
+      if (el) el.textContent = `(${remotePlayers.size + 1} Mercenaries)`;
+    }
+
+    // --- ANIME SLASH FX & COMBAT ABILITIES ---
+    function spawnSlashArc(x, y, facing, color = '#f4d28c', radius = 48) {
+      slashArcs.push({ x, y, facing, color, radius, life: 14, maxLife: 14 });
+      for (let i = 0; i < 8; i++) {
+        bloodSparks.push({
+          x, y: y - 15,
+          vx: (Math.random() - 0.2) * facing * 180,
+          vy: (Math.random() - 0.8) * 140,
+          color: i % 2 === 0 ? '#e03c3c' : color,
+          life: 18
+        });
       }
     }
 
-    // --- COMBAT ABILITIES (KEYS 1-4) ---
     function triggerAbility(slot) {
       if (slot === 1) {
         let target = enemies.find(e => e.id === localPlayer.targetEntityId);
-        if (!target && enemies.length > 0) target = enemies[0];
-        if (target) {
-          executePrimaryStrike(target);
-        } else {
-          showToast('No target in sight. Press [TAB]');
+        if (!target && enemies.length > 0) {
+          cycleTabTarget();
+          target = enemies.find(e => e.id === localPlayer.targetEntityId);
         }
+        if (target) executePrimaryStrike(target);
       } else if (slot === 2) {
-        if (localPlayer.mana < 20) {
-          showToast('Not enough Mana!');
+        if (localPlayer.mana < 15) {
+          showToast('Insufficient Astral Od!');
           return;
         }
-        localPlayer.mana -= 20;
-        localPlayer.actionEffect = 'signature';
-        localPlayer.actionTimer = 40;
+        localPlayer.mana -= 15;
+        localPlayer.swingTimer = 20;
+        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#e03c3c', 135);
 
-        enemies.forEach(en => {
-          if (Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y) < 160) {
-            en.hp -= 45;
-            spawnCombatText(en.x, en.y, '-45 CRIT', '#cb51cf');
+        for (let i = enemies.length - 1; i >= 0; i--) {
+          const en = enemies[i];
+          if (Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y) < 165) {
+            en.hp -= 55;
+            spawnCombatText(en.x, en.y, '55 ECLIPSE!', '#f4d28c');
+            if (en.hp <= 0) handleEnemyDefeat(en, i);
           }
-        });
-        showToast('Abyssal Nova unleashed!');
+        }
       } else if (slot === 3) {
-        localPlayer.actionEffect = 'sprint';
-        localPlayer.actionTimer = 30;
-        localPlayer.speed = 420;
-        setTimeout(() => { localPlayer.speed = 215; }, 2500);
-        showToast('Shadow Sprint active!');
+        localPlayer.speed = 410;
+        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#38bdf8', 40);
+        setTimeout(() => {
+          const r = RACES[localPlayer.race] || RACES['Human-Standard'];
+          localPlayer.speed = 220 * r.speedMod;
+        }, 2000);
+        showToast('Gale Strider Dash!');
       } else if (slot === 4) {
-        if (localPlayer.mana < 25) {
-          showToast('Not enough Mana!');
+        if (localPlayer.mana < 15) {
+          showToast('Insufficient Astral Od!');
           return;
         }
-        localPlayer.mana -= 25;
-        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 50);
-        localPlayer.actionEffect = 'commune';
-        localPlayer.actionTimer = 35;
-        spawnCombatText(localPlayer.x, localPlayer.y, '+50 HP', '#36cb85');
-        showToast('Soul Mended.');
+        localPlayer.mana -= 15;
+        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 65);
+        spawnCombatText(localPlayer.x, localPlayer.y, '+65 MEND', '#10b981');
       }
       updateVitalsUI();
-      broadcastState(true);
+      broadcastState();
     }
 
     function executePrimaryStrike(target) {
       const dist = Math.hypot(localPlayer.x - target.x, localPlayer.y - target.y);
-      if (dist > 85) {
+      if (dist > 95) {
         localPlayer.targetX = target.x;
         localPlayer.targetY = target.y;
         return;
       }
 
-      localPlayer.actionEffect = 'strike';
-      localPlayer.actionTimer = 25;
-      const dmg = 22 + Math.floor(Math.random() * 12);
+      localPlayer.facing = target.x >= localPlayer.x ? 1 : -1;
+      localPlayer.swingTimer = 18;
+      spawnSlashArc(target.x, target.y, localPlayer.facing, '#f4d28c', 52);
+
+      const dmg = 26 + Math.floor(Math.random() * 14);
       target.hp -= dmg;
-      spawnCombatText(target.x, target.y, `-${dmg}`, '#cb3636');
+      spawnCombatText(target.x, target.y, `-${dmg}`, '#ff4d4d');
 
       if (target.hp <= 0) {
-        showToast(`Defeated ${target.name}!`);
         const idx = enemies.indexOf(target);
-        if (idx !== -1) enemies.splice(idx, 1);
-        if (localPlayer.targetEntityId === target.id) localPlayer.targetEntityId = null;
+        if (idx !== -1) handleEnemyDefeat(target, idx);
       }
-      broadcastState(true);
+      broadcastState();
+    }
+
+    function handleEnemyDefeat(target, idx) {
+      enemies.splice(idx, 1);
+      localPlayer.kills++;
+      if (localPlayer.kills % 3 === 0) {
+        localPlayer.level++;
+        localPlayer.maxHp += 20;
+        localPlayer.hp = localPlayer.maxHp;
+        document.getElementById('vitals-lvl').textContent = `LV.${localPlayer.level}`;
+        spawnCombatText(localPlayer.x, localPlayer.y - 20, `LEVEL UP! LV.${localPlayer.level}`, '#f4d28c');
+      }
+      if (localPlayer.targetEntityId === target.id) localPlayer.targetEntityId = null;
+      if (enemies.length < 6) setTimeout(spawnHellEnemies, 3000);
+      updateVitalsUI();
     }
 
     function spawnCombatText(x, y, text, color) {
-      combatTexts.push({ x, y: y - 20, text, color, life: 55, maxLife: 55 });
+      combatTexts.push({ x, y: y - 28, text, color, life: 50, maxLife: 50 });
     }
 
     function sendChat() {
       const input = document.getElementById('chat-input');
       const val = input.value.trim();
-      if (!val) return;
-
+      if (!val) {
+        input.blur();
+        return;
+      }
       appendChat(localPlayer.name, val);
       localPlayer.chatBubble = val;
-      localPlayer.chatTimer = 220;
-
+      localPlayer.chatTimer = 240;
       broadcastChat(val);
-      broadcastState(true);
-
+      broadcastState();
       input.value = '';
       input.blur();
     }
@@ -843,13 +1435,25 @@
       toast.textContent = msg;
       toast.style.display = 'block';
       clearTimeout(window._tTimer);
-      window._tTimer = setTimeout(() => { toast.style.display = 'none'; }, 2600);
+      window._tTimer = setTimeout(() => { toast.style.display = 'none'; }, 2400);
     }
 
+    // CRT Scanline Toggle
+    document.getElementById('btn-toggle-crt').addEventListener('click', (e) => {
+      const crt = document.getElementById('crt-overlay');
+      const hidden = crt.style.display === 'none';
+      crt.style.display = hidden ? 'block' : 'none';
+      e.currentTarget.textContent = hidden ? '📺 CRT: ON' : '📺 CRT: OFF';
+    });
+
     document.getElementById('btn-copy-invite').addEventListener('click', () => {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        showToast('Shard invite link copied! Send to friends.');
-      });
+      const temp = document.createElement('textarea');
+      temp.value = window.location.href;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast('Shard Invite URL Copied!');
     });
 
     document.getElementById('btn-home-shard').addEventListener('click', () => {
@@ -863,7 +1467,7 @@
       if (nameInput) localPlayer.name = nameInput;
       localPlayer.race = document.getElementById('char-race').value;
       localPlayer.className = document.getElementById('char-class').value;
-      localPlayer.domainName = document.getElementById('hell-name').value.trim() || 'Abyssal Bastion';
+      localPlayer.domainName = document.getElementById('hell-name').value.trim() || 'Eclipse Bastion';
 
       const raceMeta = RACES[localPlayer.race] || RACES['Human-Standard'];
       const classMeta = CLASSES[localPlayer.className] || CLASSES['Fighter'];
@@ -871,17 +1475,17 @@
       localPlayer.hp = localPlayer.maxHp;
       localPlayer.maxMana = classMeta.mana;
       localPlayer.mana = localPlayer.maxMana;
-      localPlayer.speed = 215 * raceMeta.speedMod;
+      localPlayer.speed = 220 * raceMeta.speedMod;
 
       document.getElementById('char-modal').style.display = 'none';
       document.getElementById('hud').style.display = 'block';
 
       document.getElementById('vitals-name').textContent = localPlayer.name;
-      document.getElementById('vitals-subtitle').textContent = `${raceMeta.name} ${classMeta.name}`;
+      document.getElementById('vitals-subtitle').textContent = `${raceMeta.name} • ${classMeta.name}`;
 
       initNetworking();
       updateVitalsUI();
-      appendChat('Hell Shard', `You have opened the gates to ${localPlayer.domainName}. Combat ready.`);
+      appendChat('Chronicle', `You stand within ${localPlayer.domainName}. Apostles prowl the outer flagstones.`);
     });
 
     function updateVitalsUI() {
@@ -899,6 +1503,8 @@
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
+      updatePreview(now);
+
       let moveX = 0;
       let moveY = 0;
 
@@ -913,21 +1519,31 @@
         const len = Math.hypot(moveX, moveY);
         localPlayer.x += (moveX / len) * localPlayer.speed * dt;
         localPlayer.y += (moveY / len) * localPlayer.speed * dt;
+        if (Math.abs(moveX) > 0.05) localPlayer.facing = moveX > 0 ? 1 : -1;
+        localPlayer.isMoving = true;
       } else if (localPlayer.targetX !== null && localPlayer.targetY !== null) {
         const dx = localPlayer.targetX - localPlayer.x;
         const dy = localPlayer.targetY - localPlayer.y;
         const dist = Math.hypot(dx, dy);
-        if (dist > 5) {
+        if (dist > 6) {
           localPlayer.x += (dx / dist) * localPlayer.speed * dt;
           localPlayer.y += (dy / dist) * localPlayer.speed * dt;
+          if (Math.abs(dx) > 2) localPlayer.facing = dx > 0 ? 1 : -1;
+          localPlayer.isMoving = true;
         } else {
           localPlayer.targetX = null;
           localPlayer.targetY = null;
+          localPlayer.isMoving = false;
         }
+      } else {
+        localPlayer.isMoving = false;
       }
 
-      localPlayer.x = Math.max(50, Math.min(WORLD_SIZE - 50, localPlayer.x));
-      localPlayer.y = Math.max(50, Math.min(WORLD_SIZE - 50, localPlayer.y));
+      // Passive Mana / Od Recovery
+      localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 3.5 * dt);
+
+      localPlayer.x = Math.max(60, Math.min(WORLD_SIZE - 60, localPlayer.x));
+      localPlayer.y = Math.max(60, Math.min(WORLD_SIZE - 60, localPlayer.y));
 
       const coreDist = Math.hypot(localPlayer.x - DOMAIN_CORE.x, localPlayer.y - DOMAIN_CORE.y);
       if (coreDist < DOMAIN_CORE.radius) {
@@ -938,25 +1554,24 @@
 
       enemies.forEach(en => {
         const distToPlayer = Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y);
-        if (distToPlayer < 450) {
+        if (distToPlayer < 420 && distToPlayer > 32) {
           const ang = Math.atan2(localPlayer.y - en.y, localPlayer.x - en.x);
           en.x += Math.cos(ang) * en.speed * dt;
           en.y += Math.sin(ang) * en.speed * dt;
-
-          if (distToPlayer < 45) {
-            en.attackCooldown -= dt;
-            if (en.attackCooldown <= 0) {
-              en.attackCooldown = 1.2;
-              const hitDmg = 12 + Math.floor(Math.random() * 8);
-              localPlayer.hp -= hitDmg;
-              spawnCombatText(localPlayer.x, localPlayer.y, `-${hitDmg} HP`, '#cb3636');
-              updateVitalsUI();
-            }
+        }
+        if (distToPlayer < 46) {
+          en.attackCooldown -= dt;
+          if (en.attackCooldown <= 0) {
+            en.attackCooldown = 1.35;
+            const hitDmg = 10 + Math.floor(Math.random() * 7);
+            localPlayer.hp = Math.max(10, localPlayer.hp - hitDmg);
+            spawnCombatText(localPlayer.x, localPlayer.y, `-${hitDmg}`, '#e03c3c');
+            updateVitalsUI();
           }
         }
       });
 
-      if (localPlayer.actionTimer > 0) localPlayer.actionTimer--;
+      if (localPlayer.swingTimer > 0) localPlayer.swingTimer--;
       if (localPlayer.chatTimer > 0) {
         localPlayer.chatTimer--;
         if (localPlayer.chatTimer <= 0) localPlayer.chatBubble = null;
@@ -967,28 +1582,130 @@
           p.chatTimer--;
           if (p.chatTimer <= 0) p.chatBubble = null;
         }
-        if (p.actionTimer > 0) p.actionTimer--;
+        if (p.swingTimer > 0) p.swingTimer--;
       });
 
+      for (let i = slashArcs.length - 1; i >= 0; i--) {
+        slashArcs[i].life--;
+        if (slashArcs[i].life <= 0) slashArcs.splice(i, 1);
+      }
+      for (let i = bloodSparks.length - 1; i >= 0; i--) {
+        const sp = bloodSparks[i];
+        sp.x += sp.vx * dt;
+        sp.y += sp.vy * dt;
+        sp.life--;
+        if (sp.life <= 0) bloodSparks.splice(i, 1);
+      }
       for (let i = combatTexts.length - 1; i >= 0; i--) {
         const ct = combatTexts[i];
-        ct.y -= 22 * dt;
+        ct.y -= 26 * dt;
         ct.life--;
         if (ct.life <= 0) combatTexts.splice(i, 1);
       }
 
       netTickTimer += dt;
-      if (netTickTimer > 0.066) {
+      if (netTickTimer > 0.08) {
         broadcastState();
         netTickTimer = 0;
       }
 
-      render();
+      render(now * 0.001);
       requestAnimationFrame(gameLoop);
     }
 
-    // --- RENDERING PIPELINE ---
-    function render() {
+    // --- 90s ANIME LOW-FANTASY WORLD RENDERING ---
+    function drawAnimeMonster(ctx, en, timeSec, isTargeted) {
+      ctx.save();
+      ctx.translate(en.x, en.y);
+
+      if (isTargeted) {
+        ctx.strokeStyle = '#ff2a38';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 6, en.radius + 10, (en.radius + 10) * 0.45, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.65)';
+      ctx.beginPath();
+      ctx.ellipse(0, 6, en.radius, en.radius * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const bob = Math.sin(timeSec * 6 + en.x) * 3;
+      ctx.translate(0, bob);
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2.4;
+
+      if (en.type === 'imp') {
+        // Behelit / Crimson Gargoyle Imp with Wings & Glowing Yellow Eyes
+        ctx.fillStyle = '#3b1018';
+        ctx.beginPath();
+        ctx.moveTo(0, -10); ctx.lineTo(-22, -24); ctx.lineTo(-14, -2); ctx.closePath();
+        ctx.moveTo(0, -10); ctx.lineTo(22, -24);  ctx.lineTo(14, -2);  ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = en.color;
+        ctx.beginPath();
+        ctx.ellipse(0, -10, 13, 15, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(-6, -13, 4, 3);
+        ctx.fillRect(2, -13, 4, 3);
+      } else if (en.type === 'hound') {
+        // Jagged Black-Dog Beast of Darkness
+        ctx.fillStyle = '#1f121c';
+        ctx.beginPath();
+        ctx.moveTo(-20, 2);
+        ctx.lineTo(-14, -15);
+        ctx.lineTo(-4, -12);
+        ctx.lineTo(6, -18);
+        ctx.lineTo(20, -8);
+        ctx.lineTo(16, 4);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#ff2a38';
+        ctx.fillRect(8, -12, 5, 2.5);
+      } else {
+        // Towering Horned Obsidian Apostle
+        ctx.fillStyle = '#381e4a';
+        ctx.beginPath();
+        ctx.roundRect(-18, -32, 36, 34, 8);
+        ctx.fill(); ctx.stroke();
+
+        // Giant Curved Horns
+        ctx.fillStyle = '#d6c5ad';
+        ctx.beginPath();
+        ctx.moveTo(-12, -28); ctx.lineTo(-28, -44); ctx.lineTo(-6, -30); ctx.closePath();
+        ctx.moveTo(12, -28);  ctx.lineTo(28, -44);  ctx.lineTo(6, -30);  ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#ff2a38';
+        ctx.fillRect(-8, -20, 5, 3);
+        ctx.fillRect(3, -20, 5, 3);
+      }
+
+      // Monster HP Bar
+      const hpRatio = Math.max(0, en.hp / en.maxHp);
+      ctx.fillStyle = '#050308';
+      ctx.fillRect(-18, -en.radius - 24, 36, 6);
+      ctx.fillStyle = '#e03c3c';
+      ctx.fillRect(-17, -en.radius - 23, 34 * hpRatio, 4);
+
+      ctx.font = '700 10px Cinzel, serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#e6dac8';
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 3;
+      ctx.fillText(en.name, 0, -en.radius - 28);
+      ctx.shadowBlur = 0;
+
+      ctx.restore();
+    }
+
+    function render(timeSec) {
       ctx.clearRect(0, 0, screenW, screenH);
 
       const camX = localPlayer.x - screenW / 2;
@@ -997,162 +1714,193 @@
       ctx.save();
       ctx.translate(-camX, -camY);
 
-      ctx.fillStyle = '#07040a';
+      // 1. Hand-Painted Dark Stone Cavern Base
+      ctx.fillStyle = '#110d19';
       ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-      ctx.strokeStyle = '#2d143b';
-      ctx.lineWidth = 14;
-      ctx.strokeRect(0, 0, WORLD_SIZE, WORLD_SIZE);
+      // Ink-Hatched Stone Flagstone Grid
+      ctx.strokeStyle = 'rgba(38, 30, 54, 0.65)';
+      ctx.lineWidth = 1.5;
+      const tile = 96;
+      const startX = Math.floor(camX / tile) * tile;
+      const startY = Math.floor(camY / tile) * tile;
+      for (let x = startX; x < camX + screenW + tile; x += tile) {
+        ctx.beginPath(); ctx.moveTo(x, camY); ctx.lineTo(x, camY + screenH); ctx.stroke();
+      }
+      for (let y = startY; y < camY + screenH + tile; y += tile) {
+        ctx.beginPath(); ctx.moveTo(camX, y); ctx.lineTo(camX + screenW, y); ctx.stroke();
+      }
 
-      ctx.fillStyle = '#100617';
+      // 2. Central Eclipse Citadel Flagstone Ring & Brand of Sacrifice Runes
+      ctx.fillStyle = '#191324';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.arc(DOMAIN_CORE.x, DOMAIN_CORE.y, 380, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#52206e';
-      ctx.lineWidth = 5;
       ctx.stroke();
 
+      ctx.strokeStyle = 'rgba(184, 40, 50, 0.38)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(DOMAIN_CORE.x, DOMAIN_CORE.y, 290, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 3. Gothic Pillars & Flickering Crimson Braziers
       for (let i = 0; i < hellProps.length; i++) {
         const prop = hellProps[i];
-        if (prop.x < camX - 60 || prop.x > camX + screenW + 60 || prop.y < camY - 60 || prop.y > camY + screenH + 60) continue;
+        if (prop.x < camX - 80 || prop.x > camX + screenW + 80 || prop.y < camY - 80 || prop.y > camY + screenH + 80) continue;
 
-        if (prop.type === 'spire') {
-          ctx.fillStyle = '#140c1c';
+        ctx.strokeStyle = '#050308';
+        ctx.lineWidth = 2.5;
+        if (prop.type === 'pillar') {
+          ctx.fillStyle = '#251e33';
           ctx.beginPath();
           ctx.arc(prop.x, prop.y, prop.size, 0, Math.PI * 2);
           ctx.fill();
-          ctx.strokeStyle = '#38174a';
-          ctx.lineWidth = 2;
           ctx.stroke();
-        } else {
-          ctx.fillStyle = '#1f0e15';
+          // Cel shadow crescent
+          ctx.fillStyle = '#140f1d';
           ctx.beginPath();
-          ctx.arc(prop.x, prop.y, prop.size * 0.75, 0, Math.PI * 2);
+          ctx.arc(prop.x + 3, prop.y + 3, prop.size * 0.7, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = '#cf5136';
+        } else {
+          // Flickering Hellfire Brazier
+          const glowR = prop.size * (1.5 + Math.sin(timeSec * 7 + i) * 0.2);
+          const grad = ctx.createRadialGradient(prop.x, prop.y, 2, prop.x, prop.y, glowR);
+          grad.addColorStop(0, 'rgba(255, 110, 48, 0.65)');
+          grad.addColorStop(1, 'rgba(255, 50, 30, 0)');
+          ctx.fillStyle = grad;
           ctx.beginPath();
-          ctx.arc(prop.x, prop.y, prop.size * 0.35, 0, Math.PI * 2);
+          ctx.arc(prop.x, prop.y, glowR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#2b1d24';
+          ctx.beginPath();
+          ctx.arc(prop.x, prop.y, prop.size * 0.55, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#ff6b35';
+          ctx.beginPath();
+          ctx.arc(prop.x, prop.y - 2, prop.size * 0.3, 0, Math.PI * 2);
           ctx.fill();
         }
       }
 
-      const coreAura = ctx.createRadialGradient(DOMAIN_CORE.x, DOMAIN_CORE.y, 30, DOMAIN_CORE.x, DOMAIN_CORE.y, 350);
-      coreAura.addColorStop(0, 'rgba(203, 81, 207, 0.25)');
-      coreAura.addColorStop(1, 'rgba(7, 4, 10, 0)');
-      ctx.fillStyle = coreAura;
+      // 4. Central Crimson Behelit / Obsidian Monolith Shrine
+      const shrineGrad = ctx.createRadialGradient(DOMAIN_CORE.x, DOMAIN_CORE.y, 20, DOMAIN_CORE.x, DOMAIN_CORE.y, 280);
+      shrineGrad.addColorStop(0, 'rgba(184, 32, 48, 0.32)');
+      shrineGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shrineGrad;
       ctx.beginPath();
-      ctx.arc(DOMAIN_CORE.x, DOMAIN_CORE.y, 350, 0, Math.PI * 2);
+      ctx.arc(DOMAIN_CORE.x, DOMAIN_CORE.y, 280, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#1c0d26';
+      ctx.fillStyle = '#24152b';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.arc(DOMAIN_CORE.x, DOMAIN_CORE.y, DOMAIN_CORE.radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#9e42cc';
-      ctx.lineWidth = 6;
       ctx.stroke();
 
-      ctx.fillStyle = '#f3c2ff';
-      ctx.font = 'bold 12px Cinzel, serif';
+      ctx.strokeStyle = '#d6a85a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(DOMAIN_CORE.x, DOMAIN_CORE.y, DOMAIN_CORE.radius - 10, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f4d28c';
+      ctx.font = '900 13px Cinzel, serif';
       ctx.textAlign = 'center';
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 4;
       ctx.fillText(localPlayer.domainName.toUpperCase(), DOMAIN_CORE.x, DOMAIN_CORE.y + 4);
+      ctx.shadowBlur = 0;
 
+      // 5. Render Apostles & Beasts
       enemies.forEach(en => {
-        ctx.fillStyle = 'rgba(0,0,0,0.45)';
-        ctx.beginPath();
-        ctx.ellipse(en.x, en.y + en.radius * 0.6, en.radius, en.radius * 0.5, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = en.color;
-        ctx.beginPath();
-        ctx.arc(en.x, en.y, en.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (en.id === localPlayer.targetEntityId) {
-          ctx.strokeStyle = '#f3c2ff';
-          ctx.lineWidth = 2.5;
-          ctx.beginPath();
-          ctx.arc(en.x, en.y, en.radius + 6, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-
-        ctx.font = '10px sans-serif';
-        ctx.fillStyle = '#ff9999';
-        ctx.fillText(en.name, en.x, en.y - en.radius - 6);
+        drawAnimeMonster(ctx, en, timeSec, en.id === localPlayer.targetEntityId);
       });
 
-      remotePlayers.forEach(p => drawAvatar(p));
-      drawAvatar(localPlayer);
+      // 6. Depth-Sorted Players
+      const allPlayers = [localPlayer, ...Array.from(remotePlayers.values())];
+      allPlayers.sort((a, b) => a.y - b.y);
+      allPlayers.forEach(p => {
+        drawAnimeCharacter(ctx, p, p.x, p.y, timeSec, 1.0, false);
+        drawPlayerNameAndSpeech(ctx, p);
+      });
 
+      // 7. Anime Crescent Weapon Slash Arcs & Blood Sparks
+      slashArcs.forEach(arc => {
+        ctx.save();
+        const alpha = arc.life / arc.maxLife;
+        ctx.strokeStyle = arc.color;
+        ctx.lineWidth = 6 * alpha;
+        ctx.beginPath();
+        ctx.arc(arc.x, arc.y - 18, arc.radius, -0.8, 0.8);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      bloodSparks.forEach(sp => {
+        ctx.fillStyle = sp.color;
+        ctx.fillRect(sp.x, sp.y, 3.5, 3.5);
+      });
+
+      // 8. Floating Combat Damage Popups
       combatTexts.forEach(ct => {
-        ctx.font = 'bold 13px Cinzel, serif';
+        ctx.font = '900 14px Cinzel, serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = ct.color;
-        ctx.globalAlpha = Math.max(0, ct.life / ct.maxLife);
-        ctx.shadowColor = '#000';
-        ctx.shadowBlur = 4;
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(ct.text, ct.x, ct.y);
         ctx.fillText(ct.text, ct.x, ct.y);
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1.0;
       });
 
       ctx.restore();
     }
 
-    function drawAvatar(p) {
+    function drawPlayerNameAndSpeech(ctx, p) {
       const raceMeta = RACES[p.race] || RACES['Human-Standard'];
-      const classColor = CLASSES[p.className]?.color || '#cb51cf';
-      const rad = 14 * raceMeta.scale;
+      const topY = p.y - 58 * raceMeta.scale;
 
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.beginPath();
-      ctx.ellipse(p.x, p.y + rad * 0.7, rad * 1.1, rad * 0.5, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#3a214a';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = classColor;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
+      ctx.save();
       ctx.textAlign = 'center';
-      ctx.font = '11px sans-serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = 'black';
-      ctx.shadowBlur = 4;
-      ctx.fillText(p.name, p.x, p.y - rad - 12);
+      ctx.font = '800 12px Cinzel, serif';
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+      ctx.strokeText(p.name, p.x, topY);
+      ctx.fillStyle = p.id === localPlayer.id ? '#f4d28c' : '#e2d9c8';
+      ctx.fillText(p.name, p.x, topY);
 
-      ctx.font = '9px Cinzel, serif';
-      ctx.fillStyle = '#dfa8ff';
-      ctx.fillText(`<${p.race}>`, p.x, p.y - rad - 2);
-      ctx.shadowBlur = 0;
+      ctx.font = 'italic 11px Crimson Pro, serif';
+      ctx.fillStyle = '#b89872';
+      ctx.fillText(`<${raceMeta.name}>`, p.x, topY + 11);
 
       if (p.chatBubble) {
-        ctx.font = '12px sans-serif';
-        const txtWidth = ctx.measureText(p.chatBubble).width;
-        const boxW = Math.max(txtWidth + 16, 50);
+        ctx.font = '600 13px Crimson Pro, serif';
+        const txtW = ctx.measureText(p.chatBubble).width;
+        const boxW = Math.max(txtW + 18, 54);
         const boxH = 24;
         const boxX = p.x - boxW / 2;
-        const boxY = p.y - rad - 46;
+        const boxY = topY - 36;
 
-        ctx.fillStyle = 'rgba(8, 5, 12, 0.92)';
-        ctx.strokeStyle = '#cb51cf';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(boxX, boxY, boxW, boxH, 4);
-        ctx.fill();
-        ctx.stroke();
+        ctx.fillStyle = 'rgba(12, 10, 18, 0.95)';
+        ctx.strokeStyle = '#d6a85a';
+        ctx.lineWidth = 1.5;
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-        ctx.fillStyle = '#fae3ff';
+        ctx.fillStyle = '#fff4db';
         ctx.fillText(p.chatBubble, p.x, boxY + 16);
       }
+      ctx.restore();
     }
 
     requestAnimationFrame(gameLoop);
   </script>
 </body>
 </html>
-```eof
