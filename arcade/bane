@@ -476,4 +476,1299 @@
     <div style="border-bottom:1px solid #4a3520; padding-bottom:6px;">
       <span id="ascend-title" style="font-family:'Cinzel',serif; font-size:16px; font-weight:900; color:var(--tartaria-gold-bright);">🔥 ATMAN ASCENSION</span>
     </div>
-    <div id="ascend-desc" style="font-size:12.5
+    <div id="ascend-desc" style="font-size:12.5px; color:#e2d9c8;">Choose your path:</div>
+    <div id="ascend-options" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- =========================================================================
+       MAIN HUD
+       ========================================================================= -->
+  <div id="hud">
+    <!-- Top Ribbon -->
+    <div class="top-ribbon interactive">
+      <div class="ribbon-left">
+        <span id="zone-icon">🧭</span>
+        <span id="shard-status" style="color:#f8e2a8; font-weight:800;">Sector (0, 0): Central Firepit</span>
+        <span id="pvp-badge" style="color:#4ade80; font-weight:800;">[SAFEZONE]</span>
+        <span id="online-badge" style="color:#38bdf8; font-family:'JetBrains Mono',monospace; font-size:10px;">[Shard MAIN: 1/4]</span>
+      </div>
+      <div class="ribbon-right">
+        <button id="btn-gates" class="action-btn" title="Open/Close Nearest Gate or Chest">⛩️ Interact [E]</button>
+        <button id="btn-inv" class="action-btn">🎒 Armory [I]</button>
+        <button id="btn-grim" class="action-btn">📖 Specials [G]</button>
+        <button id="btn-track" class="action-btn" title="Cycle Musical Theme">🎵 Track: Auto</button>
+        <button id="btn-audio" class="action-btn">🔊 BGM</button>
+        <button id="btn-crt" class="action-btn">📺 CRT</button>
+        <button id="btn-invite" class="action-btn">🔗 Invite</button>
+      </div>
+    </div>
+
+    <!-- TOP-LEFT DOCK: Player Profile + Party Mates Portraits -->
+    <div id="top-left-party-dock" class="interactive">
+      <div class="profile-card tartaria-window">
+        <div class="profile-header">
+          <div class="portrait-badge" id="self-portrait-icon">🏹</div>
+          <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <span id="vitals-name" style="font-weight:900; font-size:13px; color:#f4dca6; font-family:'Cinzel',serif;">Hawkwind</span>
+              <span id="vitals-lvl" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#cfa354;">LV.1</span>
+            </div>
+            <div style="font-size:10px; color:#d4a359; font-weight:bold;" id="vitals-race">Elf • Highlander Archer</div>
+            <div style="font-size:9.5px; color:#b8a68e; font-style:italic;" id="vitals-class">Core Rogue</div>
+          </div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label"><span>KRITA HP</span><span id="hp-txt">250/250</span></div>
+          <div class="bar-container"><div id="hp-fill" class="bar-fill"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>DILMUN MP</span><span id="mana-txt">90/90</span></div>
+          <div class="bar-container"><div id="mana-fill" class="bar-fill"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label" style="color:#fde047;"><span>⚱️ ATMAN URN [R]</span><span id="atman-txt">45/100</span></div>
+          <div class="bar-container"><div id="atman-fill" class="bar-fill" style="width:45%;"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span>XP (<span id="gold-hud" style="color:#facc15;">150g</span>)</span><span id="xp-txt">0/100</span></div>
+          <div class="bar-container"><div id="xp-fill" class="bar-fill" style="width:0%;"></div></div>
+        </div>
+      </div>
+
+      <!-- Party Mates Profiles (Stacked directly below Player Profile at Top-Left) -->
+      <div id="party-mates-box" class="tartaria-window">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #3d2d1f; padding-bottom:2px;">
+          <span style="font-family:'Cinzel',serif; font-size:9.5px; color:#f4dca6; font-weight:800;">🛡️ PARTY MATES (SLOTS 1–4)</span>
+          <span id="mesh-status" style="font-size:8.5px; color:#4ade80;">P2P Ready</span>
+        </div>
+        <div id="party-list" style="display:flex; flex-direction:column; gap:4px;"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT-SIDE DOCK: Auto-Map + 3-Weapon Rack (Prime 1, Side 2, Backup 3) & Auto-Attack Stance -->
+    <div id="right-dock" class="interactive">
+      <div id="minimap-box" class="tartaria-window">
+        <div style="display:flex; justify-content:space-between; width:100%; font-family:'Cinzel',serif; font-size:9.5px; color:#f4dca6;">
+          <span>🗺️ ZHAD CARTOGRAPHY</span>
+          <span id="mapped-count-txt" style="color:#4ade80;">5 Sectors</span>
+        </div>
+        <canvas id="minimapCanvas" width="196" height="112" title="Player-Mapped Labyrinth Grid!"></canvas>
+        <div id="sector-discoverer-txt" style="font-size:8.5px; color:#b8a68e; text-align:center;">Mapped by: House of Ra</div>
+      </div>
+
+      <!-- Right-Side 3-Weapon Rack & Auto-Attack Stance Panel -->
+      <div id="weapon-stance-dock" class="tartaria-window">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #3d2d1f; padding-bottom:3px;">
+          <span style="font-family:'Cinzel',serif; font-size:9.5px; color:#f8e2a8; font-weight:900;">⚔️ AUTO-ATTACK STANCE [V]</span>
+          <span id="auto-swing-indicator" style="font-size:8.5px; color:#4ade80;">Auto: ON</span>
+        </div>
+
+        <div class="stance-row">
+          <div class="stance-btn active" id="stance-cleave" onclick="setCombatStance('cleave')" title="+30% Auto-Attack Speed & Cleave">⚔️ FURY</div>
+          <div class="stance-btn" id="stance-precision" onclick="setCombatStance('precision')" title="+45% Weakness Multiplier & Crit">🎯 AIM</div>
+          <div class="stance-btn" id="stance-guard" onclick="setCombatStance('guard')" title="-35% Damage Taken & Steady Guard">🛡️ GUARD</div>
+        </div>
+
+        <div style="font-family:'Cinzel',serif; font-size:9px; color:#cfa354; margin-top:2px;">WEAPON RACK (MATCH ENEMY WEAKNESS):</div>
+
+        <!-- Weapon 1: Prime Melee (SLASH) -->
+        <div class="weapon-slot-card active" id="wpn-card-0" onclick="selectWeaponSlot(0)" title="Prime Melee 1 [Key Z] - Best vs Flesh / Unarmored">
+          <div style="display:flex; align-items:center;">
+            <span class="wpn-key-badge">Z</span>
+            <div>
+              <div style="font-family:'Cinzel',serif; font-size:10px; color:#f4dca6; font-weight:800;" id="hud-wpn-name-0">1. Cobold Scimitar</div>
+              <div style="font-size:8.5px; color:#a89984;" id="hud-wpn-sub-0">Prime Melee • +18 ATK</div>
+            </div>
+          </div>
+          <span class="wpn-dmg-tag tag-slash" id="hud-wpn-tag-0">SLASH</span>
+        </div>
+
+        <!-- Weapon 2: Side Weapon (BLUNT) -->
+        <div class="weapon-slot-card" id="wpn-card-1" onclick="selectWeaponSlot(1)" title="Side Weapon 2 [Key X] - Shatters Bone / Undead / Stone Statues">
+          <div style="display:flex; align-items:center;">
+            <span class="wpn-key-badge">X</span>
+            <div>
+              <div style="font-family:'Cinzel',serif; font-size:10px; color:#f4dca6; font-weight:800;" id="hud-wpn-name-1">2. Zhad Stone-Mace</div>
+              <div style="font-size:8.5px; color:#a89984;" id="hud-wpn-sub-1">Side Weapon • +20 ATK</div>
+            </div>
+          </div>
+          <span class="wpn-dmg-tag tag-blunt" id="hud-wpn-tag-1">BLUNT</span>
+        </div>
+
+        <!-- Weapon 3: Backup Weapon (PIERCE / RANGED) -->
+        <div class="weapon-slot-card" id="wpn-card-2" onclick="selectWeaponSlot(2)" title="Backup Weapon 3 [Key C] - Pierces Winged Demons & Scaled Giants">
+          <div style="display:flex; align-items:center;">
+            <span class="wpn-key-badge">C</span>
+            <div>
+              <div style="font-family:'Cinzel',serif; font-size:10px; color:#f4dca6; font-weight:800;" id="hud-wpn-name-2">3. Highlander Bow</div>
+              <div style="font-size:8.5px; color:#a89984;" id="hud-wpn-sub-2">Backup Ranged • +17 ATK</div>
+            </div>
+          </div>
+          <span class="wpn-dmg-tag tag-pierce" id="hud-wpn-tag-2">PIERCE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom-Left Compact Chat -->
+    <div class="chat-container interactive">
+      <div class="chat-log tartaria-window" id="chat-log">
+        <div class="chat-msg" style="color: #f4dca6;"><i>[Tartaria Combat Guide]: Match your Right-Side Weapon ([Z] Prime SLASH, [X] Side BLUNT, [C] Backup PIERCE) to the enemy's Weakness tag! Using the wrong attack type deals 85% less damage!</i></div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" class="chat-input" placeholder="Press Enter to speak across Tartaria..." maxlength="100">
+      </div>
+    </div>
+
+    <!-- Bottom-Center 1-9 Specials & Regional Chants Dock -->
+    <div class="bottom-action-dock interactive">
+      <div class="special-orb-btn" onclick="triggerAtmanCymaticBurst()" title="Unleash Atman Cymatic Wave [Key R] (Costs 35 Atman)">
+        <span style="font-size:14px;">⚱️</span>
+        <span>ATMAN [R]</span>
+      </div>
+      <div class="hotbar" id="hotbar-container"></div>
+      <div class="special-orb-btn" onclick="triggerDodgeRoll()" style="background:radial-gradient(circle at 35% 35%, #38bdf8 0%, #1e3a8a 75%, #090d16 100%);" title="Shadow Dodge-Roll [Key Shift]">
+        <span style="font-size:13px;">💨</span>
+        <span>DODGE</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="tartaria-window">Notice</div>
+
+  <script>
+    // =========================================================================
+    // 1. WIZARDRY + DRAGON WARS + ATMAN LORE AUTO-NAME GENERATOR
+    // =========================================================================
+    const LORE_NAME_PREFIXES = [
+      'Hawkwind', 'Werdna', 'Trebor', 'Halito', 'Kadorto', 'Tiltowait', 'Muramasa', 'Llylgamyn',
+      'Lanac\'toor', 'Namis', 'Phoebus', 'Byzan', 'Dilmun', 'Myrrias', 'Ulrik', 'Nergal',
+      'Asura', 'Abeshu', 'Seshat', 'Zhad', 'Krita', 'Atman', 'Marduk', 'Shinobi', 'Vaelen'
+    ];
+    const LORE_NAME_TITLES = [
+      'of Dilmun', 'of Zhad', 'the Unaged', 'of Purgatory', 'of Llylgamyn', 'the Krita-Born',
+      'of Lanac\'toor', 'the Sun-Scribe', 'of the Maelstrom', 'the Kubi-Kiri', 'of House Ra', ''
+    ];
+
+    function generateLoreName() {
+      const p = LORE_NAME_PREFIXES[Math.floor(Math.random() * LORE_NAME_PREFIXES.length)];
+      const t = LORE_NAME_TITLES[Math.floor(Math.random() * LORE_NAME_TITLES.length)];
+      return (t ? `${p} ${t}` : p).slice(0, 18);
+    }
+
+    document.getElementById('btn-roll-name').addEventListener('click', () => {
+      const newName = generateLoreName();
+      document.getElementById('char-name').value = newName;
+      localPlayer.name = newName;
+    });
+
+    // =========================================================================
+    // 2. SEAMLESS PLAYER-MAPPED PROCEDURAL ZONE ENGINE
+    // =========================================================================
+    const TILE_SIZE = 1000;
+    const FIREPIT_POS = { x: 500, y: 500, radius: 62, safeRadius: 390 };
+
+    const worldSectors = new Map();
+    const SOLID_PILLARS = [];
+    const WALL_TORCHES = [];
+    const GATES = [];
+    const gateSet = new Set();
+
+    function sectorKey(gx, gy) { return `${gx},${gy}`; }
+
+    function seededHash(gx, gy, salt = 0) {
+      let h = Math.imul(gx ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul(gy ^ 0xc2b2ae35, 0x27d4eb2f) ^ salt;
+      h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13;
+      return (h >>> 0) / 4294967296;
+    }
+
+    const SECTOR_ARCHETYPES = [
+      { kind: 'catacomb_hall',  floor: 'stone_slate',   titles: ['Narrow Shusi Passageway', 'Hall of the Krita Seeds', 'Dilmun Undercroft Corridor'] },
+      { kind: 'pillars_zhad',   floor: 'stone_violet',  titles: ['Pillars of Zhad Chamber', 'Cymatic Resonance Hall', 'Scribe\'s Kush Gallery'] },
+      { kind: 'purgatory_pit',  floor: 'stone_crimson', titles: ['Namis Purgatory Arena', 'Byzan Slaver Garrison', 'Quagmire Blood-Vault'] },
+      { kind: 'sunken_ruin',    floor: 'stone_moss',    titles: ['Sunken Ruin of Dilmun', 'Phoebus Sun-Dial Vault', 'Maelstrom Ossuary Crossing'] },
+      { kind: 'statue_sanctum', floor: 'stone_dark',    titles: ['☠️ Sanctum of Petrified Abeshu', '☠️ Citadel of Lanac\'toor', '☠️ Throne of Fire Giant Surtr', '☠️ Altar of Archmage Werdna'] }
+    ];
+
+    function getOrGenerateSector(gx, gy, discovererName = 'House of Ra', broadcastNew = true) {
+      const key = sectorKey(gx, gy);
+      if (worldSectors.has(key)) return worldSectors.get(key);
+
+      const depth = Math.abs(gx) + Math.abs(gy);
+      const wx = gx * TILE_SIZE;
+      const wy = gy * TILE_SIZE;
+      const cx = wx + TILE_SIZE / 2;
+      const cy = wy + TILE_SIZE / 2;
+
+      const rects = [
+        { x: wx + 340, y: wy - 90, w: 320, h: TILE_SIZE + 180, isSpine: true },
+        { x: wx - 90,  y: wy + 340, w: TILE_SIZE + 180, h: 320, isSpine: true }
+      ];
+
+      let sector = null;
+      if (gx === 0 && gy === 0) {
+        rects.push({ x: wx + 90, y: wy + 90, w: 820, h: 820, isMain: true });
+        sector = {
+          gx, gy, key, depth: 0,
+          name: 'Central Firepit Sanctum (0, 0)',
+          kind: 'sanctum_hub', floor: 'stone_slate',
+          safe: true, isBossRoom: false, mappedBy: 'Founders of Ra', rects
+        };
+      } else {
+        const rVal = seededHash(gx, gy, 11);
+        const isBoss = depth >= 2 && ((Math.abs(gx) + Math.abs(gy)) % 2 === 0 && rVal < 0.65);
+        const archIdx = isBoss ? 4 : Math.floor(seededHash(gx, gy, 22) * 4);
+        const arch = SECTOR_ARCHETYPES[archIdx];
+        const chosenTitle = arch.titles[Math.floor(seededHash(gx, gy, 33) * arch.titles.length)];
+
+        if (arch.kind === 'catacomb_hall') {
+          rects.push({ x: wx + 220, y: wy + 220, w: 560, h: 560, isMain: true });
+        } else {
+          rects.push({ x: wx + 110, y: wy + 110, w: 780, h: 780, isMain: true });
+        }
+
+        sector = {
+          gx, gy, key, depth,
+          name: `${chosenTitle} (${gx}, ${gy})`,
+          kind: arch.kind, floor: arch.floor,
+          safe: false, isBossRoom: isBoss, mappedBy: discovererName, rects
+        };
+      }
+
+      worldSectors.set(key, sector);
+
+      const pOffsets = [[-240, -240], [240, -240], [-240, 240], [240, 240]];
+      pOffsets.forEach(([ox, oy], idx) => {
+        if (sector.kind === 'catacomb_hall' && idx > 1) return;
+        SOLID_PILLARS.push({
+          x: cx + ox, y: cy + oy,
+          r: sector.isBossRoom ? 38 : 30,
+          isZhadPillar: sector.kind === 'pillars_zhad'
+        });
+      });
+
+      WALL_TORCHES.push(
+        { x: cx - 175, y: wy + 125 }, { x: cx + 175, y: wy + 125 },
+        { x: cx - 175, y: wy + 875 }, { x: cx + 175, y: wy + 875 }
+      );
+
+      const borderGates = [
+        { id: `gate-n-${gx}-${gy}`,   x: cx,             y: wy,             horiz: true,  gx1: gx, gy1: gy, gx2: gx,   gy2: gy-1, label: `North Gate (${gx},${gy-1})` },
+        { id: `gate-s-${gx}-${gy+1}`, x: cx,             y: wy + TILE_SIZE, horiz: true,  gx1: gx, gy1: gy, gx2: gx,   gy2: gy+1, label: `South Gate (${gx},${gy+1})` },
+        { id: `gate-w-${gx}-${gy}`,   x: wx,             y: cy,             horiz: false, gx1: gx, gy1: gy, gx2: gx-1, gy2: gy,   label: `West Gate (${gx-1},${gy})` },
+        { id: `gate-e-${gx+1}-${gy}`, x: wx + TILE_SIZE, y: cy,             horiz: false, gx1: gx, gy1: gy, gx2: gx+1, gy2: gy,   label: `East Gate (${gx+1},${gy})` }
+      ];
+      borderGates.forEach(bg => {
+        const gKey = `${Math.round(bg.x)},${Math.round(bg.y)}`;
+        if (!gateSet.has(gKey)) {
+          gateSet.add(gKey);
+          GATES.push({ ...bg, isOpen: false, openAnim: 0, manualLock: false });
+        }
+      });
+
+      if (depth > 0) spawnSectorEntities(sector);
+
+      const mappedEl = document.getElementById('mapped-count-txt');
+      if (mappedEl) mappedEl.textContent = `${worldSectors.size} Sectors`;
+
+      if (broadcastNew && depth > 0) {
+        triggerSoulsBanner(`NEW SECTOR MAPPED: ${sector.name.toUpperCase()}`);
+        appendChat('Cartography Engine', `🗺️ ${discovererName} carved & mapped ${sector.name} [Tier ${depth}]!`);
+        sendPacket({ type: 'sector_mapped', id: localPlayer.id, gx, gy, discoverer: discovererName });
+      }
+      return sector;
+    }
+
+    // =========================================================================
+    // 3. PROCEDURAL 2.5D TEXTURE GENERATOR
+    // =========================================================================
+    const floorPatterns = {};
+    function generateProceduralTextures(ctx) {
+      const palettes = {
+        'stone_slate':   { slab1: '#232a38', slab2: '#171c26', mortar: '#0c0e14', accent: '#3b4963' },
+        'stone_dark':    { slab1: '#1e1b29', slab2: '#12101a', mortar: '#09070d', accent: '#352f4a' },
+        'stone_crimson': { slab1: '#2b161b', slab2: '#1a0d11', mortar: '#0d0608', accent: '#592029' },
+        'stone_violet':  { slab1: '#211a33', slab2: '#120e1c', mortar: '#08060d', accent: '#452f63' },
+        'stone_moss':    { slab1: '#19272a', slab2: '#0f1719', mortar: '#070b0c', accent: '#25473a' }
+      };
+      Object.keys(palettes).forEach(key => {
+        const pal = palettes[key];
+        const off = document.createElement('canvas');
+        off.width = 160; off.height = 160;
+        const oCtx = off.getContext('2d');
+        oCtx.fillStyle = pal.mortar; oCtx.fillRect(0, 0, 160, 160);
+        for (let r = 0; r < 4; r++) {
+          for (let c = 0; c < 4; c++) {
+            const sx = (c * 40 + (r % 2) * 20) % 160, sy = r * 40;
+            oCtx.fillStyle = (r + c) % 2 === 0 ? pal.slab1 : pal.slab2;
+            oCtx.fillRect(sx + 2, sy + 2, 36, 36);
+            oCtx.strokeStyle = pal.accent; oCtx.lineWidth = 1;
+            oCtx.beginPath(); oCtx.moveTo(sx + 2, sy + 37); oCtx.lineTo(sx + 2, sy + 2); oCtx.lineTo(sx + 37, sy + 2); oCtx.stroke();
+          }
+        }
+        floorPatterns[key] = ctx.createPattern(off, 'repeat');
+      });
+    }
+
+    // =========================================================================
+    // 4. NON-HUMAN RACES & JUN SUEMI CARD ARCHETYPES
+    // =========================================================================
+    const ARMOR_PALETTE = ['#2b3d54', '#7c0a0a', '#1b3624', '#6b21a8', '#b45309', '#1f1e26'];
+    const HAIR_PALETTE  = ['#eab308', '#e5dccb', '#dc2626', '#121016', '#4a321d', '#38bdf8'];
+
+    const RACE_TREE = {
+      'Elf': {
+        desc: 'Ancient subterranean and twilight fey shaped from Krita seeds.',
+        subraces: {
+          'Highlander': { name: 'Elf (Highlander Archer)', scale: 1.0,  skin: '#e8cbb1', hpBonus: 40, speedMod: 1.15, ears: true, bow: true, icon: '🏹', desc: '"Blonde elven Highlander in magenta & emerald tunic firing rapid recurve arrows."' },
+          'Sorceress':  { name: 'Elf (Gaiden Sorceress)',  scale: 0.99, skin: '#f3e5d8', hpBonus: 30, speedMod: 1.10, ears: true, orb: true, icon: '🔮', desc: '"Draped in flowing silk robes firing levitating astral orbs."' },
+          'Witch':      { name: 'Elf (Gaiden Witch)',      scale: 0.99, skin: '#edd8c4', hpBonus: 35, speedMod: 1.09, ears: true, witchFlame: true, icon: '🕯️', desc: '"High-ponytail gothic hex-weaver launching spiritual curse flames."' },
+          'Drow':       { name: 'Elf (Drow)',              scale: 0.98, skin: '#645f82', hpBonus: 30, speedMod: 1.12, ears: true, icon: '🗡️', desc: '"Obsidian-skinned subterranean spellblade of the Spider Vaults."' }
+        }
+      },
+      'Halfling': {
+        desc: 'Pint-sized subterranean kin—Cobold Kings, Imps, Goblins, Gnomes, and Deep Orcs.',
+        subraces: {
+          'Kobold': { name: 'Halfling (Cobold King)', scale: 0.92, skin: '#3f7d4c', hpBonus: 45, speedMod: 1.14, snout: true, ears: true, sunShield: true, icon: '☀️', desc: '"Green-furred Cobold King bearing the blazing Golden Sun-Eye Shield & Scimitar."' },
+          'Imp':    { name: 'Halfling (Imp)',         scale: 0.82, skin: '#b83232', hpBonus: 25, speedMod: 1.18, wings: true, horns: true, icon: '😈', desc: '"Barbed-tail firepit trickster hurling sulfur firebolts."' },
+          'Goblin': { name: 'Halfling (Goblin)',      scale: 0.86, skin: '#567d46', hpBonus: 35, speedMod: 1.14, ears: true, icon: '🗡️', desc: '"Cutthroat corridor ambusher hurling poisoned daggers."' },
+          'Gnome':  { name: 'Halfling (Gnome)',       scale: 0.85, skin: '#c9a68a', hpBonus: 35, speedMod: 1.06, beard: true, icon: '💎', desc: '"Deep-earth alchemist tossing volatile gem-bombs."' },
+          'Orc':    { name: 'Halfling (Deep Orc)',    scale: 0.96, skin: '#4f6346', hpBonus: 65, speedMod: 1.04, tusks: true, icon: '🪓', desc: '"Boar-tusked subterranean vanguard hurling cleavers."' }
+        }
+      },
+      'Dwarf': {
+        desc: 'Unyielding stone-carvers and ash-bearded giants of the Pillars of Zhad.',
+        subraces: {
+          'Fire-Giant':     { name: 'Dwarf (Fire Giant)', scale: 1.25, skin: '#d98a6c', hpBonus: 110, speedMod: 0.95, beard: true, flamberge: true, shellChest: true, icon: '🔥', desc: '"Flame-bearded colossus wearing the bronze shell-cuirass and launching Flamberge magma waves."' },
+          'Duergar':        { name: 'Dwarf (Duergar)',    scale: 0.88, skin: '#7d7580', hpBonus: 75,  speedMod: 0.96, beard: true, icon: '🔨', desc: '"Grim ash-skinned gray dwarf throwing iron hammers."' },
+          'Mountain Dwarf': { name: 'Dwarf (Ironpeak)',   scale: 0.90, skin: '#c99b78', hpBonus: 85,  speedMod: 0.95, beard: true, icon: '🛡️', desc: '"Runed bronze-plate defender of the old gates."' }
+        }
+      },
+      'Meow': {
+        desc: 'Agile feline duelists (formerly Felpurr) with nine-lives reflexes.',
+        subraces: {
+          'Panther-Kin': { name: 'Meow (OVA Ninja-Cat)', scale: 0.98, skin: '#2b2833', hpBonus: 40, speedMod: 1.20, catEars: true, ninjaCowl: true, icon: '🥷', desc: '"Clad in indigo shinobi cowl—hurls lethal Kubi-Kiri shurikens."' },
+          'Lynx-Blade':  { name: 'Meow (Lynx-Blade)',    scale: 1.02, skin: '#c9975b', hpBonus: 45, speedMod: 1.15, catEars: true, icon: '⚔️', desc: '"Tufted-ear samuraic duelist from the Eastern Corridors."' }
+        }
+      },
+      'Goon': {
+        desc: 'Scaled dragon-blooded & abyssal gargoyle bruisers of Dilmun.',
+        subraces: {
+          'Greater-Demon': { name: 'Goon (Greater Demon)',    scale: 1.26, skin: '#28517a', hpBonus: 115, speedMod: 0.98, wings: true, horns: true, tail: true, icon: '🦇', desc: '"Indigo-blue winged Greater Demon from Bane of the Cosmic Forge."' },
+          'Wyrm-Thug':     { name: 'Goon (Dragon-Construct)', scale: 1.22, skin: '#3b6e4c', hpBonus: 95,  speedMod: 0.97, horns: true, snout: true, icon: '🐉', desc: '"King Drake\'s scaled siege-enforcer from Dragon Wars."' }
+        }
+      },
+      'Arf': {
+        desc: 'Canine-folk (formerly Rawulf) of the Tartaria Hound-Pits.',
+        subraces: {
+          'Hound-Kin': { name: 'Arf (Hellhound-Kin)', scale: 1.06, skin: '#8c583a', hpBonus: 65, speedMod: 1.10, snout: true, ears: true, icon: '🐺', desc: '"Scarred pit-tracker who smells surface blood a mile off."' },
+          'Dire-Wolf': { name: 'Arf (Dire-Wolf)',     scale: 1.14, skin: '#575a61', hpBonus: 80, speedMod: 1.07, snout: true, ears: true, icon: '🐾', desc: '"Towering winter-mane alpha of the Northern Catacombs."' }
+        }
+      },
+      'Mook': {
+        desc: 'Enigmatic, shaggy psionic giants attuned to Atman cymatics.',
+        subraces: {
+          'Star-Walker': { name: 'Mook (Star-Fur)',    scale: 1.20, skin: '#8699ad', hpBonus: 70, speedMod: 1.02, icon: '✨', desc: '"Silver-furred mystic firing astral crystal beams."' },
+          'Deep-Shag':   { name: 'Mook (Cavern-Yeti)', scale: 1.26, skin: '#cbd5e1', hpBonus: 95, speedMod: 0.96, icon: '❄️', desc: '"Colossal white-furred brute hurling frost spears."' }
+        }
+      },
+      'Vampire': {
+        desc: 'Undead nobles, Maelstrom skeleton knights & House of Ra Atman-Harvesters.',
+        subraces: {
+          'Undead-Warrior': { name: 'Vampire (Undead Warrior)',  scale: 1.04, skin: '#d6d3c4', hpBonus: 70, speedMod: 1.08, skeleton: true, icon: '💀', desc: '"Skeletal knight draped in a tattered blue mantle with bronze round-shield."' },
+          'Blood-Scion':    { name: 'Vampire (Atman Harvester)', scale: 1.02, skin: '#d8d0e0', hpBonus: 55, speedMod: 1.12, fangs: true, icon: '⚱️', desc: '"Gold-masked archon priest who inhales Atman from glass urns."' }
+        }
+      }
+    };
+
+    // =========================================================================
+    // 5. SEPARATED 1–9 SPECIALS GRIMOIRE & 3-WEAPON DAMAGE TYPE SYSTEM
+    // =========================================================================
+    const CLASS_PROGRESSION = {
+      'Fighter': { elite: 'Warrior', hp: 185, mana: 55,  focuses: ['Fire Giant Cleaver', 'Cobold Sun-Guard', 'Dilmun Gladiator'] },
+      'Rogue':   { elite: 'Thief',   hp: 140, mana: 80,  focuses: ['Highlander Marksman', 'OVA Kubi-Kiri Ninja', 'Purgatory Escapee'] },
+      'Mage':    { elite: 'Wizard',  hp: 115, mana: 155, focuses: ['Lanac\'toor High Mage', 'Gaiden Sorceress', 'Tiltowait Savant'] },
+      'Cleric':  { elite: 'Priest',  hp: 150, mana: 125, focuses: ['Phoebus Sun-Priest', 'Asura Atman-Nurse', 'Gaiden Witch'] }
+    };
+
+    const PRESTIGE_SETS = {
+      'Classic': ['Knight', 'Ranger', 'Druid', 'Bard'],
+      'Sun':     ['Sun-Templar of Phoebus', 'Archmage of Lanac\'toor', 'Druid of Quagmire', 'Byzan Justiciar'],
+      'North':   ['Barbarian', 'Hunter', 'Warlock', 'Shaman'],
+      'East':    ['Samurai', 'Ninja', 'Sorcerer', 'Monk'],
+      'West':    ['Architect of Zhad', 'Keeper of Krita', 'Jaguar Commando', 'Vulture Necro-Scribe']
+    };
+
+    // 1-9 Specials (Separated from primary auto-attack weapons!)
+    const GRIMOIRE_SPELLS = [
+      { id: 'mahalito',   name: 'MAHALITO Fireball',  sect: 'Classic', dmgType: 'FIRE',   icon: '🔥', mp: 12, cd: 1.2, type: 'proj_aoe',  count: 1, spread: 0,    speed: 520, dmg: 68, color: '#f97316', chant: '"MAHALITO!!"',   desc: '[FIRE] Exploding Wizardry fireball. Melts Bone & Flesh.' },
+      { id: 'muramasa',   name: 'Kubi-Kiri Dash',     sect: 'East',    dmgType: 'SLASH',  icon: '🩸', mp: 12, cd: 1.1, type: 'dash',      count: 3, spread: 0.3,  speed: 660, dmg: 72, color: '#84cc16', chant: '"KUBI-KIRI!"',   desc: '[SLASH] OVA Ninja dash + 3 decapitating shurikens.' },
+      { id: 'zhad_stylus',name: 'Voice of Zhad',      sect: 'West',    dmgType: 'BLUNT',  icon: '📐', mp: 14, cd: 1.4, type: 'proj_nova', count: 10,spread: 6.28, speed: 500, dmg: 64, color: '#fbbf24', chant: '"SHUSI & KUSH!"', desc: '[BLUNT] Cymatic sonic ring that shatters Stone & Skeletons.' },
+      { id: 'lanactoor',  name: 'Lanac\'toor Lance',  sect: 'Sun',     dmgType: 'PIERCE', icon: '⚡', mp: 15, cd: 1.2, type: 'proj_aoe',  count: 2, spread: 0.15, speed: 660, dmg: 74, color: '#38bdf8', chant: '"HIGH MAGIC!"',  desc: '[PIERCE] Twin High-Magic lances. Pierces Winged Demons.' },
+      { id: 'vrana_sun',  name: 'Vrana\'s Sunfire',   sect: 'Sun',     dmgType: 'FIRE',   icon: '☀️', mp: 14, cd: 1.1, type: 'proj_fan',  count: 5, spread: 0.5,  speed: 580, dmg: 52, color: '#facc15', chant: '"PHOEBUS!!"',    desc: '[FIRE] Dragon Wars 5-ray solar flare.' },
+      { id: 'dalto',      name: 'DALTO Frost-Ring',   sect: 'North',   dmgType: 'FROST',  icon: '❄️', mp: 15, cd: 1.4, type: 'proj_nova', count: 8, spread: 6.28, speed: 480, dmg: 58, color: '#60a5fa', chant: '"DALTO!"',       desc: '[FROST] 8 ice lances. Extinguishes Fire Giants.' },
+      { id: 'porfic',     name: 'PORFIC Sun-Shield',  sect: 'Classic', dmgType: 'BUFF',   icon: '🛡️', mp: 12, cd: 2.5, type: 'buff',      count: 0, spread: 0,    speed: 0,   dmg: 45, color: '#38bdf8', chant: '"PORFIC!"',      desc: '[BUFF] Raises Golden Sun-Eye barrier & +60% speed.' },
+      { id: 'madi',       name: 'MADI Restoration',   sect: 'Classic', dmgType: 'HEAL',   icon: '✨', mp: 16, cd: 2.0, type: 'heal',      count: 0, spread: 0,    speed: 0,   dmg: 95, color: '#22c55e', chant: '"MADI!!"',       desc: '[HEAL] Sacred Llylgamyn full-flesh mend.' },
+      { id: 'tiltowait',  name: 'TILTOWAIT Eclipse',  sect: 'West',    dmgType: 'ARCANE', icon: '☄️', mp: 24, cd: 2.3, type: 'proj_nova', count: 12,spread: 6.28, speed: 550, dmg: 92, color: '#e879f9', chant: '"TILTOWAIT!!"',  desc: '[ARCANE] Cataclysmic 12-bolt nuclear sigil of Werdna.' }
+    ];
+
+    const TARTARIA_NPCS = [
+      { id: 'npc-hawk',  name: 'Hawkwind & Alex',      title: 'OVA Tavern Party',        x: 260, y: 260, color: '#3b82f6', dialog: '"Now, Alex, Hawkwind, what floor should we go to today? Swap your Right-Side Weapons ([Z] Slash, [X] Blunt, [C] Pierce) to match each monster\'s weakness!"' },
+      { id: 'npc-asura', name: 'High Architect Asura', title: 'Keeper of Krita & Atman', x: 740, y: 260, color: '#fbbf24', dialog: '"Petrified Statues and Undead Skeletons take almost zero damage from swords or arrows—crush them with your Side Weapon 2 [X] (BLUNT) or Voice of Zhad!"' },
+      { id: 'npc-dilmun',name: 'Scribe of Dilmun',     title: 'Exile of Namis',          x: 500, y: 740, color: '#c084fc', isWerdna: true, dialog: '"Click any Chest or press [E] to open the new Appraisal Window—identify mystery relics and equip them straight to Weapon Slots 1, 2, or 3!"' }
+    ];
+
+    // Expanded Loot Table with Weapon Slot Routing (wpn1 = SLASH, wpn2 = BLUNT, wpn3 = PIERCE)
+    const LOOT_TABLE = [
+      { name: 'Muramasa Katana',         unidName: '? Curved Eastern Blade', slot: 'wpn1', dmgType: 'SLASH',  ranged: false, atk: 32, hp: 10, mp: 0,  rarity: 'legendary', val: 320 },
+      { name: 'Fire Giant Flamberge',    unidName: '? Wavy Flame Greatsword',slot: 'wpn1', dmgType: 'SLASH',  ranged: false, atk: 27, hp: 25, mp: 0,  rarity: 'epic',      val: 240 },
+      { name: 'Cobold King Scimitar',    unidName: '? Notched Green Sabre',  slot: 'wpn1', dmgType: 'SLASH',  ranged: false, atk: 21, hp: 15, mp: 0,  rarity: 'rare',      val: 165 },
+      { name: 'Cymatic Hammer of Zhad',  unidName: '? Resonant Stone Maul',  slot: 'wpn2', dmgType: 'BLUNT',  ranged: false, atk: 34, hp: 30, mp: 15, rarity: 'legendary', val: 330 },
+      { name: 'Duergar Skull-Crusher',   unidName: '? Heavy Ash Mace',       slot: 'wpn2', dmgType: 'BLUNT',  ranged: false, atk: 25, hp: 25, mp: 0,  rarity: 'epic',      val: 220 },
+      { name: 'Ironpeak Flail',          unidName: '? Spiked Bronze Star',   slot: 'wpn2', dmgType: 'BLUNT',  ranged: false, atk: 19, hp: 15, mp: 0,  rarity: 'rare',      val: 155 },
+      { name: 'Highlander Recurve Bow',  unidName: '? Elven Yew Longbow',    slot: 'wpn3', dmgType: 'PIERCE', ranged: true,  atk: 26, hp: 15, mp: 20, rarity: 'epic',      val: 235 },
+      { name: 'Lanac\'toor Bolt-Caster', unidName: '? Dilmun Repeating Arbalest', slot: 'wpn3', dmgType: 'PIERCE', ranged: true, atk: 31, hp: 10, mp: 35, rarity: 'legendary', val: 310 },
+      { name: 'OVA Shinobi Kunai Pouch', unidName: '? Bundle of Throwing Needles',slot: 'wpn3', dmgType: 'PIERCE', ranged: true, atk: 20, hp: 10, mp: 15, rarity: 'rare',      val: 170 },
+      { name: 'Armor of King Drake',     unidName: '? Scaled Dragon Cuirass',slot: 'armor',atk: 12, hp: 95, mp: 25, rarity: 'legendary', val: 290 },
+      { name: 'Maelstrom Bone-Plate',    unidName: '? Bleached Rib Hauberk', slot: 'armor',atk: 5,  hp: 80, mp: 10, rarity: 'epic',      val: 210 },
+      { name: 'Golden Sun-Eye Shield',   unidName: '? Blazing Buckler',      slot: 'relic',atk: 12, hp: 75, mp: 25, rarity: 'epic',      val: 260 },
+      { name: 'Amulet of Werdna',        unidName: '? Cursed Cosmic Signet', slot: 'relic',atk: 26, hp: 65, mp: 65, rarity: 'legendary', val: 380 }
+    ];
+
+    // =========================================================================
+    // 6. LOCAL PLAYER STATE & 3-WEAPON RACK
+    // =========================================================================
+    let localPlayer = {
+      id: 'p-' + Math.random().toString(36).substring(2, 9),
+      slotNum: 1,
+      shardCode: 'MAIN',
+      name: 'Hawkwind',
+      raceCategory: 'Elf',
+      subraceKey: 'Highlander',
+      raceLabel: 'Elf (Highlander Archer)',
+      coreClass: 'Rogue',
+      regionalSect: 'Classic',
+      specialistFocus: null,
+      eliteClass: null,
+      prestigeSet: null,
+      prestigeClass: null,
+      armorColor: ARMOR_PALETTE[0],
+      hairColor: HAIR_PALETTE[0],
+      x: FIREPIT_POS.x,
+      y: FIREPIT_POS.y + 125,
+      targetX: null,
+      targetY: null,
+      aimAngle: 0,
+      facing: 1,
+      isMoving: false,
+      combatStance: 'cleave', // 'cleave' | 'precision' | 'guard'
+      activeWeaponIdx: 0,     // 0 = Prime (SLASH), 1 = Side (BLUNT), 2 = Backup (PIERCE)
+      autoAttackTimer: 0,
+      baseSpeed: 255,
+      speed: 255,
+      hp: 260,
+      maxHp: 260,
+      mana: 95,
+      maxMana: 95,
+      atman: 45,
+      maxAtman: 100,
+      level: 1,
+      xp: 0,
+      nextXp: 100,
+      gold: 150,
+      weapons: [
+        { name: 'Cobold Scimitar',     slot: 'wpn1', dmgType: 'SLASH',  ranged: false, atk: 18, hp: 10, mp: 0,  rarity: 'rare', identified: true },
+        { name: 'Zhad Stone-Mace',     slot: 'wpn2', dmgType: 'BLUNT',  ranged: false, atk: 20, hp: 15, mp: 0,  rarity: 'rare', identified: true },
+        { name: 'Highlander Bow',      slot: 'wpn3', dmgType: 'PIERCE', ranged: true,  atk: 17, hp: 10, mp: 10, rarity: 'rare', identified: true }
+      ],
+      equipped: {
+        armor: { name: 'OVA Shinobi Shozoku',   slot: 'armor', atk: 5, hp: 45, mp: 15, rarity: 'rare', identified: true },
+        relic: { name: 'Golden Sun-Eye Shield', slot: 'relic', atk: 8, hp: 50, mp: 15, rarity: 'epic', identified: true }
+      },
+      backpack: [
+        { name: 'Fire Giant Flamberge', unidName: '? Wavy Flame Greatsword', slot: 'wpn1', dmgType: 'SLASH', ranged: false, atk: 27, hp: 25, mp: 0, rarity: 'epic', identified: true },
+        { name: 'Duergar Skull-Crusher',unidName: '? Heavy Ash Mace',        slot: 'wpn2', dmgType: 'BLUNT', ranged: false, atk: 25, hp: 25, mp: 0, rarity: 'epic', identified: true }
+      ],
+      spellBar: ['mahalito', 'muramasa', 'zhad_stylus', 'lanactoor', 'vrana_sun', 'dalto', 'porfic', 'madi', 'tiltowait'],
+      targetEntityId: null,
+      swingTimer: 0,
+      dodgeTimer: 0,
+      hitFlash: 0,
+      chatBubble: null,
+      chatTimer: 0
+    };
+
+    const SAVE_KEY = 'tartaria_v7_save';
+
+    function getActiveWeapon() {
+      return localPlayer.weapons[localPlayer.activeWeaponIdx] || localPlayer.weapons[0];
+    }
+
+    function selectWeaponSlot(idx) {
+      localPlayer.activeWeaponIdx = idx;
+      for (let i = 0; i < 3; i++) {
+        const card = document.getElementById(`wpn-card-${i}`);
+        if (card) card.classList.toggle('active', i === idx);
+      }
+      recalcEquipmentStats();
+      const w = getActiveWeapon();
+      playSfx('gate');
+      showToast(`Switched to Weapon ${idx + 1}: ${w.name} [${w.dmgType}]`);
+    }
+
+    function setCombatStance(stance) {
+      localPlayer.combatStance = stance;
+      ['cleave', 'precision', 'guard'].forEach(s => {
+        const el = document.getElementById(`stance-${s}`);
+        if (el) el.classList.toggle('active', s === stance);
+      });
+      const labels = {
+        'cleave': '⚔️ Fury Stance (+30% Auto-Swing Speed)',
+        'precision': '🎯 Precision Stance (+45% Weakness & Crit Damage)',
+        'guard': '🛡️ Guard Stance (-35% Damage Taken)'
+      };
+      showToast(labels[stance]);
+    }
+
+    function updateWeaponRackUI() {
+      const prefixes = ['1.', '2.', '3.'];
+      const roles = ['Prime Melee', 'Side Weapon', 'Backup Ranged'];
+      for (let i = 0; i < 3; i++) {
+        const w = localPlayer.weapons[i];
+        if (!w) continue;
+        const nEl = document.getElementById(`hud-wpn-name-${i}`);
+        const sEl = document.getElementById(`hud-wpn-sub-${i}`);
+        if (nEl) nEl.textContent = `${prefixes[i]} ${w.name}`;
+        if (sEl) sEl.textContent = `${roles[i]} • +${w.atk} ATK`;
+      }
+    }
+
+    function recalcEquipmentStats() {
+      const subMeta = getSubraceMeta(localPlayer);
+      const classMeta = CLASS_PROGRESSION[localPlayer.coreClass] || CLASS_PROGRESSION['Rogue'];
+      const lvlBonusHp = (localPlayer.level - 1) * 32;
+      const lvlBonusMp = (localPlayer.level - 1) * 16;
+
+      const activeWpn = getActiveWeapon();
+      let eqAtk = (localPlayer.level - 1) * 6 + (activeWpn ? activeWpn.atk : 15);
+      let eqHp = activeWpn ? (activeWpn.hp || 0) : 0;
+      let eqMp = activeWpn ? (activeWpn.mp || 0) : 0;
+
+      ['armor', 'relic'].forEach(k => {
+        const it = localPlayer.equipped[k];
+        if (it) {
+          eqAtk += it.atk || 0;
+          eqHp  += it.hp  || 0;
+          eqMp  += it.mp  || 0;
+        }
+      });
+
+      localPlayer.dmgBonus = eqAtk;
+      localPlayer.maxHp = classMeta.hp + subMeta.hpBonus + lvlBonusHp + eqHp;
+      localPlayer.maxMana = classMeta.mana + lvlBonusMp + eqMp;
+      localPlayer.hp = Math.min(localPlayer.hp, localPlayer.maxHp);
+      localPlayer.mana = Math.min(localPlayer.mana, localPlayer.maxMana);
+      localPlayer.speed = localPlayer.baseSpeed * subMeta.speedMod;
+      updateWeaponRackUI();
+    }
+
+    function savePersistentProgress() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
+          name: localPlayer.name,
+          raceCategory: localPlayer.raceCategory,
+          subraceKey: localPlayer.subraceKey,
+          raceLabel: localPlayer.raceLabel,
+          coreClass: localPlayer.coreClass,
+          regionalSect: localPlayer.regionalSect,
+          specialistFocus: localPlayer.specialistFocus,
+          eliteClass: localPlayer.eliteClass,
+          prestigeSet: localPlayer.prestigeSet,
+          prestigeClass: localPlayer.prestigeClass,
+          armorColor: localPlayer.armorColor,
+          hairColor: localPlayer.hairColor,
+          level: localPlayer.level,
+          xp: localPlayer.xp,
+          nextXp: localPlayer.nextXp,
+          gold: localPlayer.gold,
+          atman: localPlayer.atman,
+          weapons: localPlayer.weapons,
+          equipped: localPlayer.equipped,
+          backpack: localPlayer.backpack,
+          spellBar: localPlayer.spellBar
+        }));
+      } catch (e) {}
+    }
+
+    function checkExistingSave() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (data && data.name && RACE_TREE[data.raceCategory]?.subraces[data.subraceKey]) {
+          Object.assign(localPlayer, data);
+          document.getElementById('char-name').value = localPlayer.name;
+          document.getElementById('char-race').value = localPlayer.raceCategory;
+          document.getElementById('char-race').dispatchEvent(new Event('change'));
+          document.getElementById('char-subrace').value = localPlayer.subraceKey;
+          document.getElementById('char-class').value = localPlayer.coreClass;
+          document.getElementById('char-sect').value = localPlayer.regionalSect || 'Classic';
+
+          const banner = document.getElementById('returning-save-banner');
+          banner.style.display = 'flex';
+          document.getElementById('returning-save-txt').textContent =
+            `Vessel Found: ${localPlayer.name} (Lv.${localPlayer.level} ${localPlayer.raceLabel} • ${localPlayer.gold}g)`;
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    document.getElementById('btn-reset-save').addEventListener('click', () => {
+      localStorage.removeItem(SAVE_KEY);
+      document.getElementById('returning-save-banner').style.display = 'none';
+      localPlayer.level = 1; localPlayer.xp = 0; localPlayer.nextXp = 100; localPlayer.gold = 150;
+      showToast('Saved Vessel Wiped.');
+    });
+
+    // =========================================================================
+    // 7. UPGRADED MULTI-THEME PROCEDURAL MUSIC COMPOSER & SFX ENGINE
+    // =========================================================================
+    let audioCtx = null;
+    let bgmEnabled = true;
+    let bgmTimer = null;
+    let bgmStep = 0;
+    let musicMode = 'auto'; // 'auto' | 'tavern' | 'catacomb' | 'zhad' | 'boss'
+    let activeThemeName = 'tavern';
+
+    const MUSIC_THEMES = {
+      'tavern': {
+        label: 'Tavern Lute',
+        tempoMs: 420,
+        leadWave: 'triangle',
+        bassWave: 'sine',
+        notes: [293.66, 349.23, 440.00, 392.00, 349.23, 329.63, 293.66, 261.63],
+        bass:  [146.83, 146.83, 174.61, 196.00, 146.83, 130.81, 146.83, 146.83]
+      },
+      'catacomb': {
+        label: 'Dilmun Crypt',
+        tempoMs: 480,
+        leadWave: 'sine',
+        bassWave: 'triangle',
+        notes: [164.81, 174.61, 220.00, 207.65, 174.61, 164.81, 146.83, 164.81],
+        bass:  [82.41,  82.41,  110.00, 103.83, 87.31,  82.41,  73.42,  82.41]
+      },
+      'zhad': {
+        label: 'Zhad Cymatics',
+        tempoMs: 520,
+        leadWave: 'sine',
+        bassWave: 'sine',
+        notes: [220.00, 329.63, 440.00, 392.00, 329.63, 293.66, 220.00, 261.63],
+        bass:  [110.00, 164.81, 110.00, 146.83, 110.00, 164.81, 110.00, 130.81]
+      },
+      'boss': {
+        label: 'Archon Boss',
+        tempoMs: 240,
+        leadWave: 'sawtooth',
+        bassWave: 'sawtooth',
+        notes: [293.66, 311.13, 293.66, 220.00, 293.66, 349.23, 329.63, 277.18],
+        bass:  [73.42,  73.42,  110.00, 73.42,  87.31,  73.42,  98.00,  69.30]
+      }
+    };
+
+    function initAudioEngine() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!bgmTimer) scheduleNextMusicBeat();
+    }
+
+    function scheduleNextMusicBeat() {
+      if (bgmTimer) clearTimeout(bgmTimer);
+      const theme = MUSIC_THEMES[activeThemeName] || MUSIC_THEMES['tavern'];
+      bgmTimer = setTimeout(() => {
+        if (bgmEnabled && audioCtx && document.getElementById('char-modal').style.display === 'none') {
+          try {
+            const now = audioCtx.currentTime;
+            const idx = bgmStep % theme.notes.length;
+
+            // 1. Lead Voice
+            const osc1 = audioCtx.createOscillator();
+            const g1 = audioCtx.createGain();
+            osc1.type = theme.leadWave;
+            osc1.frequency.setValueAtTime(theme.notes[idx], now);
+            g1.gain.setValueAtTime(activeThemeName === 'boss' ? 0.022 : 0.032, now);
+            g1.gain.exponentialRampToValueAtTime(0.001, now + (theme.tempoMs * 0.0009));
+            osc1.connect(g1); g1.connect(audioCtx.destination);
+            osc1.start(now); osc1.stop(now + (theme.tempoMs * 0.00095));
+
+            // 2. Bass / Cymatic Drone Voice on even steps
+            if (bgmStep % 2 === 0) {
+              const osc2 = audioCtx.createOscillator();
+              const g2 = audioCtx.createGain();
+              osc2.type = theme.bassWave;
+              osc2.frequency.setValueAtTime(theme.bass[idx], now);
+              g2.gain.setValueAtTime(0.035, now);
+              g2.gain.exponentialRampToValueAtTime(0.001, now + (theme.tempoMs * 0.0018));
+              osc2.connect(g2); g2.connect(audioCtx.destination);
+              osc2.start(now); osc2.stop(now + (theme.tempoMs * 0.0019));
+            }
+            bgmStep++;
+          } catch (e) {}
+        }
+        scheduleNextMusicBeat();
+      }, theme.tempoMs);
+    }
+
+    document.getElementById('btn-track').addEventListener('click', (e) => {
+      const order = ['auto', 'tavern', 'catacomb', 'zhad', 'boss'];
+      const nextIdx = (order.indexOf(musicMode) + 1) % order.length;
+      musicMode = order[nextIdx];
+      if (musicMode !== 'auto') activeThemeName = musicMode;
+      e.currentTarget.textContent = `🎵 Track: ${musicMode.toUpperCase()}`;
+    });
+
+    function playSfx(kind) {
+      if (!audioCtx || !bgmEnabled) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+
+        if (kind === 'resist') {
+          // Dull metallic ricochet clang when using the wrong damage type!
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.setValueAtTime(620, now + 0.04);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.11);
+          osc.start(now); osc.stop(now + 0.11);
+        } else if (kind === 'weakness') {
+          // Heavy meaty crunch when hitting enemy weakness!
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(190, now);
+          osc.frequency.exponentialRampToValueAtTime(55, now + 0.18);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+          osc.start(now); osc.stop(now + 0.18);
+        } else if (kind === 'bow') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(500, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.09);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.09);
+          osc.start(now); osc.stop(now + 0.09);
+        } else if (kind === 'atman') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(110, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.45);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.45);
+          osc.start(now); osc.stop(now + 0.45);
+        } else if (kind === 'slash') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(310, now);
+          osc.frequency.exponentialRampToValueAtTime(65, now + 0.13);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.13);
+          osc.start(now); osc.stop(now + 0.13);
+        } else if (kind === 'behead') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(540, now);
+          osc.frequency.exponentialRampToValueAtTime(85, now + 0.24);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.24);
+          osc.start(now); osc.stop(now + 0.24);
+        } else if (kind === 'gate') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(95, now);
+          osc.frequency.linearRampToValueAtTime(140, now + 0.22);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
+          osc.start(now); osc.stop(now + 0.22);
+        } else if (kind === 'spell') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(720, now + 0.26);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.26);
+          osc.start(now); osc.stop(now + 0.26);
+        } else if (kind === 'loot') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.08);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.24);
+          osc.start(now); osc.stop(now + 0.24);
+        } else if (kind === 'death') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(130, now);
+          osc.frequency.linearRampToValueAtTime(38, now + 0.65);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.65);
+          osc.start(now); osc.stop(now + 0.65);
+        }
+      } catch (e) {}
+    }
+
+    document.getElementById('btn-audio').addEventListener('click', (e) => {
+      bgmEnabled = !bgmEnabled;
+      e.currentTarget.textContent = bgmEnabled ? '🔊 BGM' : '🔇 MUTE';
+    });
+
+    // =========================================================================
+    // 8. UI INITIALIZATION & INTERACTIVE MULTI-ITEM LOOTING / APPRAISAL
+    // =========================================================================
+    function drawWerdna1981Portrait() {
+      const c = document.getElementById('werdnaCanvas');
+      if (!c) return;
+      const wCtx = c.getContext('2d');
+      wCtx.clearRect(0, 0, c.width, c.height);
+      wCtx.fillStyle = '#c81e56'; wCtx.strokeStyle = '#111'; wCtx.lineWidth = 2.5;
+      wCtx.beginPath(); wCtx.moveTo(40, 225); wCtx.quadraticCurveTo(15, 130, 75, 95); wCtx.lineTo(185, 95); wCtx.quadraticCurveTo(245, 130, 220, 225); wCtx.closePath(); wCtx.fill(); wCtx.stroke();
+      wCtx.fillStyle = '#d6336c';
+      wCtx.beginPath(); wCtx.moveTo(105, 65); wCtx.lineTo(130, 12); wCtx.lineTo(155, 65); wCtx.closePath(); wCtx.fill(); wCtx.stroke();
+      wCtx.fillStyle = '#eab308';
+      wCtx.beginPath(); wCtx.arc(130, 78, 18, 0, Math.PI * 2); wCtx.fill(); wCtx.stroke();
+      wCtx.fillStyle = '#f8fafc';
+      wCtx.beginPath(); wCtx.moveTo(112, 85); wCtx.quadraticCurveTo(95, 165, 115, 220); wCtx.quadraticCurveTo(135, 195, 155, 220); wCtx.quadraticCurveTo(165, 155, 148, 85); wCtx.closePath(); wCtx.fill(); wCtx.stroke();
+      wCtx.fillStyle = '#eab308';
+      wCtx.beginPath(); wCtx.arc(85, 112, 10, 0, Math.PI * 2); wCtx.arc(175, 112, 10, 0, Math.PI * 2); wCtx.fill(); wCtx.stroke();
+    }
+    drawWerdna1981Portrait();
+
+    function initCreationUI() {
+      const urlShard = new URLSearchParams(window.location.search).get('shard');
+      if (urlShard) document.getElementById('shard-code-input').value = urlShard.toUpperCase().slice(0, 12);
+
+      const raceSel = document.getElementById('char-race');
+      const subSel = document.getElementById('char-subrace');
+      Object.keys(RACE_TREE).forEach(rKey => {
+        const opt = document.createElement('option');
+        opt.value = rKey; opt.textContent = rKey;
+        raceSel.appendChild(opt);
+      });
+
+      function populateSubraces() {
+        const rKey = raceSel.value;
+        const rObj = RACE_TREE[rKey];
+        subSel.innerHTML = '';
+        Object.keys(rObj.subraces).forEach(sKey => {
+          const sObj = rObj.subraces[sKey];
+          const opt = document.createElement('option');
+          opt.value = sKey; opt.textContent = sObj.name;
+          subSel.appendChild(opt);
+        });
+        updateLore();
+      }
+      function updateLore() {
+        const sObj = RACE_TREE[raceSel.value]?.subraces[subSel.value];
+        if (sObj) document.getElementById('race-lore-box').textContent = sObj.desc;
+      }
+      raceSel.addEventListener('change', populateSubraces);
+      subSel.addEventListener('change', updateLore);
+      populateSubraces();
+
+      const armorRow = document.getElementById('armor-swatches');
+      ARMOR_PALETTE.forEach((col, i) => {
+        const s = document.createElement('div');
+        s.className = 'swatch' + (i === 0 ? ' active' : '');
+        s.style.backgroundColor = col;
+        s.onclick = () => {
+          localPlayer.armorColor = col;
+          armorRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+          s.classList.add('active');
+        };
+        armorRow.appendChild(s);
+      });
+
+      const hairRow = document.getElementById('hair-swatches');
+      HAIR_PALETTE.forEach((col, i) => {
+        const s = document.createElement('div');
+        s.className = 'swatch' + (i === 0 ? ' active' : '');
+        s.style.backgroundColor = col;
+        s.onclick = () => {
+          localPlayer.hairColor = col;
+          hairRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+          s.classList.add('active');
+        };
+        hairRow.appendChild(s);
+      });
+
+      checkExistingSave();
+    }
+    initCreationUI();
+
+    function getSubraceMeta(p) {
+      return RACE_TREE[p.raceCategory]?.subraces[p.subraceKey] || RACE_TREE['Elf'].subraces['Highlander'];
+    }
+
+    function getActiveClassTitle(p) {
+      if (p.prestigeClass) return `${p.prestigeClass} [${p.prestigeSet}]`;
+      if (p.eliteClass) return `${p.eliteClass} (${p.specialistFocus})`;
+      return `Core ${p.coreClass}`;
+    }
+
+    function renderHotbarUI() {
+      const container = document.getElementById('hotbar-container');
+      container.innerHTML = '';
+      const unlockedSlots = Math.min(9, localPlayer.level);
+
+      for (let i = 0; i < 9; i++) {
+        const spellId = localPlayer.spellBar[i] || 'mahalito';
+        const sp = GRIMOIRE_SPELLS.find(s => s.id === spellId) || GRIMOIRE_SPELLS[0];
+        const isLocked = (i + 1) > unlockedSlots;
+
+        const slot = document.createElement('div');
+        slot.className = 'hotkey-slot' + (isLocked ? ' locked' : '');
+        slot.title = isLocked
+          ? `Special Slot ${i + 1} unlocks at Level ${i + 1}`
+          : `[Key ${i + 1}] ${sp.name} (${sp.dmgType}) - ${sp.desc}`;
+        slot.innerHTML = `
+          <span class="hotkey-num">${i + 1}</span>
+          ${!isLocked && sp.mp > 0 ? `<span class="hotkey-mp">${sp.mp}</span>` : ''}
+          <span class="hotkey-icon">${isLocked ? '🔒' : sp.icon}</span>
+          <span class="hotkey-label">${isLocked ? 'Lv.' + (i + 1) : sp.name.split(' ')[0]}</span>
+          <div class="cd-overlay" id="cd-slot-${i}"></div>
+        `;
+        slot.onclick = () => {
+          if (isLocked) showToast(`Special Slot ${i + 1} unlocks at Level ${i + 1}!`);
+          else triggerSpellSlot(i);
+        };
+        container.appendChild(slot);
+      }
+    }
+
+    // Interactive Multi-Item Chest Looting & Appraisal Window
+    let activeOpenChest = null;
+
+    function openChestLootModal(chestObj) {
+      activeOpenChest = chestObj;
+      playSfx('loot');
+
+      // Grant Gold & Atman immediately on opening
+      if (!chestObj.currencyClaimed) {
+        chestObj.currencyClaimed = true;
+        localPlayer.gold += chestObj.gold || 45;
+        localPlayer.atman = Math.min(localPlayer.maxAtman, localPlayer.atman + (chestObj.atman || 12));
+        savePersistentProgress();
+        updateVitalsUI();
+      }
+
+      document.getElementById('loot-modal-title').textContent = `🎁 ${chestObj.label}`;
+      document.getElementById('loot-modal-bonus').textContent = `Claimed +${chestObj.gold}g & +${chestObj.atman || 12} Atman`;
+      renderLootModalItems();
+      document.getElementById('loot-modal').style.display = 'flex';
+    }
+
+    function renderLootModalItems() {
+      const list = document.getElementById('loot-items-list');
+      list.innerHTML = '';
+      if (!activeOpenChest || !activeOpenChest.items || activeOpenChest.items.length === 0) {
+        closeLootModal(true);
+        return;
+      }
+
+      activeOpenChest.items.forEach((it, idx) => {
+        const row = document.createElement('div');
+        row.className = 'loot-item-row';
+        const rClass = `rarity-${it.rarity || 'rare'}`;
+        const displayName = it.identified ? it.name : (it.unidName || '? Unidentified Relic');
+        const statText = it.identified
+          ? `${it.dmgType ? '[' + it.dmgType + '] ' : ''}+${it.atk || 0} ATK | +${it.hp || 0} HP`
+          : 'Unidentified Wizardry Artifact — Click Appraise!';
+
+        let actionBtns = '';
+        if (!it.identified) {
+          actionBtns = `<button class="action-btn" data-act="id" data-idx="${idx}" style="border-color:#fde047; color:#fde047;">🔍 Appraise</button>`;
+        } else if (it.slot === 'wpn1' || it.slot === 'wpn2' || it.slot === 'wpn3') {
+          const wSlotNum = it.slot === 'wpn1' ? 1 : (it.slot === 'wpn2' ? 2 : 3);
+          actionBtns = `
+            <button class="action-btn" data-act="eq" data-idx="${idx}" style="border-color:#4ade80; color:#4ade80;">⚔️ Equip Wpn ${wSlotNum}</button>
+            <button class="action-btn" data-act="bag" data-idx="${idx}">🎒 Bag</button>
+          `;
+        } else {
+          actionBtns = `
+            <button class="action-btn" data-act="eq" data-idx="${idx}" style="border-color:#4ade80; color:#4ade80;">🛡️ Equip</button>
+            <button class="action-btn" data-act="bag" data-idx="${idx}">🎒 Bag</button>
+          `;
+        }
+
+        row.innerHTML = `
+          <div>
+            <div class="${rClass}" style="font-family:'Cinzel',serif; font-size:11.5px; font-weight:800;">${displayName}</div>
+            <div style="font-size:9.5px; color:#a89984;">${statText}</div>
+          </div>
+          <div style="display:flex; gap:5px;">${actionBtns}</div>
+        `;
+
+        row.querySelectorAll('button').forEach(btn => {
+          btn.onclick = () => {
+            const act = btn.getAttribute('data-act');
+            const i = parseInt(btn.getAttribute('data-idx'));
+            const targetItem = activeOpenChest.items[i];
+            if (!targetItem) return;
+
+            if (act === 'id') {
+              targetItem.identified = true;
+              playSfx('spell');
+              renderLootModalItems();
+            } else if (act === 'eq') {
+              equipItemDirectly(targetItem);
+              activeOpenChest.items.splice(i, 1);
+              renderLootModalItems();
+            } else if (act === 'bag') {
+              if (localPlayer.backpack.length < 8) {
+                targetItem.identified = true;
+                localPlayer.backpack.push(targetItem);
+                activeOpenChest.items.splice(i, 1);
+                playSfx('loot');
+                savePersistentProgress();
+                renderLootModalItems();
+              } else {
+                showToast('Backpack Satchel is full!');
+              }
+            }
+          };
+        });
+        list.appendChild(row);
+      });
+    }
+
+    function equipItemDirectly(item) {
+      item.identified = true;
+      if (item.slot === 'wpn1') localPlayer.weapons[0] = item;
+      else if (item.slot === 'wpn2') localPlayer.weapons[1] = item;
+      else if (item.slot === 'wpn3') localPlayer.weapons[2] = item;
+      else if (item.slot === 'armor') localPlayer.equipped.armor = item;
+      else if (item.slot === 'relic') localPlayer.equipped.relic = item;
+
+      playSfx('loot');
+      recalcEquipmentStats();
+      savePersistentProgress();
+      updateVitalsUI();
+      showToast(`Equipped ${item.name}!`);
+    }
+
+    document.getElementById('btn-take-all-loot').addEventListener('click', () => {
+      if (!activeOpenChest) return;
+      activeOpenChest.items.forEach(it => {
+        it.identified = true;
+        if (localPlayer.backpack.length < 8) localPlayer.backpack.push(it);
+      });
+      activeOpenChest.items = [];
+      playSfx('loot');
+      savePersistentProgress();
+      closeLootModal(true);
+      showToast('Looted all relics into Satchel [I]!');
+    });
+
+    function closeLootModal(removeEmpty = false) {
+      document.getElementById('loot-modal').style.display = 'none';
+      if (activeOpenChest && (removeEmpty || activeOpenChest.items.length === 0)) {
+        const idx = lootChests.indexOf(activeOpenChest);
+        if (idx !== -1) lootChests.splice(idx, 1);
+      }
+      activeOpenChest = null;
+    }
+
+    function toggleInventory(forceState) {
+      const modal = document.getElementById('inventory-modal');
+      const open = typeof forceState === 'boolean' ? forceState : modal.style.display !== 'flex';
+      modal.style.display = open ? 'flex' : 'none';
+      if (open) renderInventoryUI();
+    }
+
+    function renderInventoryUI() {
+      recalcEquipmentStats();
+      document.getElementById('inv-gold').textContent = `💰 ${localPlayer.gold} Gold`;
+      document.getElementById('gold-hud').textContent = `${localPlayer.gold}g`;
+
+      for (let i = 0; i < 3; i++) {
+        const w = localPlayer.weapons[i];
+        document.getElementById(`eq-wpn${i+1}-name`).textContent = w ? w.name : 'Empty';
+        document.getElementById(`eq-wpn${i+1}-stat`).textContent = w ? `[${w.dmgType}] +${w.atk} ATK` : '—';
+      }
+      ['armor', 'relic'].forEach(slotKey => {
+        const item = localPlayer.equipped[slotKey];
+        document.getElementById(`eq-${slotKey}-name`).textContent = item ? item.name : 'Empty';
+        document.getElementById(`eq-${slotKey}-stat`).textContent = item ? `+${item.hp || 0} HP +${item.atk || 0} ATK` : '—';
+      });
+
+      document.getElementById('inv-stats-summary').textContent =
+        `Active Bonus: ATK +${localPlayer.dmgBonus} | MaxHP ${localPlayer.maxHp} | MaxMP ${localPlayer.maxMana}`;
+
+      const grid = document.getElementById('bag-grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        const it = localPlayer.backpack[i];
+        const cell = document.createElement('div');
+        cell.className = 'bag-slot';
+        if (it) {
+          const rClass = `rarity-${it.rarity || 'rare'}`;
+          cell.innerHTML = `
+            <span class="item-name ${rClass}">${it.name}</span>
+            <span class="item-stat">${it.dmgType ? '[' + it.dmgType + ']' : '[GEAR]'} +${it.atk || 0} ATK +${it.hp || 0} HP</span>
+          `;
+          cell.onclick = () => {
+            equipItemDirectly(it);
+            localPlayer.backpack.splice(i, 1);
+            renderInventoryUI();
+          };
+        } else {
+          cell.innerHTML = `<span style="font-size:9.5px; color:#57493a;">Empty Slot</span>`;
+        }
+        grid.appendChild(cell);
+      }
+      updateVitalsUI();
+    }
+
+    let selectedGrimoireSlot = 0;
+    function toggleGrimoire(forceState) {
+      const modal = document.getElementById('grimoire-modal');
+      const open = typeof forceState === 'boolean' ? forceState : modal.style.display !== 'flex';
+      modal.style.display = open ? 'flex' : 'none';
+      if (modal.style.display === 'flex') renderGrimoireModal();
+    }
+
+    function renderGrimoireModal() {
+      const unlocked = Math.min(9, localPlayer.level);
+      document.getElementById('grimoire-slot-info').textContent = `Unlocked Specials: ${unlocked} / 9 (1 per Level)`;
+
+      const selRow = document.getElementById('grimoire-slot-selector');
+      selRow.innerHTML = '';
+      for (let i = 0; i < unlocked; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'action-btn';
+        if (i === selectedGrimoireSlot) btn.style.background = '#5c1919';
+        btn.textContent = `Special [${i + 1}]`;
+        btn.onclick = () => { selectedGrimoireSlot = i; renderGrimoireModal(); };
+        selRow.appendChild(btn);
+      }
+
+      const list = document.getElementById('grimoire-spell-list');
+      list.innerHTML = '';
+      GRIMOIRE_SPELLS.forEach(sp => {
+        const card = document.createElement('div');
+        card.className = 'spell-card';
+        card.innerHTML = `
+          <div>
+            <div style="font-family:'Cinzel',serif; font-size:11.5px; color:#f4dca6; font-weight:700;">${sp.icon} ${sp.name} <small style="color:#cfa354;">[${sp.dmgType}]</small></div>
+            <div style="font-size:10px; color:#a89984;">${sp.desc} (${sp.mp} MP)</div>
+          </div>
+          <span style="font-family:'Cinzel',serif; font-size:10px; color:#4ade80;">Bind -> [${selectedGrimoireSlot + 1}]</span>
+        `;
+        card.onclick = () => {
+          localPlayer.spellBar[selectedGrimoireSlot] = sp.id;
+          savePersistentProgress();
+          renderHotbarUI();
+          showToast(`Bound ${sp.name} to Special Slot [${selectedGrimoireSlot + 1}]`);
+        };
+        list.appendChild(card);
+      });
+    }
+
+    document.getElementById('btn-inv').onclick = () => toggleInventory();
+    document.getElementById('btn-grim').onclick = () => toggleGrimoire();
+    document.getElementById('btn-gates').onclick = () => interactWithWorldObject();
+
+    function checkClassAscensionPrompt() {
+      const modal = document.getElementById('ascend-modal');
+      const title = document.getElementById('ascend-title');
+      const desc = document.getElementById('ascend-desc');
+      const opts = document.getElementById('ascend-options');
+
+      if (localPlayer.level >= 3 && !localPlayer.eliteClass) {
+        const cMeta = CLASS_PROGRESSION[localPlayer.coreClass] || CLASS_PROGRESSION['Rogue'];
+        title.textContent = `🔥 LEVEL 3 SPECIALIST FOCUS -> ELITE ${cMeta.elite.toUpperCase()}`;
+        desc.textContent = `Choose your Specialist Focus to lock into the Elite ${cMeta.elite} class:`;
+        opts.innerHTML = '';
+        cMeta.focuses.forEach(foc => {
+          const b = document.createElement('button');
+          b.className = 'action-btn'; b.style.padding = '10px';
+          b.textContent = `${foc} -> ${cMeta.elite}`;
+          b.onclick = () => {
+            localPlayer.specialistFocus = foc; localPlayer.eliteClass = cMeta.elite;
+            modal.style.display = 'none'; savePersistentProgress(); updateVitalsUI();
+            triggerSoulsBanner(`ASCENDED: ELITE ${cMeta.elite.toUpperCase()}`);
+          };
+          opts.appendChild(b);
+        });
+        modal.style.display = 'flex';
+      } else if (localPlayer.level >= 6 && !localPlayer.prestigeClass) {
+        const sect = localPlayer.regionalSect || 'Classic';
+        const classes = PRESTIGE_SETS[sect] || PRESTIGE_SETS['Classic'];
+        title.textContent = `⚔️ LEVEL 6 REGIONAL PRESTIGE SET (${sect.toUpperCase()})`;
+        desc.textContent = `Choose your Regional Prestige Calling from Set ${sect}:`;
+        opts.innerHTML = '';
+        classes.forEach(pCls => {
+          const b = document.createElement('button');
+          b.className = 'action-btn'; b.style.padding = '10px';
+          b.textContent = `${pCls} [Set ${sect}]`;
+          b.onclick = () => {
+            localPlayer.prestigeSet = `Set ${sect}`; localPlayer.prestigeClass = pCls;
+            modal.style.display = 'none'; savePersistentProgress(); updateVitalsUI();
+            triggerSoulsBanner(`PRESTIGE: ${pCls.toUpperCase()}`);
+          };
+          opts.appendChild(b);
+        });
+        modal.style.display = 'flex';
+      }
+    }
+
+    function triggerSoulsBanner(text) {
+      const b = document.getElementById('souls-banner');
+      b.textContent = text; b.style.display = 'block';
+      clearTimeout(window._soulsBannerTimer);
+      window._soulsBannerTimer = setTimeout(() => { b.style.display = 'none'; }, 3100);
+    }
+
+    // =========================================================================
+    // 9. ENEMIES WITH STRICT ARMOR WEAKNESSES & MULTI-ITEM CHEST GENERATION
+    // =========================================================================
+    const enemies = [];
+    const projectiles = [];
+    const atmanMotes = [];
+    const dodgeAfterimages = [];
+    const floorDecals = [];
+    const lootChests = [];
+    const spellVortexes = [];
+    const slashArcs = [];
+    const bloodSparks = [];
+    const flyingHeads = [];
+    const combatTexts = [];
+    let screenShake = 0;
+
+    function createMultiItemChest(x, y, label, tier = 1, isCorpse = false) {
+      const count = 2 + Math.floor(Math.random() * 2);
+      const items = [];
+      for (let i = 0; i < count; i++) {
+        const base = LOOT_TABLE[Math.floor(Math.random() * LOOT_TABLE.length)];
+        items.push({
+          ...base,
+          atk: base.atk + (tier - 1) * 4,
+          identified: Math.random() < 0.35 // 65% of chest items require Wizardry appraisal!
+        });
+      }
+      return {
+        id: 'chest-' + Math.random().toString(36).slice(2, 7),
+        x, y, label, isCorpse,
+        gold: (45 + Math.floor(Math.random() * 55)) * tier,
+        atman: 10 + tier * 5,
+        items
+      };
+    }
+
+    function spawnSectorEntities(sector) {
+      const cx = sector.gx * TILE_SIZE + TILE_SIZE / 2;
+      const cy = sector.gy * TILE_SIZE + TILE_SIZE / 2;
+      const tier = Math.max(1, sector.depth);
+      const hpMult = 1 + (tier - 1) * 0.42;
+
+      if (sector.isBossRoom) {
+        const bossArchetypes = [
+          { name: 'PETRIFIED STATUE OF ABESHU', kind: 'abeshu_statue', color: '#eab308', pattern: 'zhad_cymatic', weakTo: ['BLUNT', 'ARCANE'], vulnLabel: 'WEAK: BLUNT (WPN 2)' },
+          { name: 'BAALZEBUL, GREATER DEMON',   kind: 'greater_demon', color: '#28517a', pattern: 'demon_spiral', weakTo: ['PIERCE', 'ARCANE'], vulnLabel: 'WEAK: PIERCE (WPN 3)' },
+          { name: 'SUR
