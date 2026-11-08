@@ -2,396 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Bane of Shadows - The Tree of Life (Build 0.5 - Global Multi-Relay & Friend Finder)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Reliable Global MQTT-over-WebSockets & PeerJS WebRTC Clients -->
-  <script src="https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bane of Shadows: The Tree of Life</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
-    :root {
-      --gold: #c8a253;
-      --gold-bright: #f2d07e;
-      --gold-dark: #6e5322;
-      --stone-dark: #0e0e11;
-      --stone-panel: #16161c;
-      --crimson: #8b1e22;
-    }
-    body {
-      font-family: 'Crimson Pro', serif;
-      background-color: #090a0c;
-      color: #e2d9c8;
-      overflow: hidden;
-      touch-action: none;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
       user-select: none;
+      -webkit-user-select: none;
     }
-    .font-cinzel { font-family: 'Cinzel', serif; }
-    .font-mono-code { font-family: 'JetBrains Mono', monospace; }
-
-    /* Gothic Stone & Tarnished Gold Borders */
-    .gothic-panel {
-      background: radial-gradient(circle at top, #1f1e26 0%, #121116 100%);
-      border: 2px solid #594423;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), inset 0 0 20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(235, 198, 117, 0.25);
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0d0f12;
+      font-family: 'Cinzel', 'Georgia', serif;
+      color: #e5d8b8;
     }
-    .gothic-subpanel {
-      background: rgba(10, 10, 14, 0.78);
-      border: 1px solid #3c2f1b;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #111a14;
     }
-    .gothic-btn {
-      background: linear-gradient(180deg, #3a2d1d 0%, #1e160d 100%);
-      border: 1px solid #8c6d36;
-      color: #edd7a4;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.9);
-      transition: all 0.15s ease;
+
+    /* Modal / Character Screen */
+    #char-modal {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(18, 22, 20, 0.96) 0%, rgba(6, 8, 7, 0.99) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
     }
-    .gothic-btn:hover:not(:disabled) {
-      background: linear-gradient(180deg, #523e26 0%, #2c2012 100%);
-      border-color: #dab365;
-      color: #fff3d6;
-      box-shadow: 0 0 12px rgba(200, 162, 83, 0.35);
+    .char-card {
+      background: rgba(14, 18, 16, 0.95);
+      border: 2px solid #5a4625;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(184, 134, 11, 0.2);
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
-    .gothic-btn:active:not(:disabled) {
-      transform: translateY(1px);
+    .char-card h1 {
+      font-size: 22px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+      color: #dfb76c;
+      border-bottom: 1px solid #3d2f19;
+      padding-bottom: 8px;
     }
-    .gothic-btn-active {
-      background: linear-gradient(180deg, #6b1d20 0%, #3b0d0f 100%) !important;
-      border-color: #e6b85c !important;
-      color: #fff6dc !important;
-      box-shadow: 0 0 14px rgba(180, 35, 35, 0.55), inset 0 0 8px rgba(255, 200, 110, 0.3);
+    .char-card h2 {
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #8c826e;
+      text-align: center;
     }
-    .gothic-btn-primary {
-      background: linear-gradient(180deg, #8b1e22 0%, #4d0d10 100%);
-      border: 2px solid #d4af59;
-      color: #fff2d0;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.95);
-      box-shadow: 0 4px 20px rgba(139, 30, 34, 0.6);
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .gothic-btn-primary:hover {
-      background: linear-gradient(180deg, #aa252a 0%, #631216 100%);
-      border-color: #ffe299;
-      box-shadow: 0 0 24px rgba(212, 175, 89, 0.65);
+    label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #c0ab80;
+      letter-spacing: 1px;
     }
-    /* Custom scrollbars */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0d0d11; }
-    ::-webkit-scrollbar-thumb { background: #594423; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #8c6d36; }
-  </style>
-</head>
-<body class="h-screen w-screen overflow-hidden relative">
-
-  <!-- ========================================================================= -->
-  <!-- 1. SHADOWBANE CHARACTER CREATION OVERLAY                                 -->
-  <!-- ========================================================================= -->
-  <div id="char-creation-screen" class="fixed inset-0 z-50 bg-stone-950 flex flex-col justify-between p-2 sm:p-4 overflow-y-auto"
-       style="background: radial-gradient(circle at 50% 25%, #1d261d 0%, #0d0d12 70%, #050507 100%);">
-
-    <!-- Top Banner -->
-    <div class="max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between border-b border-amber-900/50 pb-2 mb-2 gap-2">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-amber-950/90 border-2 border-amber-500/80 flex items-center justify-center shadow-lg">
-          <span class="font-cinzel font-black text-amber-300 text-lg">🌳</span>
-        </div>
-        <div>
-          <h1 class="font-cinzel font-bold text-lg sm:text-2xl tracking-widest text-amber-200 uppercase drop-shadow">
-            Bane of Shadows <span class="text-xs font-normal text-amber-500/90 tracking-normal ml-1">Build 0.5 • Global Multi-Relay & Friend Teleport</span>
-          </h1>
-          <p class="text-xs text-stone-400 italic -mt-1">Forge your vessel, wield your calling's powers, and gather with friends beneath the Tree of Life</p>
-        </div>
-      </div>
-
-      <!-- Realm Shard Selector & Live Status -->
-      <div class="flex flex-wrap items-center gap-2">
-        <div class="flex items-center gothic-subpanel rounded-lg px-2.5 py-1 border border-amber-800/60 gap-1.5">
-          <span class="font-cinzel text-[11px] uppercase tracking-wider text-amber-400">Shard:</span>
-          <input id="cc-shard-input" type="text" maxlength="24" value="TreeOfLife-Main"
-                 class="bg-transparent text-amber-100 font-mono-code text-xs w-32 focus:outline-none border-b border-amber-700/50 focus:border-amber-400" />
-        </div>
-        <button id="cc-copy-invite" class="gothic-btn px-3 py-1 rounded-lg text-xs font-cinzel font-bold flex items-center gap-1.5">
-          <span>🔗 Copy Friend Invite URL</span>
-        </button>
-        <span id="cc-online-badge" class="text-xs bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 px-3 py-1 rounded-full font-mono-code">
-          🟡 Connecting Global Relays...
-        </span>
-      </div>
-    </div>
-
-    <!-- Main 3-Column Character Builder Grid -->
-    <div class="max-w-7xl w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 my-auto overflow-visible lg:overflow-hidden">
-
-      <!-- LEFT COLUMN: Race & Base Class Selection (4 cols) -->
-      <div class="lg:col-span-4 gothic-panel rounded-xl p-3.5 flex flex-col justify-between overflow-y-auto max-h-[82vh]">
-        <div class="space-y-3">
-          <!-- Name Input -->
-          <div>
-            <label class="block font-cinzel text-xs uppercase tracking-wider text-amber-300/90 mb-1">Character Name</label>
-            <div class="flex gap-1.5">
-              <input id="cc-name-input" type="text" maxlength="16" placeholder="Enter thy name..."
-                     class="flex-1 gothic-subpanel px-3 py-1.5 rounded text-amber-100 text-base focus:outline-none focus:border-amber-500" />
-              <button id="cc-random-name" title="Generate Lore Name" class="gothic-btn px-3 py-1.5 rounded text-xs font-cinzel font-semibold">
-                🎲 Random
-              </button>
-            </div>
-          </div>
-
-          <!-- Race Selection -->
-          <div>
-            <div class="flex justify-between items-baseline mb-1">
-              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300/90">Select Race</label>
-              <span id="cc-race-tagline" class="text-xs italic text-amber-500/80">Empire Builders</span>
-            </div>
-            <div id="cc-race-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-1.5">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Base Class Selection -->
-          <div>
-            <div class="flex justify-between items-baseline mb-1">
-              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300/90">Base Calling (Class)</label>
-              <span id="cc-class-weapon-label" class="text-xs italic text-stone-400">Broadblade & Targe</span>
-            </div>
-            <div id="cc-class-grid" class="grid grid-cols-2 gap-1.5">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Lore Description Box -->
-          <div class="gothic-subpanel rounded-lg p-2.5 text-xs leading-relaxed text-stone-300 border border-amber-950/60">
-            <div id="cc-lore-title" class="font-cinzel font-bold text-amber-300 text-sm mb-0.5">Human Fighter</div>
-            <p id="cc-lore-desc" class="italic text-stone-300/90">
-              Adaptable and ambitious, Humans are the most numerous folk of the shattered realms.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- CENTER COLUMN: Live 2.5D Avatar Preview & Appearance Customizer (4 cols) -->
-      <div class="lg:col-span-4 gothic-panel rounded-xl p-3.5 flex flex-col justify-between items-center relative">
-        <div class="w-full flex justify-between items-center border-b border-amber-900/40 pb-1.5">
-          <span class="font-cinzel text-xs uppercase tracking-wider text-amber-300">Vessel Visage</span>
-          <span id="cc-summary-pill" class="text-xs font-semibold text-amber-200/90 bg-amber-950/60 px-2.5 py-0.5 rounded border border-amber-700/40">
-            Level 1 Human Fighter
-          </span>
-        </div>
-
-        <!-- Interactive Character Preview Canvas -->
-        <div class="relative w-full flex-1 min-h-[220px] flex items-center justify-center my-2 gothic-subpanel rounded-xl overflow-hidden">
-          <canvas id="cc-preview-canvas" width="300" height="250" class="w-[300px] h-[250px]"></canvas>
-          <div class="absolute bottom-2 inset-x-3 flex justify-between items-center text-[11px] text-stone-400 pointer-events-none">
-            <span> Sanctuary of First Roots</span>
-            <span class="text-amber-400/80">Click character to test swing</span>
-          </div>
-        </div>
-
-        <!-- Appearance Customization Controls -->
-        <div class="w-full space-y-2.5 pt-1">
-          <!-- Skin Tone -->
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-cinzel text-stone-300">Skin Complexion</span>
-            <div id="cc-skin-swatches" class="flex gap-1.5"></div>
-          </div>
-          <!-- Hair / Horn Color -->
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-cinzel text-stone-300">Hair / Horn Crest</span>
-            <div id="cc-hair-swatches" class="flex gap-1.5"></div>
-          </div>
-          <!-- Armor / Tunic Trim -->
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-cinzel text-stone-300">Heraldic Armor Dye</span>
-            <div id="cc-armor-swatches" class="flex gap-1.5"></div>
-          </div>
-          <!-- Hair/Feature Style Toggle -->
-          <div class="flex items-center justify-between pt-0.5">
-            <span class="text-xs font-cinzel text-stone-300">Head / Crest Style</span>
-            <div class="flex items-center gap-2">
-              <button id="cc-style-prev" class="gothic-btn px-2.5 py-0.5 rounded text-xs">◀</button>
-              <span id="cc-style-label" class="text-xs font-mono-code text-amber-200 w-24 text-center">Style 1</span>
-              <button id="cc-style-next" class="gothic-btn px-2.5 py-0.5 rounded text-xs">▶</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN: Attributes & Creation Runes (4 cols) -->
-      <div class="lg:col-span-4 gothic-panel rounded-xl p-3.5 flex flex-col justify-between overflow-y-auto max-h-[82vh]">
-        <div class="space-y-3">
-          <!-- Attribute Point Allocation -->
-          <div>
-            <div class="flex items-center justify-between border-b border-amber-900/40 pb-1 mb-2">
-              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300">Attribute Allocation</label>
-              <div class="text-xs">
-                <span class="text-stone-400">Points Remaining:</span>
-                <span id="cc-points-left" class="font-mono-code font-bold text-emerald-400 text-sm ml-1">25</span>
-              </div>
-            </div>
-
-            <div id="cc-stats-list" class="space-y-1.5">
-              <!-- Populated by JS: STR, DEX, CON, INT, SPI -->
-            </div>
-
-            <!-- Derived Vitals Preview -->
-            <div class="grid grid-cols-3 gap-1.5 mt-2.5 pt-2 border-t border-stone-800 text-center">
-              <div class="gothic-subpanel p-1.5 rounded">
-                <div class="text-[10px] uppercase text-stone-400">Health</div>
-                <div id="cc-derived-hp" class="font-mono-code text-xs font-bold text-red-400">180</div>
-              </div>
-              <div class="gothic-subpanel p-1.5 rounded">
-                <div class="text-[10px] uppercase text-stone-400">Mana</div>
-                <div id="cc-derived-mp" class="font-mono-code text-xs font-bold text-sky-400">110</div>
-              </div>
-              <div class="gothic-subpanel p-1.5 rounded">
-                <div class="text-[10px] uppercase text-stone-400">Stamina</div>
-                <div id="cc-derived-st" class="font-mono-code text-xs font-bold text-amber-300">140</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Creation Trait Runes (Pick up to 2) -->
-          <div>
-            <div class="flex items-center justify-between border-b border-amber-900/40 pb-1 mb-1.5">
-              <label class="font-cinzel text-xs uppercase tracking-wider text-amber-300">Creation Runes</label>
-              <span id="cc-rune-counter" class="text-xs text-amber-400/90 font-mono-code">Selected: 1 / 2</span>
-            </div>
-            <div id="cc-runes-list" class="space-y-1.5">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Spawn Button -->
-        <div class="pt-3 mt-2 border-t border-amber-900/50 space-y-1.5">
-          <div class="flex items-center justify-between text-[11px] text-stone-400 px-1">
-            <span id="cc-saved-status" class="italic text-emerald-400/90">Character auto-saved to browser</span>
-            <button id="cc-reset-char" class="text-amber-400/80 hover:text-amber-300 underline">Reset Defaults</button>
-          </div>
-          <button id="btn-spawn-tree" class="w-full gothic-btn-primary py-3 rounded-lg font-cinzel font-bold text-base tracking-widest uppercase flex items-center justify-center gap-2 cursor-pointer">
-            <span>✨ Awaken at the Tree of Life</span>
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Toast Notification Banner -->
-  <div id="toast-banner" class="fixed top-16 left-1/2 -translate-x-1/2 z-[60] gothic-panel px-4 py-2 rounded-full border border-amber-400 text-amber-200 font-cinzel text-xs shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300">
-    Invite Link Copied!
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- 2. OVERWORLD HUD & GAMEPLAY INTERFACE                                     -->
-  <!-- ========================================================================= -->
-
-  <!-- Top Left: Player Self Portrait & Status Bars -->
-  <div id="hud-top-left" class="fixed top-3 left-3 z-20 flex items-center gap-3 pointer-events-auto hidden">
-    <div class="gothic-panel rounded-xl p-2.5 flex items-center gap-3 min-w-[265px]">
-      <div class="w-11 h-11 rounded-lg bg-stone-900 border border-amber-600/70 flex flex-col items-center justify-center text-center relative">
-        <span id="hud-self-icon" class="text-lg">⚔️</span>
-        <span id="hud-self-level" class="text-[9px] font-mono-code bg-amber-900/90 text-amber-200 px-1 rounded -mt-1">Lv.1</span>
-      </div>
-      <div class="flex-1">
-        <div class="flex items-baseline justify-between">
-          <span id="hud-self-name" class="font-cinzel font-bold text-sm text-amber-200 truncate">Vaelen</span>
-          <span id="hud-self-raceclass" class="text-[11px] text-stone-400 italic">Human Fighter</span>
-        </div>
-        <!-- Health / Mana / Stamina / XP Bars -->
-        <div class="space-y-1 mt-1">
-          <div class="w-full h-2 bg-stone-950 rounded overflow-hidden border border-stone-800 relative">
-            <div id="hud-bar-hp" class="h-full bg-gradient-to-r from-red-800 to-red-500 w-full transition-all duration-200"></div>
-          </div>
-          <div class="w-full h-1.5 bg-stone-950 rounded overflow-hidden border border-stone-800">
-            <div id="hud-bar-mp" class="h-full bg-gradient-to-r from-blue-800 to-sky-400 w-full transition-all duration-200"></div>
-          </div>
-          <div class="w-full h-1.5 bg-stone-950 rounded overflow-hidden border border-stone-800">
-            <div id="hud-bar-st" class="h-full bg-gradient-to-r from-amber-700 to-yellow-400 w-full transition-all duration-200"></div>
-          </div>
-          <div class="w-full h-1 bg-stone-950 rounded overflow-hidden border border-amber-900/40" title="Experience towards next Rank">
-            <div id="hud-bar-xp" class="h-full bg-gradient-to-r from-purple-600 to-amber-300 w-0 transition-all duration-300"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sanctuary Safe-Zone & Time of Day Indicator -->
-    <div id="sanctuary-banner" class="gothic-panel px-3 py-1.5 rounded-full border border-emerald-600/60 hidden md:flex items-center gap-2 shadow-lg transition-opacity duration-500">
-      <span id="hud-zone-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span id="hud-net-status-pill" class="font-cinzel text-xs text-emerald-300 tracking-wider uppercase">Aegis of the Tree (Sanctuary)</span>
-      <button id="btn-return-tree" class="gothic-btn px-2 py-0.5 rounded text-[10px] font-cinzel font-bold ml-1" title="Teleport back to the Tree of Life">🌳 Recall to Tree</button>
-      <button id="btn-cycle-time" class="gothic-btn px-2 py-0.5 rounded text-[10px] font-cinzel font-bold" title="Toggle Day / Dusk / Night">☀️ Day</button>
-      <button id="btn-top-left-invite" class="gothic-btn px-2 py-0.5 rounded text-[10px] font-cinzel font-bold">🔗 Copy Invite</button>
-    </div>
-  </div>
-
-  <!-- Bottom Center: Shadowbane Class Action Hotbar (Keys 1-4) -->
-  <div id="hud-action-bar" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto hidden">
-    <div class="gothic-panel rounded-xl px-3 py-2 flex items-center gap-2 border border-amber-600/70 shadow-2xl">
-      <button data-slot="1" class="action-slot gothic-btn w-12 h-12 rounded-lg flex flex-col items-center justify-center relative group">
-        <span class="absolute top-0.5 left-1 text-[9px] font-mono-code text-amber-400/90">1</span>
-        <span id="slot-icon-1" class="text-base">⚔️</span>
-        <span id="slot-label-1" class="text-[9px] font-cinzel tracking-tighter text-stone-300 truncate max-w-[42px]">Strike</span>
-      </button>
-      <button data-slot="2" class="action-slot gothic-btn w-12 h-12 rounded-lg flex flex-col items-center justify-center relative group">
-        <span class="absolute top-0.5 left-1 text-[9px] font-mono-code text-amber-400/90">2</span>
-        <span id="slot-icon-2" class="text-base">✨</span>
-        <span id="slot-label-2" class="text-[9px] font-cinzel tracking-tighter text-stone-300 truncate max-w-[42px]">Power</span>
-      </button>
-      <button data-slot="3" class="action-slot gothic-btn w-12 h-12 rounded-lg flex flex-col items-center justify-center relative group">
-        <span class="absolute top-0.5 left-1 text-[9px] font-mono-code text-amber-400/90">3</span>
-        <span id="slot-icon-3" class="text-base">💨</span>
-        <span id="slot-label-3" class="text-[9px] font-cinzel tracking-tighter text-stone-300 truncate max-w-[42px]">Sprint</span>
-      </button>
-      <button data-slot="4" class="action-slot gothic-btn w-12 h-12 rounded-lg flex flex-col items-center justify-center relative group">
-        <span class="absolute top-0.5 left-1 text-[9px] font-mono-code text-amber-400/90">4</span>
-        <span id="slot-icon-4" class="text-base">🌿</span>
-        <span id="slot-label-4" class="text-[9px] font-cinzel tracking-tighter text-stone-300 truncate max-w-[42px]">Commune</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Top Center: Target Inspection Frame (When clicking another character or the Tree) -->
-  <div id="hud-target-frame" class="fixed top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto hidden">
-    <div class="gothic-panel rounded-xl px-4 py-2.5 min-w-[300px] max-w-[92vw] border border-amber-500/80 shadow-2xl relative">
-      <button id="btn-close-target" class="absolute top-1.5 right-2 text-stone-400 hover:text-amber-300 text-xs font-mono-code px-1.5 py-0.5 rounded">✕</button>
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-amber-950/90 border border-amber-500/70 flex items-center justify-center font-cinzel font-bold text-amber-300 text-lg">
-          <span id="target-badge">🌳</span>
-        </div>
-        <div>
-          <div id="target-name" class="font-cinzel font-bold text-sm text-amber-200">The First Tree of Life</div>
-          <div id="target-subtitle" class="text-[11px] italic text-stone-400">Cradle of Creation • Safe Sanctuary</div>
-        </div>
-      </div>
-      <div id="target-stats-row" class="flex flex-wrap gap-3 text-[11px] font-mono-code text-stone-300 mt-2 pt-1.5 border-t border-stone-800"></div>
-      <div id="target-runes-row" class="text-[10px] text-amber-400/90 italic mt-0.5"></div>
-    </div>
-  </div>
-
-  <!-- Top Right: Minimap & Live Realm Telemetry -->
-  <div id="hud-top-right" class="fixed top-3 right-3 z-20 flex flex-col items-end gap-2 pointer-events-auto hidden">
-    <div class="gothic-panel p-2.5 rounded-xl flex flex-col items-center min-w-[195px]">
-      <div class="w-full flex justify-between items-center text-[10px] font-cinzel text-amber-300 px-0.5 mb-1">
-        <span id="hud-shard-label" class="truncate max-w-[105px]">TreeOfLife-Main</span>
-        <span id="hud-coords" class="font-mono-code text-stone-400">1600, 1800</span>
-      </div>
-      <canvas id="minimap-canvas" width="154" height="154" class="rounded-lg border border-amber-900/70 bg-stone-950"></canvas>
-
-      <!-- Live Multi-Broker Status & Ping -->
-      <div class="w-full flex justify-between items-center mt-1.5 px-0.5 text-[10px] font-mono-code">
-        <div class="flex items-center gap-1">
-          <span id="hud-net-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="player-count-hud" class="text-emerald-400 font-bold">1 Human Online</span>
-        </div>
-        <span id="hud-ping" class="text-stone-400">Live</span>
-      </div>
-
-      <!-- Roster & Action Buttons -->
-      <div class="w-full grid grid-cols-2 gap-1 mt-1.5">
-        <button id="btn-hud-invite" class="gothic-btn px-2 py-1 rounded text-[10px] font-cinzel font-semibold">🔗 Invite</button>
-        <button id="btn-recreate" class="gothic-btn px-2 py-1 rounded text-[10px] font-cinzel font-semibold" title="Edit Character or Switch Shard">⚙️ Character</button>
-      </div>
-
-      <!-- Live Online Player Roster List (With 1-Click Teleport!) -->
-      <div class="w-full mt-1.5 pt-1.5 border-t border-stone-800/80">
+    input[type="text"], select {
+      background: #090c0a;
+      border: 1px solid #4a3c20;
+      color: #f1e4c3;
+      padding: 8px 12px
