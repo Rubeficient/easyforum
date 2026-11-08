@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Wizardry Inverted: The Maelstrom Firepit (OVA Edition)</title>
+  <title>Wizardry Inverted: Tartaria Online (Always-On MMORPG)</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Crimson+Pro:ital,wght@0,500;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink-black: #070609;
-      --ova-slate: #16141c;
-      --ova-amber: #d99b43;
-      --ova-amber-bright: #f7c978;
-      --ova-blood: #a82424;
-      --ova-fire: #e85d24;
+      --ink-black: #050407;
+      --tartaria-dark: #0b0910;
+      --tartaria-gold: #d4af37;
+      --tartaria-gold-bright: #f3e5ab;
+      --tartaria-blood: #8b0000;
+      --tartaria-stone: #25222e;
     }
     * {
       box-sizing: border-box;
@@ -27,13 +27,13 @@
       overflow: hidden;
       background-color: var(--ink-black);
       font-family: 'Crimson Pro', 'Georgia', serif;
-      color: #e6dac8;
+      color: #e2d9c8;
     }
     canvas#gameCanvas {
       display: block;
       width: 100vw;
       height: 100vh;
-      background: #0b090e;
+      background: var(--tartaria-dark);
       cursor: crosshair;
     }
 
@@ -43,26 +43,26 @@
       pointer-events: none;
       z-index: 90;
       background:
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-        radial-gradient(circle at center, transparent 55%, rgba(4, 3, 6, 0.78) 100%);
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%),
+        radial-gradient(circle at center, transparent 50%, rgba(3, 2, 5, 0.85) 100%);
       background-size: 100% 3px, 100% 100%;
     }
 
-    .ova-window {
-      background: linear-gradient(180deg, rgba(24, 21, 32, 0.96) 0%, rgba(10, 9, 14, 0.98) 100%);
-      border: 2px solid var(--ova-amber);
-      outline: 2px solid #040307;
+    .tartaria-window {
+      background: linear-gradient(180deg, rgba(18, 15, 24, 0.96) 0%, rgba(8, 7, 12, 0.99) 100%);
+      border: 2px solid var(--tartaria-gold);
+      outline: 2px solid #020104;
       box-shadow:
-        4px 4px 0px #040307,
-        inset 0 0 0 2px #3d2c19,
-        inset 0 0 20px rgba(0, 0, 0, 0.9);
+        4px 4px 0px #020104,
+        inset 0 0 0 2px #2d2216,
+        inset 0 0 25px rgba(0, 0, 0, 0.95);
       border-radius: 2px;
     }
 
     #char-modal {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 30%, rgba(48, 28, 22, 0.94) 0%, rgba(7, 6, 9, 0.99) 85%);
+      background: radial-gradient(circle at 50% 30%, rgba(45, 18, 18, 0.95) 0%, rgba(5, 4, 8, 0.99) 85%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -73,8 +73,8 @@
     }
     .char-card {
       width: 100%;
-      max-width: 820px;
-      padding: 18px 22px;
+      max-width: 840px;
+      padding: 20px 24px;
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       gap: 18px;
@@ -85,25 +85,25 @@
     .title-banner {
       grid-column: 1 / -1;
       text-align: center;
-      border-bottom: 2px solid #4a3520;
+      border-bottom: 2px solid #3d2e1c;
       padding-bottom: 8px;
     }
     .title-banner h1 {
       font-family: 'Cinzel', serif;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 900;
-      letter-spacing: 3.5px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--ova-amber-bright);
-      text-shadow: 2px 2px 0 #000, 0 0 14px rgba(232, 93, 36, 0.5);
+      color: var(--tartaria-gold-bright);
+      text-shadow: 2px 2px 0 #000, 0 0 16px rgba(139, 0, 0, 0.6);
     }
     .title-banner h2 {
       font-family: 'Cinzel', serif;
       font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #c98a5b;
-      margin-top: 2px;
+      color: #b8975a;
+      margin-top: 3px;
     }
 
     .form-col {
@@ -116,26 +116,26 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      background: #09080d;
-      border: 2px solid #4a3520;
-      box-shadow: inset 0 0 24px rgba(0,0,0,0.95);
+      background: #060509;
+      border: 2px solid #3d2e1c;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.95);
       padding: 10px;
     }
     #previewCanvas {
       width: 240px;
       height: 210px;
-      background: radial-gradient(circle at 50% 65%, #2b1d18 0%, #07060a 75%);
-      border: 1px solid #3c2a1e;
+      background: radial-gradient(circle at 50% 65%, #21141b 0%, #050407 75%);
+      border: 1px solid #2d2119;
     }
     .lore-box {
-      font-size: 12.5px;
+      font-size: 12px;
       line-height: 1.35;
-      color: #dfd0ba;
+      color: #d4c5b2;
       font-style: italic;
       text-align: center;
       padding: 6px 8px;
-      background: rgba(16, 14, 22, 0.92);
-      border-left: 3px solid var(--ova-amber);
+      background: rgba(12, 10, 16, 0.92);
+      border-left: 3px solid var(--tartaria-gold);
       width: 100%;
     }
 
@@ -146,26 +146,26 @@
     }
     label {
       font-family: 'Cinzel', serif;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       text-transform: uppercase;
-      color: var(--ova-amber);
+      color: var(--tartaria-gold);
       letter-spacing: 1px;
       text-shadow: 1px 1px 0 #000;
     }
     input[type="text"], select {
-      background: #08070c;
-      border: 2px solid #573f26;
-      color: #f5ebd6;
+      background: #060509;
+      border: 2px solid #3d2d1f;
+      color: #f3ebd6;
       padding: 7px 10px;
       border-radius: 2px;
       font-family: 'Crimson Pro', serif;
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 600;
       outline: none;
     }
     input[type="text"]:focus, select:focus {
-      border-color: var(--ova-amber-bright);
+      border-color: var(--tartaria-gold-bright);
     }
     .grid-2 {
       display: grid;
@@ -181,18 +181,18 @@
       width: 22px;
       height: 22px;
       border: 2px solid #000;
-      outline: 1px solid #6b5335;
+      outline: 1px solid #574129;
       cursor: pointer;
     }
     .swatch.active {
       transform: scale(1.18);
-      outline: 2px solid var(--ova-amber-bright);
+      outline: 2px solid var(--tartaria-gold-bright);
     }
 
     .btn-spawn {
       grid-column: 1 / -1;
-      background: linear-gradient(180deg, #9c2a1c 0%, #52110a 100%);
-      border: 2px solid var(--ova-amber-bright);
+      background: linear-gradient(180deg, #8b0000 0%, #4a0000 100%);
+      border: 2px solid var(--tartaria-gold-bright);
       outline: 2px solid #000;
       color: #fff4db;
       padding: 11px;
@@ -207,54 +207,45 @@
     }
     .btn-spawn:hover { filter: brightness(1.15); }
 
-    #ascension-modal {
+    /* Inventory Modal (Press I) */
+    #inventory-modal {
       position: absolute;
       inset: 0;
-      background: rgba(5, 4, 8, 0.88);
+      background: rgba(4, 3, 6, 0.85);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 150;
       padding: 16px;
     }
-    .ascend-card {
+    .inventory-card {
       width: 100%;
-      max-width: 640px;
+      max-width: 600px;
       padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
-    .choice-grid {
+    .inv-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      max-height: 340px;
-      overflow-y: auto;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
     }
-    .choice-btn {
-      background: #121018;
-      border: 2px solid #594126;
-      color: #f5ebd6;
-      padding: 10px;
-      text-align: left;
+    .inv-slot {
+      height: 64px;
+      background: #060509;
+      border: 2px solid #3d2d1f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      text-align: center;
       cursor: pointer;
-      font-family: 'Crimson Pro', serif;
+      position: relative;
     }
-    .choice-btn:hover {
-      border-color: var(--ova-amber-bright);
-      background: #1f1a29;
-    }
-    .choice-btn strong {
-      display: block;
-      font-family: 'Cinzel', serif;
-      color: var(--ova-amber-bright);
-      font-size: 13px;
-    }
-    .choice-btn span {
-      font-size: 12px;
-      color: #b8a68e;
-    }
+    .inv-slot:hover { border-color: var(--tartaria-gold-bright); }
+    .inv-slot strong { font-family: 'Cinzel', serif; color: var(--tartaria-gold-bright); font-size: 10px; }
 
     #hud {
       position: absolute;
@@ -278,16 +269,16 @@
     }
     .panel {
       padding: 6px 12px;
-      font-size: 12px;
+      font-size: 11.5px;
       display: flex;
       align-items: center;
       gap: 8px;
       font-family: 'Cinzel', serif;
     }
     .action-btn {
-      background: #261816;
-      border: 1px solid var(--ova-amber);
-      color: var(--ova-amber-bright);
+      background: #1a141b;
+      border: 1px solid var(--tartaria-gold);
+      color: var(--tartaria-gold-bright);
       padding: 4px 9px;
       font-family: 'Cinzel', serif;
       font-size: 10.5px;
@@ -297,7 +288,7 @@
       text-transform: uppercase;
       box-shadow: 2px 2px 0 #000;
     }
-    .action-btn:hover { background: #3d241f; }
+    .action-btn:hover { background: #2d221f; }
 
     .vitals-box {
       position: absolute;
@@ -310,9 +301,9 @@
     .bar-container {
       width: 100%;
       height: 10px;
-      background: #08060c;
+      background: #060509;
       border: 2px solid #000;
-      outline: 1px solid #59432a;
+      outline: 1px solid #3d2d1f;
       margin-top: 2px;
       overflow: hidden;
     }
@@ -321,9 +312,9 @@
       width: 100%;
       transition: width 0.12s linear;
     }
-    #hp-fill { background: linear-gradient(180deg, #e03c3c 0%, #851616 100%); }
-    #mana-fill { background: linear-gradient(180deg, #479be8 0%, #1b4985 100%); }
-    #xp-fill { background: linear-gradient(180deg, #f7c978 0%, #b87b28 100%); }
+    #hp-fill { background: linear-gradient(180deg, #c0392b 0%, #781c14 100%); }
+    #mana-fill { background: linear-gradient(180deg, #2980b9 0%, #154360 100%); }
+    #xp-fill { background: linear-gradient(180deg, #f3e5ab 0%, #b8975a 100%); }
 
     .hotbar {
       position: absolute;
@@ -346,7 +337,7 @@
       cursor: pointer;
       position: relative;
     }
-    .hotkey-slot:hover { border-color: var(--ova-amber-bright); }
+    .hotkey-slot:hover { border-color: var(--tartaria-gold-bright); }
     .hotkey-num {
       position: absolute;
       top: 2px;
@@ -354,7 +345,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 9.5px;
       font-weight: 700;
-      color: var(--ova-amber);
+      color: var(--tartaria-gold);
     }
     .hotkey-icon { font-size: 17px; }
     .hotkey-label {
@@ -390,7 +381,7 @@
       text-shadow: 1px 1px 0 #000;
     }
     .chat-msg .author {
-      color: var(--ova-amber-bright);
+      color: var(--tartaria-gold-bright);
       font-weight: 700;
       font-family: 'Cinzel', serif;
       margin-right: 5px;
@@ -398,10 +389,10 @@
     .chat-input-row { display: flex; gap: 4px; }
     .chat-input {
       flex: 1;
-      background: rgba(9, 7, 14, 0.94);
-      border: 2px solid #59432a;
+      background: rgba(6, 5, 9, 0.94);
+      border: 2px solid #3d2d1f;
       padding: 6px 10px;
-      color: #f5ebd6;
+      color: #f3ebd6;
       font-size: 13px;
       font-family: 'Crimson Pro', serif;
       outline: none;
@@ -416,7 +407,7 @@
       font-family: 'Cinzel', serif;
       font-size: 12px;
       font-weight: 800;
-      color: var(--ova-amber-bright);
+      color: var(--tartaria-gold-bright);
       letter-spacing: 1.5px;
       display: none;
       z-index: 200;
@@ -429,16 +420,16 @@
   <div id="crt-overlay"></div>
 
   <div id="char-modal">
-    <div class="char-card ova-window">
+    <div class="char-card tartaria-window">
       <div class="title-banner">
-        <h1>Wizardry Inverted: The Firepit</h1>
-        <h2>No Humans Allowed • Hunt Naive Adventurers • Regain Your Humanity</h2>
+        <h1>Tartaria Online: The Undeworld</h1>
+        <h2>Always-On MMORPG • Full-Loot PvP • Central Firepit Safezone</h2>
       </div>
 
       <div class="form-col">
         <div class="form-group">
-          <label for="char-name">Underworld Denizen Name</label>
-          <input type="text" id="char-name" maxlength="16" value="LaLa Moo-Moo">
+          <label for="char-name">Denizen Name</label>
+          <input type="text" id="char-name" maxlength="16" value="Xalthor">
         </div>
 
         <div class="grid-2">
@@ -463,8 +454,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Progression Path Preview</label>
-            <input type="text" id="path-preview" readonly value="Lv.3 Specialist/Elite -> Lv.6 Prestige Set" style="color:#d99b43; font-size:12px;">
+            <label>Progression Path</label>
+            <input type="text" id="path-preview" readonly value="Lv.3 Specialist -> Lv.6 Prestige Set" style="color:#d4af37; font-size:12px;">
           </div>
         </div>
 
@@ -474,36 +465,37 @@
             <div class="swatch-row" id="armor-swatches"></div>
           </div>
           <div class="form-group">
-            <label>Crest / Mane / Aura Tint</label>
+            <label>Crest / Aura Tint</label>
             <div class="swatch-row" id="hair-swatches"></div>
           </div>
         </div>
       </div>
 
       <div class="preview-col">
-        <span style="font-family:'Cinzel',serif; font-size:10.5px; color:#d99b43; letter-spacing:1.5px;">OVA DENIZEN VISAGE (CLICK TO STRIKE)</span>
+        <span style="font-family:'Cinzel',serif; font-size:10px; color:#d4af37; letter-spacing:1px;">TARTARIA DENIZEN VISAGE</span>
         <canvas id="previewCanvas" width="240" height="210"></canvas>
         <div class="lore-box" id="race-lore-box"></div>
       </div>
 
-      <button id="btn-awaken" class="btn-spawn">🔥 Awaken at the Underworld Firepit</button>
+      <button id="btn-awaken" class="btn-spawn">⚔️ Enter Tartaria Central Server</button>
     </div>
   </div>
 
-  <div id="ascension-modal">
-    <div class="ascend-card ova-window">
-      <h2 id="ascend-title" style="font-family:'Cinzel',serif; color:#f7c978; text-align:center;">Ascension Awaits</h2>
-      <p id="ascend-desc" style="text-align:center; font-size:14px; color:#dfd0ba;"></p>
-      <div class="choice-grid" id="ascend-choices"></div>
-    </div>
-  </div>
-
-  <div id="grimoire-modal" style="display:none; position:absolute; inset:0; background:rgba(5,4,8,0.92); z-index:160; align-items:center; justify-content:center; padding:16px;">
-    <div class="ascend-card ova-window" style="max-width:720px;">
-      <h2 style="font-family:'Cinzel',serif; color:#f7c978; text-align:center;">Regional Grimoire Customization</h2>
-      <p style="text-align:center; font-size:12.5px; color:#dfd0ba;">Configure your equipped incantations & combat powers across your unlocked slots (1 per level up to 9).</p>
-      <div id="grimoire-slots-container" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; max-height:300px; overflow-y:auto; padding:6px;"></div>
-      <button class="action-btn" onclick="document.getElementById('grimoire-modal').style.display='none'" style="margin-top:10px; padding:8px; text-align:center;">Save & Close Grimoire</button>
+  <div id="inventory-modal">
+    <div class="inventory-card tartaria-window">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #3d2d1f; padding-bottom:6px;">
+        <h2 style="font-family:'Cinzel',serif; color:#f3e5ab; font-size:16px;">Denizen Inventory & Equipment [I]</h2>
+        <span style="font-size:11px; color:#b8975a;" id="inv-gold-display">Gold: 150g</span>
+      </div>
+      <div style="font-family:'Cinzel',serif; font-size:11px; color:#d4af37;">Equipped Gear:</div>
+      <div style="display:flex; gap:8px;" id="equipped-row">
+        <div class="inv-slot"><strong>Weapon</strong><span id="eq-weapon">None</span></div>
+        <div class="inv-slot"><strong>Armor</strong><span id="eq-armor">Garb</span></div>
+        <div class="inv-slot"><strong>Relic</strong><span id="eq-relic">None</span></div>
+      </div>
+      <div style="font-family:'Cinzel',serif; font-size:11px; color:#d4af37; margin-top:4px;">Backpack Satchel (Full Loot on PvP Death):</div>
+      <div class="inv-grid" id="backpack-grid"></div>
+      <button class="action-btn" onclick="document.getElementById('inventory-modal').style.display='none'" style="padding:6px; text-align:center;">Close Satchel</button>
     </div>
   </div>
 
@@ -511,24 +503,24 @@
 
   <div id="hud">
     <div class="top-bar">
-      <div class="panel ova-window">
-        <span style="color:#e85d24;">🔥</span>
-        <span id="shard-status">Labyrinth Floor 7: The Firepit</span>
-        <span id="escape-pact" style="color:#f7c978;">Escape Pact: 1/5 Denizens</span>
+      <div class="panel tartaria-window">
+        <span style="color:#8b0000;">🛡️</span>
+        <span id="shard-status">Central Firepit (Safezone)</span>
+        <span id="pvp-zone-status" style="color:#22c55e;">[SAFEZONE ACTIVE]</span>
       </div>
-      <div class="panel ova-window interactive">
-        <button id="btn-ascend-now" class="action-btn" style="display:none; background:#6b1d1d;">⭐ Ascend Class!</button>
-        <button id="btn-toggle-crt" class="action-btn">📺 OVA CRT: ON</button>
-        <button id="btn-copy-invite" class="action-btn">🔗 Summon 4 Allies</button>
+      <div class="panel tartaria-window interactive">
+        <button id="btn-toggle-inv" class="action-btn">🎒 Inventory [I]</button>
+        <button id="btn-toggle-crt" class="action-btn">📺 CRT: ON</button>
+        <button id="btn-copy-invite" class="action-btn">🔗 Copy Server Link</button>
       </div>
     </div>
 
-    <div class="vitals-box ova-window">
+    <div class="vitals-box tartaria-window">
       <div style="display:flex; justify-content:space-between; align-items:baseline;">
-        <div id="vitals-name" style="font-weight:900; font-size:14px; color:#f7c978; font-family:'Cinzel',serif;">Denizen</div>
-        <span id="vitals-lvl" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#d99b43;">LV.1</span>
+        <div id="vitals-name" style="font-weight:900; font-size:14px; color:#f3e5ab; font-family:'Cinzel',serif;">Denizen</div>
+        <span id="vitals-lvl" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#d4af37;">LV.1</span>
       </div>
-      <div style="font-size:11px; color:#c99e67; margin-bottom:2px; font-weight:bold;" id="vitals-race">Legend • Murphy's Ghost</div>
+      <div style="font-size:11px; color:#c99e67; margin-bottom:2px; font-weight:bold;" id="vitals-race">Halfling • Kobold</div>
       <div style="font-size:11px; color:#a89984; margin-bottom:5px; font-style:italic;" id="vitals-class">Core Fighter</div>
 
       <div style="display:flex; justify-content:space-between; font-size:10.5px;">
@@ -537,388 +529,148 @@
       <div class="bar-container"><div id="hp-fill" class="bar-fill"></div></div>
 
       <div style="display:flex; justify-content:space-between; font-size:10.5px; margin-top:4px;">
-        <span>SPELL CHANT MP</span><span id="mana-txt" style="font-family:'JetBrains Mono',monospace;">50/50</span>
+        <span>SPELL MP</span><span id="mana-txt" style="font-family:'JetBrains Mono',monospace;">50/50</span>
       </div>
       <div class="bar-container"><div id="mana-fill" class="bar-fill"></div></div>
 
       <div style="display:flex; justify-content:space-between; font-size:10.5px; margin-top:4px;">
-        <span>HUMANITY SPARKS (XP)</span><span id="xp-txt" style="font-family:'JetBrains Mono',monospace;">0/100</span>
+        <span>SOUL XP</span><span id="xp-txt" style="font-family:'JetBrains Mono',monospace;">0/100</span>
       </div>
       <div class="bar-container"><div id="xp-fill" class="bar-fill" style="width:0%;"></div></div>
     </div>
 
     <div class="chat-container interactive">
-      <div class="chat-log ova-window" id="chat-log">
-        <div class="chat-msg" style="color: #f7c978;"><i>[Firepit Loa]: Humans are forbidden here. Slay Naive Surface Adventurers & Loyalist Mobs to reach Lv.3 (Specialist) & Lv.6 (Prestige)! Pool 5 players at the Firepit to escape!</i></div>
+      <div class="chat-log tartaria-window" id="chat-log">
+        <div class="chat-msg" style="color: #f3e5ab;"><i>[Tartaria Oracle]: Welcome to the Central Server. The Central Firepit is a safezone. Step outside into the North, South, East, or West Halls for Full-Loot PvP and dungeon crawling! Press [I] for inventory.</i></div>
       </div>
       <div class="chat-input-row">
-        <input type="text" id="chat-input" class="chat-input" placeholder="Press Enter to chant to your pact..." maxlength="100">
+        <input type="text" id="chat-input" class="chat-input" placeholder="Type message or press Enter..." maxlength="100">
       </div>
     </div>
 
-    <div class="hotbar interactive" id="dynamic-hotbar">
-      <!-- Generated dynamically (up to 9 slots based on level + spellbook button) -->
+    <div class="hotbar interactive">
+      <div class="hotkey-slot tartaria-window" onclick="triggerAbility(1)" title="Weapon Strike (Key 1)">
+        <span class="hotkey-num">1</span>
+        <span class="hotkey-icon">⚔️</span>
+        <span class="hotkey-label">Strike</span>
+      </div>
+      <div class="hotkey-slot tartaria-window" onclick="triggerAbility(2)" title="MAHALITO (Key 2)">
+        <span class="hotkey-num">2</span>
+        <span class="hotkey-icon">🔥</span>
+        <span class="hotkey-label">Mahalito</span>
+      </div>
+      <div class="hotkey-slot tartaria-window" onclick="triggerAbility(3)" title="PORFIC (Key 3)">
+        <span class="hotkey-num">3</span>
+        <span class="hotkey-icon">💨</span>
+        <span class="hotkey-label">Porfic</span>
+      </div>
+      <div class="hotkey-slot tartaria-window" onclick="triggerAbility(4)" title="MADI (Key 4)">
+        <span class="hotkey-num">4</span>
+        <span class="hotkey-icon">✨</span>
+        <span class="hotkey-label">Madi</span>
+      </div>
     </div>
   </div>
 
-  <div id="toast" class="ova-window">Notice</div>
+  <div id="toast" class="tartaria-window">Notice</div>
 
   <script>
-    const WORLD_SIZE = 3200;
-    const FIREPIT_POS = { x: 1600, y: 1600, radius: 85, safeRadius: 340 };
+    // --- PERSISTENT MMORPG CONFIGURATION ---
+    const WORLD_SIZE = 3600;
+    const FIREPIT_POS = { x: 1800, y: 1800, radius: 90, safeRadius: 360 };
 
-    const ARMOR_PALETTE = ['#6e1a1a', '#1d2b3a', '#253826', '#4a321f', '#381e42', '#26262e'];
-    const HAIR_PALETTE  = ['#d9d2c5', '#16141c', '#9e2a22', '#d4a243', '#493222', '#528078'];
+    // --- 5 CONNECTED TARTARIA ROOMS / HALLS ---
+    const ROOMS = [
+      { id: 'center', name: 'Central Firepit Sanctum', x: 1800, y: 1800, w: 1000, h: 1000, safe: true },
+      { id: 'north',  name: 'North Catacomb Hall',      x: 1800, y: 700,  w: 900,  h: 800,  safe: false },
+      { id: 'south',  name: 'South Ossuary Vault',      x: 1800, y: 2900, w: 900,  h: 800,  safe: false },
+      { id: 'east',   name: 'East Magma Corridor',      x: 2900, y: 1800, w: 800,  h: 900,  safe: false },
+      { id: 'west',   name: 'West Shadow Warren',       x: 700,  y: 1800, w: 800,  h: 900,  safe: false }
+    ];
+
+    const ARMOR_PALETTE = ['#8b0000', '#1b263b', '#1e3320', '#4a2e18', '#321c42', '#212129'];
+    const HAIR_PALETTE  = ['#e2d9c8', '#111014', '#a82424', '#d4af37', '#422e1c', '#3d6860'];
 
     const RACE_TREE = {
-      'Underworld Legend': {
-        desc: 'Iconic named denizens of the Maze of Maelstrom seeking to reclaim a mortal soul.',
-        subraces: {
-          'Murphys Ghost':   { name: "Murphy's Ghost", scale: 1.18, skin: '#7fa699', hpBonus: 95, speedMod: 0.94, ghost: true, desc: '"The legendary Undead Knight of Floor 1—now tired of being farmed by surface brats."' },
-          'Vampire Lord':    { name: 'Vampire Lord',   scale: 1.12, skin: '#c8c2d6', hpBonus: 65, speedMod: 1.08, cape: true, fangs: true, desc: '"Aristocratic ruler of Floor 10 who drains levels and blood from foolish paladins."' },
-          'Lack Imp Jester': { name: 'Lack the Imp Jester', scale: 0.92, skin: '#c94a38', hpBonus: 35, speedMod: 1.16, jester: true, horns: true, desc: '"Cackling trickster jester of the deep heart of the Maelstrom."' },
-          'Greater Demon':   { name: 'Greater Demon',  scale: 1.34, skin: '#8c2222', hpBonus: 110, speedMod: 0.92, wings: true, horns: true, desc: '"Towering abyssal fiend who rebelled against Werdna to seek mortality."' }
-        }
-      },
       'Halfling': {
-        desc: 'Pint-sized subterranean kin—now encompassing Kobolds, Imps, Goblins, Gnomes, and Deep Orc-kin.',
+        desc: 'Pint-sized subterranean kin—Kobolds, Imps, Goblins, Gnomes, and Deep Orcs.',
         subraces: {
           'Kobold': { name: 'Halfling (Kobold)', scale: 0.84, skin: '#a86b3c', hpBonus: 20, speedMod: 1.14, snout: true, ears: true, desc: '"Yipping trap-smith dog-kin of the upper labyrinth."' },
           'Imp':    { name: 'Halfling (Imp)',    scale: 0.82, skin: '#b83232', hpBonus: 15, speedMod: 1.18, wings: true, horns: true, desc: '"Nimble winged firepit imp with a barbed tail."' },
           'Goblin': { name: 'Halfling (Goblin)', scale: 0.86, skin: '#567d46', hpBonus: 30, speedMod: 1.12, ears: true, desc: '"Cutthroat tunnel ambusher armed with jagged steel."' },
-          'Gnome':  { name: 'Halfling (Gnome)',  scale: 0.85, skin: '#c9a68a', hpBonus: 25, speedMod: 1.05, beard: true, desc: '"Ascetic subterranean gem-priest folded into the Halfling lineage."' },
+          'Gnome':  { name: 'Halfling (Gnome)',  scale: 0.85, skin: '#c9a68a', hpBonus: 25, speedMod: 1.05, beard: true, desc: '"Ascetic subterranean gem-priest."' },
           'Orc':    { name: 'Halfling (Deep Orc)', scale: 0.95, skin: '#4f6346', hpBonus: 55, speedMod: 1.02, tusks: true, desc: '"Broad-shouldered pig-faced dungeon vanguard."' }
         }
       },
       'Elf': {
-        desc: 'Ancient subterranean and twilight fey who turned their backs on the surface.',
+        desc: 'Ancient subterranean and twilight fey.',
         subraces: {
           'Drow':     { name: 'Elf (Drow)',     scale: 0.98, skin: '#645f82', hpBonus: 20, speedMod: 1.08, ears: true, desc: '"Obsidian-skinned subterranean spellblade."' },
-          'Wood Elf': { name: 'Elf (Wildwood)', scale: 0.98, skin: '#cfa882', hpBonus: 25, speedMod: 1.10, ears: true, desc: '"Feral labyrinth stalker lost in the underground groves."' },
-          'High Elf': { name: 'Elf (Fallen High)', scale: 1.0, skin: '#e0c6ad', hpBonus: 15, speedMod: 1.06, ears: true, desc: '"Exiled noble house seeking redemption in the Firepit."' },
-          'Blood Elf':{ name: 'Elf (Crimson)',  scale: 0.99, skin: '#d99a96', hpBonus: 30, speedMod: 1.07, ears: true, desc: '"Mana-starved siphon mage of the deep catacombs."' }
+          'Wood Elf': { name: 'Elf (Wildwood)', scale: 0.98, skin: '#cfa882', hpBonus: 25, speedMod: 1.10, ears: true, desc: '"Feral labyrinth stalker."' },
+          'High Elf': { name: 'Elf (Fallen High)', scale: 1.0, skin: '#e0c6ad', hpBonus: 15, speedMod: 1.06, ears: true, desc: '"Exiled noble house seeking redemption."' },
+          'Blood Elf':{ name: 'Elf (Crimson)',  scale: 0.99, skin: '#d99a96', hpBonus: 30, speedMod: 1.07, ears: true, desc: '"Mana-starved siphon mage."' }
         }
       },
       'Dwarf': {
-        desc: 'Stout subterranean smiths carved from stone, ash, and deep magma.',
+        desc: 'Stout subterranean smiths carved from stone and magma.',
         subraces: {
-          'Duergar':        { name: 'Dwarf (Duergar)',   scale: 0.88, skin: '#7d7580', hpBonus: 65, speedMod: 0.94, beard: true, desc: '"Ash-bearded gray dwarf of the chains."' },
+          'Duergar':        { name: 'Dwarf (Duergar)',   scale: 0.88, skin: '#7d7580', hpBonus: 65, speedMod: 0.94, beard: true, desc: '"Ash-bearded gray dwarf."' },
           'Mountain Dwarf': { name: 'Dwarf (Ironpeak)',  scale: 0.90, skin: '#c99b78', hpBonus: 75, speedMod: 0.92, beard: true, desc: '"Heavily plated tunnel defender."' },
-          'Forgeborn':      { name: 'Dwarf (Magma-Kin)', scale: 0.92, skin: '#8c4230', hpBonus: 85, speedMod: 0.90, beard: true, desc: '"Charcoal-skinned smith whose beard smolders with embers."' }
+          'Forgeborn':      { name: 'Dwarf (Magma-Kin)', scale: 0.92, skin: '#8c4230', hpBonus: 85, speedMod: 0.90, beard: true, desc: '"Charcoal-skinned smith smoldering with embers."' }
         }
       },
       'Arf': {
-        desc: 'Formerly Rawulf—loyal yet ferocious canine-folk of the deep kennels.',
+        desc: 'Loyal yet ferocious canine-folk of the deep kennels.',
         subraces: {
           'Hound-Kin': { name: 'Arf (Hellhound-Kin)', scale: 1.06, skin: '#8c583a', hpBonus: 55, speedMod: 1.08, snout: true, ears: true, desc: '"Fierce pack-tracker with iron jaws."' },
-          'Dire-Wolf': { name: 'Arf (Dire-Wolf)',     scale: 1.14, skin: '#575a61', hpBonus: 70, speedMod: 1.05, snout: true, ears: true, desc: '"Silver-furred alpha of the labyrinth corridors."' }
+          'Dire-Wolf': { name: 'Arf (Dire-Wolf)',     scale: 1.14, skin: '#575a61', hpBonus: 70, speedMod: 1.05, snout: true, ears: true, desc: '"Silver-furred alpha of the corridors."' }
         }
       },
       'Meow': {
-        desc: 'Formerly Felpurr—agile feline duelists with razor reflexes.',
+        desc: 'Agile feline duelists with razor reflexes.',
         subraces: {
           'Panther-Kin': { name: 'Meow (Shadow-Cat)', scale: 0.98, skin: '#2b2833', hpBonus: 30, speedMod: 1.16, catEars: true, desc: '"Velvet-furred nocturnal assassin."' },
-          'Lynx-Blade':  { name: 'Meow (Lynx-Blade)', scale: 1.02, skin: '#c9975b', hpBonus: 40, speedMod: 1.14, catEars: true, desc: '"Tufted-ear swordmaster of the eastern warrens."' }
+          'Lynx-Blade':  { name: 'Meow (Lynx-Blade)', scale: 1.02, skin: '#c9975b', hpBonus: 40, speedMod: 1.14, catEars: true, desc: '"Tufted-ear swordmaster."' }
         }
       },
       'Goon': {
-        desc: 'Formerly Dracon—scaled dragon-blooded bruisers who breathe acid and fire.',
+        desc: 'Scaled dragon-blooded bruisers.',
         subraces: {
-          'Wyrm-Thug':   { name: 'Goon (Wyrm-Bruiser)', scale: 1.25, skin: '#3b6e4c', hpBonus: 90, speedMod: 0.95, horns: true, snout: true, desc: '"Heavy-scaled enforcer of the Firepit."' },
+          'Wyrm-Thug':   { name: 'Goon (Wyrm-Bruiser)', scale: 1.25, skin: '#3b6e4c', hpBonus: 90, speedMod: 0.95, horns: true, snout: true, desc: '"Heavy-scaled enforcer."' },
           'Drake-Blood': { name: 'Goon (Crimson Drake)', scale: 1.22, skin: '#9e2b2b', hpBonus: 80, speedMod: 0.98, horns: true, snout: true, desc: '"Fire-spitting draconic merc."' }
         }
       },
       'Mook': {
-        desc: 'Enigmatic, furry psionic giants from the stars trapped in the deep maze.',
+        desc: 'Enigmatic, furry psionic giants.',
         subraces: {
-          'Star-Walker': { name: 'Mook (Star-Fur)',   scale: 1.20, skin: '#8699ad', hpBonus: 60, speedMod: 1.0, desc: '"Shaggy silver-furred telepath wielding ancient crystal staves."' },
-          'Deep-Shag':   { name: 'Mook (Cavern-Yeti)', scale: 1.28, skin: '#cbd5e1', hpBonus: 85, speedMod: 0.94, desc: '"Towering white-furred guardian of the frozen floor."' }
+          'Star-Walker': { name: 'Mook (Star-Fur)',   scale: 1.20, skin: '#8699ad', hpBonus: 60, speedMod: 1.0, desc: '"Shaggy telepath wielding ancient crystal staves."' },
+          'Deep-Shag':   { name: 'Mook (Cavern-Yeti)', scale: 1.28, skin: '#cbd5e1', hpBonus: 85, speedMod: 0.94, desc: '"Towering white-furred guardian."' }
         }
       },
       'Vampire': {
-        desc: 'Formerly Faerie—cursed blood-drinkers ranging from petite Dusk-Pixies to Elder Nosferatu.',
+        desc: 'Cursed blood-drinkers and undead nobles.',
         subraces: {
-          'Blood-Scion': { name: 'Vampire (Crimson Noble)', scale: 1.02, skin: '#d8d0e0', hpBonus: 45, speedMod: 1.10, cape: true, fangs: true, desc: '"Pale silk-clad duelist who feasts on surface Clerics."' },
-          'Nosferatu':   { name: 'Vampire (Nosferatu)',     scale: 1.08, skin: '#8f9489', hpBonus: 65, speedMod: 1.06, ears: true, fangs: true, desc: '"Ghoul-visaged ancient predator of the crypts."' },
-          'Dusk-Pixie':  { name: 'Vampire (Fae-Lich)',      scale: 0.78, skin: '#b695c2', hpBonus: 15, speedMod: 1.22, wings: true, fangs: true, desc: '"Tiny winged blood-faerie whose bite paralyzes."' }
+          'Blood-Scion': { name: 'Vampire (Crimson Noble)', scale: 1.02, skin: '#d8d0e0', hpBonus: 45, speedMod: 1.10, cape: true, fangs: true, desc: '"Pale silk-clad duelist."' },
+          'Nosferatu':   { name: 'Vampire (Nosferatu)',     scale: 1.08, skin: '#8f9489', hpBonus: 65, speedMod: 1.06, ears: true, fangs: true, desc: '"Ghoul-visaged crypt predator."' },
+          'Dusk-Pixie':  { name: 'Vampire (Fae-Lich)',      scale: 0.78, skin: '#b695c2', hpBonus: 15, speedMod: 1.22, wings: true, fangs: true, desc: '"Tiny winged blood-faerie."' }
         }
       }
     };
 
     const CLASS_PROGRESSION = {
-      'Fighter': {
-        elite: 'Warrior',
-        color: '#c92a2a',
-        hp: 160,
-        mana: 45,
-        specialists: [
-          { id: 'Vanguard Focus', desc: '+45 Max HP & Heavy Cleave Poise' },
-          { id: 'Executioner Focus', desc: '+25% Critical Strike Damage' }
-        ],
-        prestigeBySet: {
-          'Set Classic': { name: 'Knight',    desc: 'Heavy chivalric bulwark of the abyss.' },
-          'Set North':   { name: 'Barbarian', desc: 'Frenzied berserker of the frozen wastes.' },
-          'Set East':    { name: 'Samurai',   desc: 'Muramasa katana master who chants Mage spells.' },
-          'Set South':   { name: 'Templar',   desc: 'Zealous iron-clad inquisitor.' },
-          'Set West':    { name: 'Jaguar',    desc: 'Obsidian-blade commando of fierce ambush.' }
-        }
-      },
-      'Rogue': {
-        elite: 'Thief',
-        color: '#9c36b5',
-        hp: 115,
-        mana: 65,
-        specialists: [
-          { id: 'Cutthroat Focus', desc: 'Lethal backstab bleed & +15% Attack Speed' },
-          { id: 'Shadowdancer Focus', desc: '+20% Movement Speed & Evasion' }
-        ],
-        prestigeBySet: {
-          'Set Classic': { name: 'Ranger',   desc: 'Labyrinth tracker and bow/blade skirmisher.' },
-          'Set North':   { name: 'Hunter',   desc: 'Beast-slayer with ensnaring traps.' },
-          'Set East':    { name: 'Ninja',    desc: 'Instant Critical Decapitation assassin.' },
-          'Set South':   { name: 'Pirate',   desc: 'Swashbuckling cutlass & black-powder raider.' },
-          'Set West':    { name: 'Eagle',    desc: 'High-velocity wind scout & aerial striker.' }
-        }
-      },
-      'Mage': {
-        elite: 'Wizard',
-        color: '#3b82f6',
-        hp: 95,
-        mana: 135,
-        specialists: [
-          { id: 'Pyromancer Focus', desc: 'Empowers MAHALITO & TILTOWAIT blast radius' },
-          { id: 'Void-Weaver Focus', desc: '-25% Spell Mana Cost & Faster Chants' }
-        ],
-        prestigeBySet: {
-          'Set Classic': { name: 'Bard',      desc: 'Chants resonant songs of ruin and haste.' },
-          'Set North':   { name: 'Warlock',   desc: 'Pact-bound channeler of abyssal dread.' },
-          'Set East':    { name: 'Sorcerer',  desc: 'Pure unbridled arcane devastation.' },
-          'Set South':   { name: 'Alchemist', desc: 'Volatile philosopher-stone transmuter.' },
-          'Set West':    { name: 'Snake',     desc: 'Venomous shapeshifter & hex-weaver.' }
-        }
-      },
-      'Cleric': {
-        elite: 'Priest',
-        color: '#10b981',
-        hp: 130,
-        mana: 105,
-        specialists: [
-          { id: 'Inquisitor Focus', desc: 'Mace strikes smite enemies & restore Mana' },
-          { id: 'Soul-Binder Focus', desc: 'MADI & DIOS heal +40% more Vitality' }
-        ],
-        prestigeBySet: {
-          'Set Classic': { name: 'Druid',   desc: 'Primal subterranean fungus & beast caller.' },
-          'Set North':   { name: 'Shaman',  desc: 'Totemic spirit-medium of ancestral wrath.' },
-          'Set East':    { name: 'Monk',    desc: 'Unarmed iron-fist martial artist & mystic.' },
-          'Set West':    { name: 'Vulture', desc: 'Carrion necromancer & life-siphoning healer.' }
-        }
-      }
+      'Fighter': { elite: 'Warrior', hp: 160, mana: 45, color: '#c92a2a' },
+      'Rogue':   { elite: 'Thief',   hp: 115, mana: 65, color: '#9c36b5' },
+      'Mage':    { elite: 'Wizard',  hp: 95,  mana: 135, color: '#3b82f6' },
+      'Cleric':  { elite: 'Priest',  hp: 130, mana: 105, color: '#10b981' }
     };
 
-    const REGIONAL_SPELL_LEXICON = {
-      'Set Classic': {
-        prefix: 'Classic Llylgamyn',
-        spells: [
-          { id: 'mahalito', name: 'MAHALITO (Fireball)', mp: 15, icon: '🔥', desc: 'Classic fiery incantation scorching a wide radius.' },
-          { id: 'tiltowait', name: 'TILTOWAIT (Nuclear Blast)', mp: 35, icon: '💥', desc: 'Ultimate Llylgamyn cataclysmic incineration.' },
-          { id: 'porfic', name: 'PORFIC (Shield Dash)', mp: 10, icon: '🛡️', desc: 'Mystic defensive ward boosting deflection.' },
-          { id: 'madi', name: 'MADI (Divine Vitality)', mp: 20, icon: '✨', desc: 'Restores corporeal flesh and mana.' },
-          { id: 'badios', name: 'BADIOS (Harm Touch)', mp: 12, icon: '💀', desc: 'Necrotic burst striking adjacent foes.' },
-          { id: 'lomilwa', name: 'LOMILWA (Torch Aura)', mp: 8, icon: '🕯️', desc: 'Casts illumination and stealth speed.' },
-          { id: 'kalis', name: 'KALIS (Swift Blade)', mp: 10, icon: '⚔️', desc: 'Enchants weapon with piercing kinetic edge.' },
-          { id: 'dial', name: 'DIAL (Minor Mend)', mp: 8, icon: '💚', desc: 'Quick regenerative pulse.' },
-          { id: 'mahr', name: 'MAHR (Abyssal Silence)', mp: 18, icon: '🌀', desc: 'Disorients attacking pursuers.' }
-        ]
-      },
-      'Set North': {
-        prefix: 'Frost-Peak Nordic',
-        spells: [
-          { id: 'hwan-frost', name: 'HWAN (Glacial Spike)', mp: 14, icon: '❄️', desc: 'Spear of freezing northern tundra.' },
-          { id: 'blizzard-nova', name: 'JOTUN-BLIZZARD', mp: 32, icon: '🌨️', desc: 'Howling tempest freezing all hostiles.' },
-          { id: 'berserk-howl', name: 'FENRIR ROAR', mp: 12, icon: '🐺', desc: 'Terrifying howl boosting attack ferocity.' },
-          { id: 'blood-pact', name: 'BLUT-MEND', mp: 18, icon: '🩸', desc: 'Sacrifices minor life force for massive regen.' },
-          { id: 'ruler-smite', name: 'THOR-SMITE', mp: 16, icon: '⚡', desc: 'Lightning bolt striking the primary target.' },
-          { id: 'tundra-step', name: 'SKADI DASH', mp: 10, icon: '🧊', desc: 'Icy slide evading enemy strikes.' },
-          { id: 'ancestral-shield', name: 'VALHALLA WARD', mp: 15, icon: '🛡️', desc: 'Summons ancestral spirits for armor.' },
-          { id: 'skull-split', name: 'YMIR CRUSH', mp: 14, icon: '🪓', desc: 'Heavy glacial overhead cleave.' },
-          { id: 'ice-shackle', name: 'FROST-BIND', mp: 12, icon: '⛓️', desc: 'Roots enemies in frozen chains.' }
-        ]
-      },
-      'Set East': {
-        prefix: 'Muramasa Eastern',
-        spells: [
-          { id: 'iaijutsu', name: 'IAI-JUTSU STRIKE', mp: 15, icon: '🗡️', desc: 'Lightning-fast instantaneous draw slash.' },
-          { id: 'muramasa-burst', name: 'MURAMASA MAELSTROM', mp: 34, icon: '🌸', desc: 'Thousand cherry-blossom katana flurry.' },
-          { id: 'shadow-step', name: 'NINJUTSU KABUTO', mp: 10, icon: '💨', desc: 'Vanish into smoke and reappear.' },
-          { id: 'chakra-mend', name: 'CHI-RENEW', mp: 18, icon: '🧘', desc: 'Meditative internal soul mending.' },
-          { id: 'shuriken-storm', name: 'BO-SHURIKEN', mp: 12, icon: '⭐', desc: 'Volley of weighted piercing stars.' },
-          { id: 'kuji-in', name: 'KUJI-IN WARD', mp: 14, icon: '💮', desc: 'Mystic hand-seal barrier.' },
-          { id: 'dragon-breath', name: 'RYU-KOUEN', mp: 20, icon: '🐉', desc: 'Draconic eastern flame burst.' },
-          { id: 'silent-step', name: 'YOKAI CLOAK', mp: 10, icon: '👤', desc: 'Conceals presence from mobs.' },
-          { id: 'death-touch', name: 'DIM MAK STRIKE', mp: 25, icon: '☠️', desc: 'Pressure point strike inducing panic.' }
-        ]
-      },
-      'Set South': {
-        prefix: 'Inquisition Southern',
-        spells: [
-          { id: 'holy-wrath', name: 'SOL-INQUISITION', mp: 16, icon: '☀️', desc: 'Blazing beacon of southern sun-fire.' },
-          { id: 'cataclysm-fire', name: 'SUPERNOVA SCRIPT', mp: 35, icon: '☄️', desc: 'Alchemical volatile cataclysm.' },
-          { id: 'iron-vow', name: 'TEMPLAR OATH', mp: 12, icon: '🛡️', desc: 'Unyielding zealot defense.' },
-          { id: 'panacea', name: 'ELIXIR MADI', mp: 22, icon: '🧪', desc: 'Alchemical pure restoration.' },
-          { id: 'venom-blade', name: 'VIPER STING', mp: 12, icon: '🐍', desc: 'Toxin-infused dagger thrust.' },
-          { id: 'holy-smite', name: 'SANCTIFIED HAMMER', mp: 14, icon: '🔨', desc: 'Blessed righteous judgment strike.' },
-          { id: 'smoke-bomb', name: 'ALCH-SMOKE', mp: 10, icon: '💣', desc: 'Blinding chemical canister.' },
-          { id: 'revitalize', name: 'VITA-TONIC', mp: 15, icon: '⚗️', desc: 'Instantly restores stamina and MP.' },
-          { id: 'judgement-day', name: 'FINAL INQUISITION', mp: 30, icon: '⚡', desc: 'Wrathful divine condemnation.' }
-        ]
-      },
-      'Set West': {
-        prefix: 'Primal Western Wilds',
-        spells: [
-          { id: 'jaguar-pounce', name: 'JAGUAR MAUL', mp: 14, icon: '🐆', desc: 'Feral bounding leap and claw rake.' },
-          { id: 'vulture-swarm', name: 'CARRION FEAST', mp: 30, icon: '🦅', desc: 'Summons bone-picking spirit birds.' },
-          { id: 'serpent-coils', name: 'VIPER CONSTRICT', mp: 12, icon: '🐍', desc: 'Venomous snaring vines.' },
-          { id: 'primal-mend', name: 'DRUID-BLOOM', mp: 18, icon: '🌿', desc: 'Nature-infused regenerative sanctuary.' },
-          { id: 'totem-burst', name: 'SPIRIT TOTEM', mp: 16, icon: '🗿', desc: 'Ancestral totem pulse shockwave.' },
-          { id: 'eagle-eye', name: 'HAWK FOCUS', mp: 10, icon: '👁️', desc: 'Sharp critical precision boost.' },
-          { id: 'wolf-pack', name: 'PACK HOWL', mp: 15, icon: '🐺', desc: 'Summons feral pack synergy.' },
-          { id: 'thorn-skin', name: 'BRIAR ARMOR', mp: 12, icon: '🌵', desc: 'Reflects melee damage back to attackers.' },
-          { id: 'maelstrom-call', name: 'WILD MAELSTROM', mp: 28, icon: '🌪️', desc: 'Primal tempest throwing back all foes.' }
-        ]
-      }
-    };
-
-    let equippedGrimoire = ['mahalito', 'porfic', 'madi', 'tiltowait', 'badios', 'lomilwa', 'kalis', 'dial', 'mahr'];
-
-    function getActiveRegionalSetKey() {
-      return localPlayer.prestigeSet || 'Set Classic';
-    }
-
-    function getAvailableSpells() {
-      const setKey = getActiveRegionalSetKey();
-      return REGIONAL_SPELL_LEXICON[setKey] || REGIONAL_SPELL_LEXICON['Set Classic'];
-    }
-
-    function renderDynamicHotbar() {
-      const hotbarEl = document.getElementById('dynamic-hotbar');
-      if (!hotbarEl) return;
-      hotbarEl.innerHTML = '';
-
-      const unlockedSlots = Math.min(9, Math.max(1, localPlayer.level));
-      const spellData = getAvailableSpells();
-
-      for (let i = 0; i < unlockedSlots; i++) {
-        const spellId = equippedGrimoire[i] || spellData.spells[i % spellData.spells.length].id;
-        const sInfo = spellData.spells.find(s => s.id === spellId) || spellData.spells[0];
-
-        const slot = document.createElement('div');
-        slot.className = 'hotkey-slot ova-window';
-        slot.title = `${sInfo.name} (Key ${i + 1}) - ${sInfo.desc}`;
-        slot.onclick = () => triggerGrimoireSpell(i, sInfo);
-        slot.innerHTML = `
-          <span class="hotkey-num">${i + 1}</span>
-          <span class="hotkey-icon">${sInfo.icon}</span>
-          <span class="hotkey-label">${sInfo.id.substring(0,6)}</span>
-        `;
-        hotbarEl.appendChild(slot);
-      }
-
-      const grimBtn = document.createElement('div');
-      grimBtn.className = 'hotkey-slot ova-window';
-      grimBtn.style.background = '#28152b';
-      grimBtn.title = 'Open Regional Grimoire Configuration';
-      grimBtn.onclick = openGrimoireModal;
-      grimBtn.innerHTML = `
-        <span class="hotkey-num">⚙️</span>
-        <span class="hotkey-icon">📖</span>
-        <span class="hotkey-label">Spellbook</span>
-      `;
-      hotbarEl.appendChild(grimBtn);
-    }
-
-    function openGrimoireModal() {
-      const modal = document.getElementById('grimoire-modal');
-      const container = document.getElementById('grimoire-slots-container');
-      container.innerHTML = '';
-      const spellData = getAvailableSpells();
-      const unlockedSlots = Math.min(9, Math.max(1, localPlayer.level));
-
-      for (let i = 0; i < unlockedSlots; i++) {
-        const row = document.createElement('div');
-        row.style.cssText = 'background:#120f1a; border:1px solid #4a3520; padding:6px; display:flex; flex-direction:column; gap:4px;';
-        
-        const label = document.createElement('strong');
-        label.style.cssText = 'font-family:"Cinzel",serif; font-size:11px; color:#f7c978;';
-        label.textContent = `Slot ${i + 1} (Lv.${i + 1} Unlocked):`;
-        row.appendChild(label);
-
-        const select = document.createElement('select');
-        select.style.cssText = 'background:#08070c; color:#f5ebd6; border:1px solid #573f26; font-size:11.5px; padding:3px;';
-        spellData.spells.forEach(sp => {
-          const opt = document.createElement('option');
-          opt.value = sp.id;
-          opt.textContent = sp.name;
-          if (equippedGrimoire[i] === sp.id) opt.selected = true;
-          select.appendChild(opt);
-        });
-        select.onchange = (e) => {
-          equippedGrimoire[i] = e.target.value;
-          renderDynamicHotbar();
-        };
-        row.appendChild(select);
-        container.appendChild(row);
-      }
-      modal.style.display = 'flex';
-    }
-
-    function triggerGrimoireSpell(slotIndex, sInfo) {
-      if (localPlayer.mana < sInfo.mp) {
-        showToast(`Insufficient MP! Needs ${sInfo.mp} MP.`);
-        return;
-      }
-      localPlayer.mana -= sInfo.mp;
-      localPlayer.swingTimer = 20;
-
-      const chant = `"${sInfo.name.split(' ')[0]}!!" (${sInfo.icon})`;
-      localPlayer.chatBubble = chant;
-      localPlayer.chatTimer = 95;
-
-      if (sInfo.id.includes('madi') || sInfo.id.includes('dial') || sInfo.id.includes('mend') || sInfo.id.includes('renew')) {
-        const healAmt = 65 + localPlayer.dmgBonus;
-        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + healAmt);
-        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#10b981', 85);
-        spawnCombatText(localPlayer.x, localPlayer.y, `+${healAmt} ${sInfo.id.toUpperCase()}`, '#10b981');
-      } else if (sInfo.id.includes('porfic') || sInfo.id.includes('ward') || sInfo.id.includes('cloak')) {
-        localPlayer.speed = 420;
-        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#38bdf8', 65);
-        setTimeout(() => {
-          const sub = getSubraceMeta(localPlayer);
-          localPlayer.speed = 225 * sub.speedMod;
-        }, 2200);
-        showToast(`${sInfo.name} Shield Active!`);
-      } else {
-        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#e85d24', 160);
-        for (let i = enemies.length - 1; i >= 0; i--) {
-          const en = enemies[i];
-          if (Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y) < 210) {
-            const spellDmg = (sInfo.mp > 25 ? 110 : 55) + localPlayer.dmgBonus;
-            en.hp -= spellDmg;
-            spawnCombatText(en.x, en.y, `-${spellDmg} ${sInfo.id.toUpperCase()}`, '#f7c978');
-            if (en.hp <= 0) handleEnemyDefeat(en, i);
-          }
-        }
-      }
-
-      updateVitalsUI();
-      broadcastState();
-    }
-
+    // --- PERSISTENT PLAYER STATE & SAVE/LOAD ---
     let localPlayer = {
       id: 'p-' + Math.random().toString(36).substring(2, 9),
-      name: 'LaLa Moo-Moo',
-      raceCategory: 'Underworld Legend',
-      subraceKey: 'Murphys Ghost',
-      raceLabel: "Murphy's Ghost",
+      name: 'Xalthor',
+      raceCategory: 'Halfling',
+      subraceKey: 'Kobold',
+      raceLabel: 'Halfling (Kobold)',
       coreClass: 'Fighter',
       specialistFocus: null,
       eliteClass: null,
@@ -926,33 +678,122 @@
       prestigeClass: null,
       armorColor: ARMOR_PALETTE[0],
       hairColor: HAIR_PALETTE[0],
-      x: FIREPIT_POS.x + 120,
-      y: FIREPIT_POS.y + 110,
+      x: FIREPIT_POS.x,
+      y: FIREPIT_POS.y,
       targetX: null,
       targetY: null,
       facing: 1,
       isMoving: false,
-      speed: 225,
-      hp: 255,
-      maxHp: 255,
+      speed: 230,
+      hp: 220,
+      maxHp: 220,
       mana: 45,
       maxMana: 45,
       level: 1,
       xp: 0,
       nextXp: 100,
+      gold: 150,
       dmgBonus: 0,
+      equippedWeapon: 'Obsidian Dagger',
+      equippedArmor: 'Leather Garb',
+      equippedRelic: 'None',
+      backpack: ['Health Vial', 'Scroll of Mahalito', 'Rusty Coin Pouch', 'Empty'],
       targetEntityId: null,
       swingTimer: 0,
       chatBubble: null,
       chatTimer: 0
     };
 
+    function saveGameProgress() {
+      try {
+        const saveData = {
+          name: localPlayer.name,
+          raceCategory: localPlayer.raceCategory,
+          subraceKey: localPlayer.subraceKey,
+          raceLabel: localPlayer.raceLabel,
+          coreClass: localPlayer.coreClass,
+          level: localPlayer.level,
+          xp: localPlayer.xp,
+          nextXp: localPlayer.nextXp,
+          gold: localPlayer.gold,
+          maxHp: localPlayer.maxHp,
+          maxMana: localPlayer.maxMana,
+          equippedWeapon: localPlayer.equippedWeapon,
+          equippedArmor: localPlayer.equippedArmor,
+          equippedRelic: localPlayer.equippedRelic,
+          backpack: localPlayer.backpack
+        };
+        localStorage.setItem('tartaria_mmo_save', JSON.stringify(saveData));
+      } catch(e) {}
+    }
+
+    function loadGameProgress() {
+      try {
+        const raw = localStorage.getItem('tartaria_mmo_save');
+        if (raw) {
+          const data = JSON.parse(raw);
+          Object.assign(localPlayer, data);
+          localPlayer.hp = localPlayer.maxHp;
+          localPlayer.mana = localPlayer.maxMana;
+          return true;
+        }
+      } catch(e) {}
+      return false;
+    }
+
     const remotePlayers = new Map();
     const enemies = [];
+    const tartariaNpcs = [
+      { id: 'npc-1', name: 'Elder Vex', title: 'Keeper of the Tartaria Archives', x: FIREPIT_POS.x - 120, y: FIREPIT_POS.y - 40, dialogue: '"Traveler, the upper floors are crawling with surface paladins. Venture into the North Catacombs for true glory."' },
+      { id: 'npc-2', name: 'Blacksmith Malakor', title: 'Underworld Weaponsmith', x: FIREPIT_POS.x + 130, y: FIREPIT_POS.y - 40, dialogue: '"Bring me obsidian shards from the East Magma Corridor and I will forge you a Muramasa blade."' },
+      { id: 'npc-3', name: 'Oracle Nyx', title: 'Seer of the Maelstrom', x: FIREPIT_POS.x, y: FIREPIT_POS.y + 130, dialogue: '"Pool 5 allies at the Firepit to break the seal. Full-loot PvP awaits outside this sanctuary."' }
+    ];
+
     const combatTexts = [];
     const slashArcs = [];
     const bloodSparks = [];
-    const dungeonProps = [];
+
+    // --- PROCEDURAL AUDIO SYNTHESIZER ---
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSound(type) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'sword') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+          osc.start(now); osc.stop(now + 0.12);
+        } else if (type === 'spell') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.exponentialRampToValueAtTime(650, now + 0.25);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now); osc.stop(now + 0.25);
+        } else if (type === 'hurt') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(110, now);
+          osc.frequency.linearRampToValueAtTime(45, now + 0.18);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+          osc.start(now); osc.stop(now + 0.18);
+        }
+      } catch(e) {}
+    }
 
     function initCreationSelectors() {
       const raceSel = document.getElementById('char-race');
@@ -992,12 +833,6 @@
       subSel.addEventListener('change', updateSubraceLore);
       populateSubraces();
 
-      const classSel = document.getElementById('char-class');
-      classSel.addEventListener('change', () => {
-        const c = CLASS_PROGRESSION[classSel.value];
-        document.getElementById('path-preview').value = `Lv.3 ${c.elite} -> Lv.6 Prestige Set`;
-      });
-
       const armorRow = document.getElementById('armor-swatches');
       ARMOR_PALETTE.forEach((col, i) => {
         const s = document.createElement('div');
@@ -1027,7 +862,7 @@
     initCreationSelectors();
 
     function getSubraceMeta(p) {
-      return RACE_TREE[p.raceCategory]?.subraces[p.subraceKey] || RACE_TREE['Underworld Legend'].subraces['Murphys Ghost'];
+      return RACE_TREE[p.raceCategory]?.subraces[p.subraceKey] || RACE_TREE['Halfling'].subraces['Kobold'];
     }
 
     function getActiveClassTitle(p) {
@@ -1063,14 +898,13 @@
       ctx.save();
       ctx.scale(facing * sc, sc);
       ctx.translate(0, walkBob);
-      if (subMeta.ghost) ctx.globalAlpha = 0.86;
 
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
 
       if (subMeta.wings) {
         const flap = Math.sin(timeSec * 5) * 4;
-        ctx.fillStyle = '#3d1218';
+        ctx.fillStyle = '#4a0000';
         ctx.strokeStyle = '#050308';
         ctx.lineWidth = 2.2;
         ctx.beginPath();
@@ -1083,7 +917,7 @@
       }
 
       const cloakWave = Math.sin(timeSec * 5 + (isMoving ? 2 : 0)) * (isMoving ? 7 : 2.5);
-      ctx.fillStyle = p.armorColor || '#6e1a1a';
+      ctx.fillStyle = p.armorColor || '#8b0000';
       ctx.strokeStyle = '#050308';
       ctx.lineWidth = 2.4;
       ctx.beginPath();
@@ -1095,7 +929,7 @@
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#1a161f';
+      ctx.fillStyle = '#17141f';
       ctx.strokeStyle = '#050308';
       ctx.lineWidth = 2.2;
       ctx.fillRect(-7 + stride * 0.5, -12, 6, 14);
@@ -1110,14 +944,6 @@
       ctx.roundRect(-10, -30, 20, 20, 3);
       ctx.fill();
       ctx.stroke();
-
-      ctx.fillStyle = p.prestigeClass ? '#f7c978' : '#9ca3af';
-      ctx.beginPath();
-      ctx.ellipse(-11, -27, 6.5, 4.5, -0.3, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-      ctx.beginPath();
-      ctx.ellipse(11, -27, 6.5, 4.5, 0.3, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
 
       const headY = -39;
       const headR = 10.5;
@@ -1149,19 +975,8 @@
         ctx.moveTo(-8, headY - 7); ctx.lineTo(-10, headY - 17); ctx.lineTo(-2, headY - 9); ctx.closePath();
         ctx.moveTo(2, headY - 9);  ctx.lineTo(9, headY - 17);  ctx.lineTo(8, headY - 7);  ctx.closePath();
         ctx.fill(); ctx.stroke();
-      }
-
-      if (subMeta.jester) {
-        ctx.fillStyle = '#9e2a22';
-        ctx.beginPath();
-        ctx.moveTo(-10, headY - 5);
-        ctx.quadraticCurveTo(-22, headY - 22, -16, headY - 8);
-        ctx.lineTo(0, headY - 10);
-        ctx.quadraticCurveTo(20, headY - 22, 14, headY - 6);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
       } else if (subMeta.horns) {
-        ctx.fillStyle = '#dfd0ba';
+        ctx.fillStyle = '#f3e5ab';
         ctx.beginPath();
         ctx.moveTo(-5, headY - 7); ctx.lineTo(-15, headY - 22); ctx.lineTo(-1, headY - 9); ctx.closePath();
         ctx.moveTo(5, headY - 7);  ctx.lineTo(15, headY - 22);  ctx.lineTo(1, headY - 9);  ctx.closePath();
@@ -1178,17 +993,6 @@
         ctx.fill(); ctx.stroke();
       }
 
-      if (subMeta.beard) {
-        ctx.fillStyle = p.hairColor || '#d9d2c5';
-        ctx.beginPath();
-        ctx.moveTo(-6, headY + 3);
-        ctx.lineTo(8, headY + 3);
-        ctx.lineTo(5, headY + 15);
-        ctx.lineTo(-4, headY + 15);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-
       ctx.fillStyle = '#ff3838';
       ctx.fillRect(2, headY - 2, 2.5, 2.5);
       ctx.fillRect(6.5, headY - 2, 2.5, 2.5);
@@ -1198,37 +1002,17 @@
       ctx.translate(10, -20);
       ctx.rotate(swingRot);
 
-      if (p.coreClass === 'Fighter') {
-        ctx.fillStyle = '#d99b43';
-        ctx.fillRect(-5, -3, 10, 3);
-        ctx.fillStyle = '#cbd5e1';
-        ctx.strokeStyle = '#050308';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-3, -3); ctx.lineTo(-2, -38); ctx.lineTo(2, -42); ctx.lineTo(3, -3);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      } else if (p.coreClass === 'Mage' || p.coreClass === 'Cleric') {
-        ctx.fillStyle = '#5c3a21';
-        ctx.strokeStyle = '#050308';
-        ctx.lineWidth = 2;
-        ctx.fillRect(-1.5, -34, 3, 38);
-        ctx.strokeRect(-1.5, -34, 3, 38);
-        ctx.fillStyle = p.coreClass === 'Mage' ? '#f97316' : '#facc15';
-        ctx.beginPath();
-        ctx.arc(0, -36, 5.5, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-      } else {
-        ctx.fillStyle = '#e2e8f0';
-        ctx.strokeStyle = '#050308';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-2.5, -2); ctx.lineTo(0, -25); ctx.lineTo(3, -2);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-      ctx.restore();
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(-5, -3, 10, 3);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.strokeStyle = '#050308';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-3, -3); ctx.lineTo(-2, -38); ctx.lineTo(2, -42); ctx.lineTo(3, -3);
+      ctx.closePath();
+      ctx.fill(); ctx.stroke();
 
+      ctx.restore();
       ctx.restore();
       ctx.restore();
     }
@@ -1241,7 +1025,7 @@
     function updatePreview(now) {
       if (document.getElementById('char-modal').style.display !== 'none') {
         prevCtx.clearRect(0, 0, prevCanvas.width, prevCanvas.height);
-        prevCtx.fillStyle = '#1b151e';
+        prevCtx.fillStyle = '#140f17';
         prevCtx.strokeStyle = '#050308';
         prevCtx.lineWidth = 2.5;
         prevCtx.beginPath();
@@ -1263,132 +1047,38 @@
       }
     }
 
-    function spawnLabyrinthHostiles() {
+    function spawnTartariaHostiles() {
       enemies.length = 0;
       const templates = [
-        { name: 'Naive Surface Paladin', faction: 'Invader', hp: 85, maxHp: 85, radius: 17, speed: 135, color: '#3b82f6', kind: 'adventurer', xp: 45 },
-        { name: 'Greedy Loot-Hunter',    faction: 'Invader', hp: 60, maxHp: 60, radius: 15, speed: 165, color: '#eab308', kind: 'adventurer', xp: 35 },
-        { name: 'Fanatic Temple Bishop', faction: 'Invader', hp: 70, maxHp: 70, radius: 16, speed: 125, color: '#f8fafc', kind: 'adventurer', xp: 40 },
-        { name: 'Vorpal Bunny (Traitor-Hunter)', faction: 'Loyalist', hp: 55, maxHp: 55, radius: 13, speed: 185, color: '#f1f5f9', kind: 'bunny', xp: 40 },
-        { name: 'Creeping Coin Swarm',           faction: 'Loyalist', hp: 65, maxHp: 65, radius: 16, speed: 130, color: '#f59e0b', kind: 'coins', xp: 35 },
-        { name: 'Werdna Loyalist Guard',         faction: 'Loyalist', hp: 120, maxHp: 120, radius: 20, speed: 115, color: '#991b1b', kind: 'guard', xp: 60 }
+        { name: 'Surface Paladin Vanguard', hp: 95, maxHp: 95, radius: 18, speed: 140, color: '#3b82f6', kind: 'adventurer', xp: 50 },
+        { name: 'Greedy Labyrinth Raider',  hp: 65, maxHp: 65, radius: 15, speed: 170, color: '#eab308', kind: 'adventurer', xp: 40 },
+        { name: 'Fanatic Inquisitor',       hp: 80, maxHp: 80, radius: 16, speed: 130, color: '#f8fafc', kind: 'adventurer', xp: 45 },
+        { name: 'Vorpal Bunny of Justice',  hp: 50, maxHp: 50, radius: 13, speed: 190, color: '#f1f5f9', kind: 'bunny', xp: 35 }
       ];
 
-      for (let i = 0; i < 20; i++) {
-        const t = templates[i % templates.length];
-        const ang = (i / 20) * Math.PI * 2 + (Math.random() * 0.25);
-        const dist = 420 + Math.random() * 1050;
-        enemies.push({
-          id: 'hostile-' + i + '-' + Math.random().toString(36).slice(2,5),
-          name: t.name,
-          faction: t.faction,
-          x: FIREPIT_POS.x + Math.cos(ang) * dist,
-          y: FIREPIT_POS.y + Math.sin(ang) * dist,
-          hp: t.hp,
-          maxHp: t.maxHp,
-          radius: t.radius,
-          speed: t.speed,
-          color: t.color,
-          kind: t.kind,
-          xpValue: t.xp,
-          attackCooldown: 0
-        });
-      }
+      // Spawn across the 4 outer rooms (North, South, East, West)
+      const outerRooms = ROOMS.filter(r => !r.safe);
+      outerRooms.forEach(room => {
+        for (let i = 0; i < 6; i++) {
+          const t = templates[Math.floor(Math.random() * templates.length)];
+          enemies.push({
+            id: 'hostile-' + room.id + '-' + i + '-' + Math.random().toString(36).slice(2,5),
+            name: t.name,
+            x: room.x + (Math.random() - 0.5) * (room.w - 150),
+            y: room.y + (Math.random() - 0.5) * (room.h - 150),
+            hp: t.hp,
+            maxHp: t.maxHp,
+            radius: t.radius,
+            speed: t.speed,
+            color: t.color,
+            kind: t.kind,
+            xpValue: t.xp,
+            attackCooldown: 0
+          });
+        }
+      });
     }
-    spawnLabyrinthHostiles();
-
-    for (let i = 0; i < 260; i++) {
-      const gx = 100 + Math.random() * (WORLD_SIZE - 200);
-      const gy = 100 + Math.random() * (WORLD_SIZE - 200);
-      if (Math.hypot(gx - FIREPIT_POS.x, gy - FIREPIT_POS.y) > 220) {
-        dungeonProps.push({
-          x: gx,
-          y: gy,
-          type: i % 4 === 0 ? 'torch_pillar' : 'stone_column',
-          size: 16 + Math.random() * 20
-        });
-      }
-    }
-
-    function checkClassAscension() {
-      const btn = document.getElementById('btn-ascend-now');
-      if (localPlayer.level >= 3 && !localPlayer.eliteClass) {
-        btn.style.display = 'inline-block';
-        btn.textContent = '⭐ Lv.3 Specialist & Elite!';
-        openAscensionModal(3);
-      } else if (localPlayer.level >= 6 && !localPlayer.prestigeClass) {
-        btn.style.display = 'inline-block';
-        btn.textContent = '👑 Lv.6 Prestige Set!';
-        openAscensionModal(6);
-      } else {
-        btn.style.display = 'none';
-      }
-    }
-
-    document.getElementById('btn-ascend-now').addEventListener('click', () => {
-      if (localPlayer.level >= 3 && !localPlayer.eliteClass) openAscensionModal(3);
-      else if (localPlayer.level >= 6 && !localPlayer.prestigeClass) openAscensionModal(6);
-    });
-
-    function openAscensionModal(tierLevel) {
-      const modal = document.getElementById('ascension-modal');
-      const title = document.getElementById('ascend-title');
-      const desc = document.getElementById('ascend-desc');
-      const grid = document.getElementById('ascend-choices');
-      grid.innerHTML = '';
-
-      const prog = CLASS_PROGRESSION[localPlayer.coreClass];
-
-      if (tierLevel === 3) {
-        title.textContent = `Level 3 Attainment: ${localPlayer.coreClass} Specialist Focus`;
-        desc.textContent = `Choose your Specialist Focus to lock into the Elite [${prog.elite}] Calling:`;
-        prog.specialists.forEach(spec => {
-          const b = document.createElement('button');
-          b.className = 'choice-btn';
-          b.innerHTML = `<strong>${spec.id} ➔ Locks Elite: ${prog.elite}</strong><span>${spec.desc}</span>`;
-          b.onclick = () => {
-            localPlayer.specialistFocus = spec.id;
-            localPlayer.eliteClass = prog.elite;
-            localPlayer.maxHp += 45;
-            localPlayer.hp = localPlayer.maxHp;
-            localPlayer.dmgBonus += 10;
-            modal.style.display = 'none';
-            updateVitalsUI();
-            checkClassAscension();
-            showToast(`Ascended to Elite ${prog.elite}!`);
-            appendChat('Firepit Loa', `${localPlayer.name} mastered ${spec.id} and became an Elite ${prog.elite}!`);
-          };
-          grid.appendChild(b);
-        });
-      } else if (tierLevel === 6) {
-        title.textContent = `Level 6 Attainment: Regional Prestige Sets`;
-        desc.textContent = `Choose your Prestige Class from the 5 Sacred Sets (Classic, North, East, South, West):`;
-        Object.keys(prog.prestigeBySet).forEach(setName => {
-          const pInfo = prog.prestigeBySet[setName];
-          const b = document.createElement('button');
-          b.className = 'choice-btn';
-          b.innerHTML = `<strong>${setName}: ${pInfo.name}</strong><span>${pInfo.desc}</span>`;
-          b.onclick = () => {
-            localPlayer.prestigeSet = setName.replace('-2', '');
-            localPlayer.prestigeClass = pInfo.name;
-            localPlayer.maxHp += 70;
-            localPlayer.hp = localPlayer.maxHp;
-            localPlayer.maxMana += 35;
-            localPlayer.mana = localPlayer.maxMana;
-            localPlayer.dmgBonus += 18;
-            modal.style.display = 'none';
-            updateVitalsUI();
-            checkClassAscension();
-            renderDynamicHotbar();
-            showToast(`Ascended to Prestige ${pInfo.name}!`);
-            appendChat('Firepit Loa', `${localPlayer.name} claimed [${localPlayer.prestigeSet}] and became a ${pInfo.name}!`);
-          };
-          grid.appendChild(b);
-        });
-      }
-
-      modal.style.display = 'flex';
-    }
+    spawnTartariaHostiles();
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -1410,16 +1100,8 @@
         return;
       }
       keys[e.key.toLowerCase()] = true;
-      if (['1','2','3','4','5','6','7','8','9'].includes(e.key)) {
-        const idx = parseInt(e.key) - 1;
-        const unlockedSlots = Math.min(9, Math.max(1, localPlayer.level));
-        if (idx < unlockedSlots) {
-          const spellData = getAvailableSpells();
-          const spellId = equippedGrimoire[idx] || spellData.spells[idx % spellData.spells.length].id;
-          const sInfo = spellData.spells.find(s => s.id === spellId) || spellData.spells[0];
-          triggerGrimoireSpell(idx, sInfo);
-        }
-      }
+      if (['1','2','3','4'].includes(e.key)) triggerAbility(parseInt(e.key));
+      if (e.key.toLowerCase() === 'i') toggleInventoryModal();
       if (e.key === 'Tab') {
         e.preventDefault();
         cycleTabTarget();
@@ -1459,27 +1141,51 @@
       }
     });
 
-    function cycleTabTarget() {
-      if (enemies.length === 0) {
-        spawnLabyrinthHostiles();
-        return;
+    function toggleInventoryModal() {
+      const m = document.getElementById('inventory-modal');
+      const open = m.style.display === 'flex';
+      m.style.display = open ? 'none' : 'flex';
+      if (!open) updateInventoryUI();
+    }
+
+    document.getElementById('btn-toggle-inv').addEventListener('click', toggleInventoryModal);
+
+    function updateInventoryUI() {
+      document.getElementById('eq-weapon').textContent = localPlayer.equippedWeapon;
+      document.getElementById('eq-armor').textContent = localPlayer.equippedArmor;
+      document.getElementById('eq-relic').textContent = localPlayer.equippedRelic;
+      document.getElementById('inv-gold-display').textContent = `Gold: ${localPlayer.gold}g`;
+
+      const grid = document.getElementById('backpack-grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        const item = localPlayer.backpack[i] || 'Empty';
+        const slot = document.createElement('div');
+        slot.className = 'inv-slot';
+        slot.innerHTML = `<strong>Slot ${i+1}</strong><span style="font-size:10px; color:#d4c5b2;">${item}</span>`;
+        grid.appendChild(slot);
       }
+    }
+
+    function cycleTabTarget() {
+      if (enemies.length === 0) return;
       const sorted = [...enemies].sort((a, b) => {
         return Math.hypot(a.x - localPlayer.x, a.y - localPlayer.y) - Math.hypot(b.x - localPlayer.x, b.y - localPlayer.y);
       });
       const currentIdx = sorted.findIndex(t => t.id === localPlayer.targetEntityId);
       const nextIdx = (currentIdx + 1) % sorted.length;
       localPlayer.targetEntityId = sorted[nextIdx].id;
-      showToast(`Target: ${sorted[nextIdx].name} [${sorted[nextIdx].faction}]`);
+      showToast(`Target: ${sorted[nextIdx].name}`);
     }
 
+    // --- ALWAYS-ON CENTRAL SERVER NETWORKING (BROADCASTCHANNEL + WEBSOCKET RELAY) ---
     const globalUrlParams = new URLSearchParams(window.location.search);
-    const joinShardId = globalUrlParams.get('shard');
+    const joinShardId = globalUrlParams.get('shard') || 'tartaria-central-alpha';
 
     let localBroadcastChannel = null;
     try {
       if (typeof BroadcastChannel !== 'undefined') {
-        localBroadcastChannel = new BroadcastChannel('wizardry_firepit_' + (joinShardId || 'main'));
+        localBroadcastChannel = new BroadcastChannel('tartaria_mmo_' + joinShardId);
         localBroadcastChannel.onmessage = (ev) => {
           if (ev.data && ev.data.id !== localPlayer.id) handleIncomingPacket(ev.data);
         };
@@ -1487,7 +1193,7 @@
     } catch (e) {}
 
     const RELAY_SERVERS = [
-      'wss://free.blr2.piesocket.com/v3/wizardry_firepit_mmo?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self=0'
+      'wss://free.blr2.piesocket.com/v3/tartaria_mmo_core?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self=0'
     ];
     let activeSocket = null;
     let socketConnected = false;
@@ -1517,11 +1223,10 @@
         if (!p) {
           p = { ...data };
           remotePlayers.set(data.id, p);
-          appendChat('Firepit Pact', `${p.name} (${p.raceLabel}) joined the Firepit.`);
+          appendChat('Tartaria Realm', `${p.name} (${p.raceLabel}) stepped into the realm.`);
         } else {
           Object.assign(p, data);
         }
-        updateEscapePactCount();
       } else if (data.type === 'chat') {
         appendChat(data.sender, data.text);
       }
@@ -1568,31 +1273,76 @@
       }
     }
 
-    function updateEscapePactCount() {
-      const total = Math.min(5, remotePlayers.size + 1);
-      const el = document.getElementById('escape-pact');
-      if (el) {
-        el.textContent = total >= 5
-          ? `Escape Pact: 5/5 READY! SEAL BROKEN!`
-          : `Escape Pact: ${total}/5 Denizens (Need ${5 - total} more)`;
-      }
-    }
-
-    function spawnSlashArc(x, y, facing, color = '#f7c978', radius = 48) {
+    function spawnSlashArc(x, y, facing, color = '#f3e5ab', radius = 48) {
       slashArcs.push({ x, y, facing, color, radius, life: 14, maxLife: 14 });
       for (let i = 0; i < 8; i++) {
         bloodSparks.push({
           x, y: y - 15,
           vx: (Math.random() - 0.2) * facing * 180,
           vy: (Math.random() - 0.8) * 140,
-          color: i % 2 === 0 ? '#e03c3c' : color,
+          color: i % 2 === 0 ? '#8b0000' : color,
           life: 18
         });
       }
     }
 
     function triggerAbility(slot) {
-      triggerGrimoireSpell(slot - 1, getAvailableSpells().spells[slot - 1]);
+      initAudio();
+      if (slot === 1) {
+        let target = enemies.find(e => e.id === localPlayer.targetEntityId);
+        if (!target && enemies.length > 0) {
+          cycleTabTarget();
+          target = enemies.find(e => e.id === localPlayer.targetEntityId);
+        }
+        if (target) executePrimaryStrike(target);
+      } else if (slot === 2) {
+        if (localPlayer.mana < 15) {
+          showToast('Insufficient Spell MP!');
+          return;
+        }
+        localPlayer.mana -= 15;
+        localPlayer.swingTimer = 20;
+        playSound('spell');
+        const chant = '"MAHALITO!!"';
+        localPlayer.chatBubble = chant;
+        localPlayer.chatTimer = 95;
+        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#e85d24', 145);
+
+        for (let i = enemies.length - 1; i >= 0; i--) {
+          const en = enemies[i];
+          if (Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y) < 175) {
+            const spellDmg = 55 + localPlayer.dmgBonus;
+            en.hp -= spellDmg;
+            spawnCombatText(en.x, en.y, `-${spellDmg} MAHALITO`, '#f3e5ab');
+            if (en.hp <= 0) handleEnemyDefeat(en, i);
+          }
+        }
+      } else if (slot === 3) {
+        localPlayer.speed = 415;
+        localPlayer.chatBubble = '"PORFIC!!"';
+        localPlayer.chatTimer = 70;
+        playSound('spell');
+        spawnSlashArc(localPlayer.x, localPlayer.y, localPlayer.facing, '#38bdf8', 42);
+        setTimeout(() => {
+          const sub = getSubraceMeta(localPlayer);
+          localPlayer.speed = 230 * sub.speedMod;
+        }, 2100);
+        showToast('PORFIC Shield Active!');
+      } else if (slot === 4) {
+        if (localPlayer.mana < 15) {
+          showToast('Insufficient Spell MP!');
+          return;
+        }
+        localPlayer.mana -= 15;
+        const healAmt = 75 + localPlayer.dmgBonus;
+        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + healAmt);
+        localPlayer.chatBubble = '"MADI!!"';
+        localPlayer.chatTimer = 85;
+        playSound('spell');
+        spawnCombatText(localPlayer.x, localPlayer.y, `+${healAmt} MADI`, '#10b981');
+      }
+      updateVitalsUI();
+      broadcastState();
     }
 
     function executePrimaryStrike(target) {
@@ -1605,12 +1355,12 @@
 
       localPlayer.facing = target.x >= localPlayer.x ? 1 : -1;
       localPlayer.swingTimer = 18;
-      spawnSlashArc(target.x, target.y, localPlayer.facing, '#f7c978', 52);
+      playSound('sword');
+      spawnSlashArc(target.x, target.y, localPlayer.facing, '#f3e5ab', 52);
 
-      const isCrit = localPlayer.prestigeClass === 'Ninja' && Math.random() < 0.35;
-      const dmg = isCrit ? 999 : (28 + localPlayer.dmgBonus + Math.floor(Math.random() * 14));
+      const dmg = 28 + localPlayer.dmgBonus + Math.floor(Math.random() * 14);
       target.hp -= dmg;
-      spawnCombatText(target.x, target.y, isCrit ? 'DECAPITATED!!' : `-${dmg}`, isCrit ? '#f7c978' : '#ff4d4d');
+      spawnCombatText(target.x, target.y, `-${dmg}`, '#ff4d4d');
 
       if (target.hp <= 0) {
         const idx = enemies.indexOf(target);
@@ -1622,6 +1372,7 @@
     function handleEnemyDefeat(target, idx) {
       enemies.splice(idx, 1);
       localPlayer.xp += target.xpValue || 40;
+      localPlayer.gold += 25;
 
       if (localPlayer.xp >= localPlayer.nextXp) {
         localPlayer.xp -= localPlayer.nextXp;
@@ -1632,12 +1383,29 @@
         localPlayer.maxMana += 10;
         localPlayer.mana = localPlayer.maxMana;
         document.getElementById('vitals-lvl').textContent = `LV.${localPlayer.level}`;
-        spawnCombatText(localPlayer.x, localPlayer.y - 25, `LEVEL UP! LV.${localPlayer.level}`, '#f7c978');
-        checkClassAscension();
-        renderDynamicHotbar();
+        spawnCombatText(localPlayer.x, localPlayer.y - 25, `LEVEL UP! LV.${localPlayer.level}`, '#f3e5ab');
       }
+      saveGameProgress();
       if (localPlayer.targetEntityId === target.id) localPlayer.targetEntityId = null;
-      if (enemies.length < 7) setTimeout(spawnLabyrinthHostiles, 2500);
+      if (enemies.length < 10) setTimeout(spawnTartariaHostiles, 3000);
+      updateVitalsUI();
+    }
+
+    function handlePlayerPvPDeath() {
+      playSound('hurt');
+      showToast('YOU WERE SLAIN IN FULL-LOOT PVP!');
+      appendChat('Tartaria Realm', `${localPlayer.name} was slain in full-loot PvP! Backpack satchel looted.`);
+      
+      // Full Loot Penalty
+      localPlayer.gold = Math.max(0, localPlayer.gold - 50);
+      localPlayer.backpack = ['Empty', 'Empty', 'Empty', 'Empty', 'Empty', 'Empty', 'Empty', 'Empty'];
+      
+      // Respawn at Safezone Central Firepit
+      localPlayer.x = FIREPIT_POS.x;
+      localPlayer.y = FIREPIT_POS.y;
+      localPlayer.hp = localPlayer.maxHp;
+      localPlayer.mana = localPlayer.maxMana;
+      saveGameProgress();
       updateVitalsUI();
     }
 
@@ -1678,14 +1446,14 @@
       toast.textContent = msg;
       toast.style.display = 'block';
       clearTimeout(window._tTimer);
-      window._tTimer = setTimeout(() => { toast.style.display = 'none'; }, 2500);
+      window._tTimer = setTimeout(() => { toast.style.display = 'none'; }, 2600);
     }
 
     document.getElementById('btn-toggle-crt').addEventListener('click', (e) => {
       const crt = document.getElementById('crt-overlay');
       const hidden = crt.style.display === 'none';
       crt.style.display = hidden ? 'block' : 'none';
-      e.currentTarget.textContent = hidden ? '📺 OVA CRT: ON' : '📺 OVA CRT: OFF';
+      e.currentTarget.textContent = hidden ? '📺 CRT: ON' : '📺 CRT: OFF';
     });
 
     document.getElementById('btn-copy-invite').addEventListener('click', () => {
@@ -1695,10 +1463,11 @@
       temp.select();
       document.execCommand('copy');
       document.body.removeChild(temp);
-      showToast('Firepit Pact Link Copied! Invite 4 Friends!');
+      showToast('Tartaria Server Link Copied!');
     });
 
     document.getElementById('btn-awaken').addEventListener('click', () => {
+      initAudio();
       const nameInput = document.getElementById('char-name').value.trim();
       if (nameInput) localPlayer.name = nameInput;
       localPlayer.raceCategory = document.getElementById('char-race').value;
@@ -1712,7 +1481,9 @@
       localPlayer.hp = localPlayer.maxHp;
       localPlayer.maxMana = classMeta.mana;
       localPlayer.mana = localPlayer.maxMana;
-      localPlayer.speed = 225 * subMeta.speedMod;
+      localPlayer.speed = 230 * subMeta.speedMod;
+
+      loadGameProgress(); // Load saved xp, gold & gear if returning
 
       document.getElementById('char-modal').style.display = 'none';
       document.getElementById('hud').style.display = 'block';
@@ -1722,8 +1493,7 @@
 
       initNetworking();
       updateVitalsUI();
-      updateEscapePactCount();
-      renderDynamicHotbar();
+      showToast('Connected to Tartaria Central Server.');
     });
 
     function updateVitalsUI() {
@@ -1777,36 +1547,45 @@
         localPlayer.isMoving = false;
       }
 
-      const distToFirepit = Math.hypot(localPlayer.x - FIREPIT_POS.x, localPlayer.y - FIREPIT_POS.y);
-      if (distToFirepit < FIREPIT_POS.safeRadius) {
-        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 6 * dt);
-        localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 8 * dt);
+      // Determine current room and Safezone status
+      let currentRoom = ROOMS[0];
+      for (const r of ROOMS) {
+        if (localPlayer.x >= r.x - r.w/2 && localPlayer.x <= r.x + r.w/2 &&
+            localPlayer.y >= r.y - r.h/2 && localPlayer.y <= r.y + r.h/2) {
+          currentRoom = r;
+          break;
+        }
+      }
+
+      const pvpStatusEl = document.getElementById('pvp-zone-status');
+      const shardStatusEl = document.getElementById('shard-status');
+      shardStatusEl.textContent = currentRoom.name;
+
+      if (currentRoom.safe) {
+        pvpStatusEl.textContent = '[SAFEZONE ACTIVE]';
+        pvpStatusEl.style.color = '#22c55e';
+        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 8 * dt);
+        localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 10 * dt);
       } else {
+        pvpStatusEl.textContent = '[FULL LOOT PVP ACTIVE!]';
+        pvpStatusEl.style.color = '#ef4444';
         localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 3 * dt);
       }
 
       localPlayer.x = Math.max(60, Math.min(WORLD_SIZE - 60, localPlayer.x));
       localPlayer.y = Math.max(60, Math.min(WORLD_SIZE - 60, localPlayer.y));
 
-      if (distToFirepit < FIREPIT_POS.radius) {
+      // Central firepit collision
+      const distToFire = Math.hypot(localPlayer.x - FIREPIT_POS.x, localPlayer.y - FIREPIT_POS.y);
+      if (distToFire < FIREPIT_POS.radius) {
         const pushAngle = Math.atan2(localPlayer.y - FIREPIT_POS.y, localPlayer.x - FIREPIT_POS.x);
         localPlayer.x = FIREPIT_POS.x + Math.cos(pushAngle) * FIREPIT_POS.radius;
         localPlayer.y = FIREPIT_POS.y + Math.sin(pushAngle) * FIREPIT_POS.radius;
       }
 
-      dungeonProps.forEach(prop => {
-        const colDist = Math.hypot(localPlayer.x - prop.x, localPlayer.y - prop.y);
-        if (colDist < prop.size + 14) {
-          const pushAngle = Math.atan2(localPlayer.y - prop.y, localPlayer.x - prop.x);
-          localPlayer.x = prop.x + Math.cos(pushAngle) * (prop.size + 14);
-          localPlayer.y = prop.y + Math.sin(pushAngle) * (prop.size + 14);
-        }
-      });
-
       enemies.forEach(en => {
         const distToPlayer = Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y);
-        const distEnToFire = Math.hypot(en.x - FIREPIT_POS.x, en.y - FIREPIT_POS.y);
-        if (distToPlayer < 410 && distToPlayer > 32 && distEnToFire > FIREPIT_POS.safeRadius * 0.75) {
+        if (distToPlayer < 380 && distToPlayer > 30) {
           const ang = Math.atan2(localPlayer.y - en.y, localPlayer.x - en.x);
           en.x += Math.cos(ang) * en.speed * dt;
           en.y += Math.sin(ang) * en.speed * dt;
@@ -1814,11 +1593,13 @@
         if (distToPlayer < 46) {
           en.attackCooldown -= dt;
           if (en.attackCooldown <= 0) {
-            en.attackCooldown = 1.35;
-            const hitDmg = 9 + Math.floor(Math.random() * 7);
-            localPlayer.hp = Math.max(10, localPlayer.hp - hitDmg);
-            spawnCombatText(localPlayer.x, localPlayer.y, `-${hitDmg}`, '#e03c3c');
+            en.attackCooldown = 1.3;
+            const hitDmg = 12 + Math.floor(Math.random() * 8);
+            localPlayer.hp = Math.max(0, localPlayer.hp - hitDmg);
+            playSound('hurt');
+            spawnCombatText(localPlayer.x, localPlayer.y, `-${hitDmg}`, '#ef4444');
             updateVitalsUI();
+            if (localPlayer.hp <= 0) handlePlayerPvPDeath();
           }
         }
       });
@@ -1896,9 +1677,7 @@
         ctx.ellipse(-4, -22, 3, 9, -0.2, 0, Math.PI * 2);
         ctx.ellipse(4, -22, 3, 9, 0.2, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(2, -11, 3, 3);
-      } else if (en.kind === 'adventurer') {
+      } else {
         ctx.fillStyle = en.color;
         ctx.beginPath();
         ctx.roundRect(-12, -28, 24, 26, 4);
@@ -1907,22 +1686,17 @@
         ctx.beginPath();
         ctx.arc(0, -35, 9, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
-      } else {
-        ctx.fillStyle = en.color;
-        ctx.beginPath();
-        ctx.arc(0, -14, en.radius, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
       }
 
       const hpRatio = Math.max(0, en.hp / en.maxHp);
       ctx.fillStyle = '#050308';
       ctx.fillRect(-18, -en.radius - 26, 36, 6);
-      ctx.fillStyle = en.faction === 'Invader' ? '#38bdf8' : '#e03c3c';
+      ctx.fillStyle = '#ef4444';
       ctx.fillRect(-17, -en.radius - 25, 34 * hpRatio, 4);
 
       ctx.font = '700 10px Cinzel, serif';
       ctx.textAlign = 'center';
-      ctx.fillStyle = en.faction === 'Invader' ? '#bae6fd' : '#fca5a5';
+      ctx.fillStyle = '#fca5a5';
       ctx.shadowColor = '#000';
       ctx.shadowBlur = 3;
       ctx.fillText(en.name, 0, -en.radius - 30);
@@ -1940,105 +1714,58 @@
       ctx.save();
       ctx.translate(-camX, -camY);
 
-      ctx.fillStyle = '#0e0d12';
+      ctx.fillStyle = '#0b0910';
       ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-      ctx.strokeStyle = 'rgba(42, 38, 52, 0.65)';
-      ctx.lineWidth = 1.5;
-      const tile = 96;
-      const startX = Math.floor(camX / tile) * tile;
-      const startY = Math.floor(camY / tile) * tile;
-      for (let x = startX; x < camX + screenW + tile; x += tile) {
-        ctx.beginPath(); ctx.moveTo(x, camY); ctx.lineTo(x, camY + screenH); ctx.stroke();
-      }
-      for (let y = startY; y < camY + screenH + tile; y += tile) {
-        ctx.beginPath(); ctx.moveTo(camX, y); ctx.lineTo(camX + screenW, y); ctx.stroke();
-      }
+      // Draw the 5 connected Tartaria Rooms & Hallways
+      ROOMS.forEach(r => {
+        ctx.fillStyle = r.safe ? '#14111c' : '#1a1014';
+        ctx.strokeStyle = r.safe ? '#3d2d1f' : '#8b0000';
+        ctx.lineWidth = r.safe ? 4 : 5;
+        ctx.fillRect(r.x - r.w/2, r.y - r.h/2, r.w, r.h);
+        ctx.strokeRect(r.x - r.w/2, r.y - r.h/2, r.w, r.h);
 
-      ctx.fillStyle = '#17141d';
-      ctx.strokeStyle = '#050308';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.safeRadius, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
+        // Room Name Banner
+        ctx.font = '900 14px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = r.safe ? '#d4af37' : '#ef4444';
+        ctx.fillText(r.name.toUpperCase(), r.x, r.y - r.h/2 + 30);
+      });
 
-      const pactCount = Math.min(5, remotePlayers.size + 1);
-      for (let i = 0; i < 5; i++) {
-        const ang = (i / 5) * Math.PI * 2 - Math.PI / 2;
-        const px = FIREPIT_POS.x + Math.cos(ang) * 195;
-        const py = FIREPIT_POS.y + Math.sin(ang) * 195;
-        const lit = i < pactCount;
-
-        ctx.fillStyle = lit ? '#d99b43' : '#24202c';
-        ctx.strokeStyle = '#050308';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(px, py, 20, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-      }
-
-      for (let i = 0; i < dungeonProps.length; i++) {
-        const prop = dungeonProps[i];
-        if (prop.x < camX - 80 || prop.x > camX + screenW + 80 || prop.y < camY - 80 || prop.y > camY + screenH + 80) continue;
-
-        ctx.strokeStyle = '#050308';
-        ctx.lineWidth = 2.5;
-        if (prop.type === 'stone_column') {
-          ctx.fillStyle = '#221f2b';
-          ctx.beginPath();
-          ctx.arc(prop.x, prop.y, prop.size, 0, Math.PI * 2);
-          ctx.fill(); ctx.stroke();
-        } else {
-          const glowR = prop.size * (1.8 + Math.sin(timeSec * 8 + i) * 0.2);
-          const grad = ctx.createRadialGradient(prop.x, prop.y, 2, prop.x, prop.y, glowR);
-          grad.addColorStop(0, 'rgba(247, 160, 60, 0.55)');
-          grad.addColorStop(1, 'rgba(232, 93, 36, 0)');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(prop.x, prop.y, glowR, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = '#ff9233';
-          ctx.beginPath();
-          ctx.arc(prop.x, prop.y, prop.size * 0.35, 0, Math.PI * 2);
-          ctx.fill(); ctx.stroke();
-        }
-      }
-
-      const fireFlicker = 310 + Math.sin(timeSec * 9) * 22;
-      const fireGrad = ctx.createRadialGradient(FIREPIT_POS.x, FIREPIT_POS.y, 20, FIREPIT_POS.x, FIREPIT_POS.y, fireFlicker);
-      fireGrad.addColorStop(0, 'rgba(255, 150, 40, 0.55)');
-      fireGrad.addColorStop(0.5, 'rgba(217, 70, 25, 0.22)');
+      // Central Firepit
+      const fireGrad = ctx.createRadialGradient(FIREPIT_POS.x, FIREPIT_POS.y, 20, FIREPIT_POS.x, FIREPIT_POS.y, 280);
+      fireGrad.addColorStop(0, 'rgba(212, 175, 55, 0.45)');
       fireGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = fireGrad;
       ctx.beginPath();
-      ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, fireFlicker, 0, Math.PI * 2);
+      ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, 280, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#2b1c17';
-      ctx.strokeStyle = '#050308';
-      ctx.lineWidth = 4;
+      ctx.fillStyle = '#3d2d1f';
       ctx.beginPath();
       ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.radius, 0, Math.PI * 2);
       ctx.fill(); ctx.stroke();
 
-      ctx.fillStyle = '#f97316';
+      ctx.fillStyle = '#d4af37';
       ctx.beginPath();
-      ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.radius * 0.62, 0, Math.PI * 2);
+      ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.radius * 0.5, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#fde047';
-      ctx.beginPath();
-      ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.radius * 0.32, 0, Math.PI * 2);
-      ctx.fill();
+      // Render NPCs
+      tartariaNpcs.forEach(npc => {
+        ctx.fillStyle = '#8b0000';
+        ctx.beginPath();
+        ctx.arc(npc.x, npc.y, 16, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
 
-      ctx.fillStyle = '#fff4db';
-      ctx.font = '900 13px Cinzel, serif';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = '#000';
-      ctx.shadowBlur = 4;
-      ctx.fillText('THE UNDERWORLD FIREPIT', FIREPIT_POS.x, FIREPIT_POS.y + 4);
-      ctx.shadowBlur = 0;
+        ctx.font = '700 11px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#f3e5ab';
+        ctx.fillText(npc.name, npc.x, npc.y - 22);
+        ctx.font = 'italic 10px Crimson Pro, serif';
+        ctx.fillStyle = '#b8975a';
+        ctx.fillText(`<${npc.title}>`, npc.x, npc.y - 10);
+      });
 
       enemies.forEach(en => {
         drawHostile(ctx, en, timeSec, en.id === localPlayer.targetEntityId);
@@ -2090,11 +1817,11 @@
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 3;
       ctx.strokeText(`${p.name} [Lv.${p.level || 1}]`, p.x, topY);
-      ctx.fillStyle = p.id === localPlayer.id ? '#f7c978' : '#e2d9c8';
+      ctx.fillStyle = p.id === localPlayer.id ? '#f3e5ab' : '#e2d9c8';
       ctx.fillText(`${p.name} [Lv.${p.level || 1}]`, p.x, topY);
 
       ctx.font = 'italic 11px Crimson Pro, serif';
-      ctx.fillStyle = '#d99b43';
+      ctx.fillStyle = '#d4af37';
       ctx.fillText(`<${p.raceLabel || subMeta.name} • ${getActiveClassTitle(p)}>`, p.x, topY + 11);
 
       if (p.chatBubble) {
@@ -2106,7 +1833,7 @@
         const boxY = topY - 36;
 
         ctx.fillStyle = 'rgba(12, 10, 18, 0.95)';
-        ctx.strokeStyle = '#d99b43';
+        ctx.strokeStyle = '#d4af37';
         ctx.lineWidth = 1.5;
         ctx.fillRect(boxX, boxY, boxW, boxH);
         ctx.strokeRect(boxX, boxY, boxW, boxH);
@@ -2121,3 +1848,4 @@
   </script>
 </body>
 </html>
+```eof
