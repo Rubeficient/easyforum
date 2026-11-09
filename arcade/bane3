@@ -1,1 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call of Loki: The Golgotha Biogenesis</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #08070b;
+            color: #d1d5db;
+            overflow: hidden;
+            user-select: none;
+        }
+        .cinzel { font-family: 'Cinzel', serif; }
+        .obsidian-panel {
+            background: linear-gradient(135deg, rgba(15,14,23,0.95) 0%, rgba(8,7,11,0.98) 100%);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(217, 119, 6, 0.05);
+        }
+        .gold-glow {
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+        /* Custom scrollbar for codex/logs */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #08070b; }
+        ::-webkit-scrollbar-thumb { background: #b45309; border-radius: 3px; }
+    </style>
+</head>
+<body class="w-screen h-screen flex flex-col items-center justify-center relative">
 
+    <!-- GAME CONTAINER -->
+    <div id="game-container" class="relative w-full h-full flex items-center justify-center">
+        <canvas id="gameCanvas" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
+
+        <!-- UI OVERLAY -->
+        <div id="ui-overlay" class="absolute inset-0 pointer-events-none flex flex-col justify-between p-6 select-none">
+            
+            <!-- TOP HUD -->
+            <div class="flex justify-between items-start w-full">
+                <!-- Player Status -->
+                <div class="obsidian-panel p-4 rounded-lg flex items-center gap-4 pointer-events-auto">
+                    <div id="avatar-icon" class="w-14 h-14 rounded border border-amber-600/50 flex items-center justify-center bg-amber-950/30 text-amber-400 cinzel font-bold text-xl">
+                        M
+                    </div>
+                    <div>
+                        <div id="player-title" class="cinzel text-amber-500 font-bold tracking-wider text-sm">Mycotic Brute</div>
+                        <div class="text-xs text-gray-400">Level <span id="player-level" class="text-white font-bold">1</span> Squad Captain</div>
+                        <div class="w-48 bg-gray-900 h-2.5 rounded-full mt-2 border border-gray-800 overflow-hidden">
+                            <div id="xp-bar" class="bg-amber-600 h-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Core / Biogenesis Engine Status -->
+                <div class="obsidian-panel px-6 py-3 rounded-lg flex flex-col items-center pointer-events-auto">
+                    <div class="cinzel text-xs text-amber-400 uppercase tracking-widest gold-glow">Ymir Biogenesis Engine</div>
+                    <div class="text-lg font-bold text-white flex items-center gap-2 mt-1">
+                        <span class="w-3 h-3 rounded-full bg-red-600 animate-pulse"></span>
+                        Level 10 Core Health: <span id="core-hp" class="text-red-400">100%</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-0.5">Sigyn's Venom Serum: <span id="serum-count" class="text-amber-300">3</span> Doses</div>
+                </div>
+
+                <!-- Resources & Squad Info -->
+                <div class="obsidian-panel p-4 rounded-lg flex flex-col gap-1 pointer-events-auto min-w-[200px]">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">Biomass:</span>
+                        <span id="biomass-count" class="text-amber-400 font-bold text-sm">50</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">Active Squad:</span>
+                        <span id="squad-count" class="text-emerald-400 font-bold">0 / 4</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">Portals:</span>
+                        <span id="portal-count" class="text-cyan-400 font-bold">0 / 2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM HUD / CONTROLS HINT -->
+            <div class="flex justify-between items-end w-full">
+                <!-- Action Bar -->
+                <div class="obsidian-panel px-4 py-2 rounded-lg flex gap-4 text-xs items-center pointer-events-auto">
+                    <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 text-amber-400 font-mono">WASD</kbd> Move</div>
+                    <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 text-amber-400 font-mono">L-Click</kbd> Attack</div>
+                    <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 text-amber-400 font-mono">Q</kbd> Ability</div>
+                    <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 text-amber-400 font-mono">E</kbd> Spawn Minion (25 Bio)</div>
+                    <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 text-amber-400 font-mono">R</kbd> Place Portal (50 Bio)</div>
+                    <div class="flex items-center gap-1.5"><kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700 text-amber-400 font-mono">SPACE</kbd> Squad Command</div>
+                </div>
+
+                <!-- Wave Status -->
+                <div class="obsidian-panel px-6 py-3 rounded-lg text-right pointer-events-auto">
+                    <div class="cinzel text-xs text-amber-400">Incursion Wave <span id="wave-num" class="text-white font-bold">1</span> / 10</div>
+                    <div id="wave-status" class="text-xs text-emerald-400 mt-1">Adventurers approaching from Level 1...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MAIN MENU OVERLAY -->
+        <div id="menu-overlay" class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-6">
+            <div class="max-w-2xl w-full obsidian-panel p-8 rounded-xl text-center relative overflow-hidden">
+                <div class="absolute -top-12 -left-12 w-36 h-36 bg-amber-600/10 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-12 -right-12 w-36 h-36 bg-red-600/10 rounded-full blur-2xl"></div>
+                
+                <h2 class="cinzel text-xs tracking-[0.3em] text-amber-500 uppercase mb-2">Call of Loki: Game 1</h2>
+                <h1 class="cinzel text-4xl md:text-5xl font-black text-white mb-4 gold-glow">THE GOLGOTHA BIOGENESIS</h1>
+                <p class="text-gray-300 text-sm mb-8 leading-relaxed">
+                    Pinned beneath the bedrock with serpent venom dripping upon his brow, Loki’s divine form acts as the Ymir-like primeval engine of the underworld. From his pores, simple life sparks and evolves. Choose your birth-spawn, master the venom-serum, build your portal network, and lead your underworld squads to repel the state-licensed crusaders.
+                </p>
+
+                <!-- ARCHETYPE SELECTION -->
+                <div class="text-left cinzel text-xs text-amber-400 uppercase tracking-widest mb-3">Select Your Spawn Evolution:</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="archetype-card selected obsidian-panel p-4 rounded-lg cursor-pointer transition-all border-amber-500 hover:border-amber-400" data-type="brute" onclick="selectArchetype('brute')">
+                        <div class="cinzel font-bold text-amber-400 mb-1">Mycotic Brute</div>
+                        <div class="text-[11px] text-gray-400 leading-tight">Born from torso/groin spores. High HP, heavy armor, unleashes spore-burst area denial.</div>
+                    </div>
+                    <div class="archetype-card obsidian-panel p-4 rounded-lg cursor-pointer transition-all border-gray-800 hover:border-amber-500" data-type="stalker" onclick="selectArchetype('stalker')">
+                        <div class="cinzel font-bold text-amber-400 mb-1">Venom Stalker</div>
+                        <div class="text-[11px] text-gray-400 leading-tight">Born from scalp/nose runoff. High speed, venom daggers, lethal dash ability.</div>
+                    </div>
+                    <div class="archetype-card obsidian-panel p-4 rounded-lg cursor-pointer transition-all border-gray-800 hover:border-amber-500" data-type="caster" onclick="selectArchetype('caster')">
+                        <div class="cinzel font-bold text-amber-400 mb-1">Subterranean Caster</div>
+                        <div class="text-[11px] text-gray-400 leading-tight">Born from tear/sweat streams. Ranged crystal shard spells and mineral manipulation.</div>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="cinzel px-8 py-4 bg-amber-600 hover:bg-amber-500 text-black font-extrabold rounded-lg tracking-wider transition-all shadow-lg hover:shadow-amber-600/30 text-lg cursor-pointer">
+                    SPAWN INTO THE DEPTHS
+                </button>
+            </div>
+        </div>
+
+        <!-- GAME OVER / VICTORY MODAL -->
+        <div id="end-overlay" class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-50 p-6 hidden">
+            <div class="max-w-md w-full obsidian-panel p-8 rounded-xl text-center">
+                <h2 id="end-title" class="cinzel text-3xl font-black text-amber-500 mb-2">VICTORY</h2>
+                <p id="end-message" class="text-gray-300 text-sm mb-6">The 10-level supermax dungeon has been cleansed and converted into Loki's true sanctuary.</p>
+                <button onclick="location.reload()" class="cinzel px-6 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg tracking-wider transition-all cursor-pointer">
+                    REGENERATE RUN
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- GAME ENGINE SCRIPT -->
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize canvas
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Game States
+        let gameState = 'MENU'; // MENU, PLAYING, GAMEOVER, VICTORY
+        let selectedArchetype = 'brute';
+
+        // Camera / World
+        const world = { width: 3000, height: 3000 };
+        const camera = { x: 0, y: 0, width: canvas.width, height: canvas.height };
+
+        // Input state
+        const keys = { w: false, a: false, s: false, d: false, space: false };
+        const mouse = { x: 0, y: 0, worldX: 0, worldY: 0, down: false };
+
+        window.addEventListener('keydown', e => {
+            if (e.key === 'w' || e.key === 'W') keys.w = true;
+            if (e.key === 's' || e.key === 'S') keys.s = true;
+            if (e.key === 'a' || e.key === 'A') keys.a = true;
+            if (e.key === 'd' || e.key === 'D') keys.d = true;
+            if (e.key === ' ') { e.preventDefault(); commandSquad(); }
+            if (e.key === 'e' || e.key === 'E') spawnMinion();
+            if (e.key === 'r' || e.key === 'R') placePortal();
+            if (e.key === 'q' || e.key === 'Q') playerAbility();
+        });
+
+        window.addEventListener('keyup', e => {
+            if (e.key === 'w' || e.key === 'W') keys.w = false;
+            if (e.key === 's' || e.key === 'S') keys.s = false;
+            if (e.key === 'a' || e.key === 'A') keys.a = false;
+            if (e.key === 'd' || e.key === 'D') keys.d = false;
+        });
+
+        window.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            mouse.worldX = camera.x + mouse.x;
+            mouse.worldY = camera.y + mouse.y;
+        });
+
+        window.addEventListener('mousedown', () => mouse.down = true);
+        window.addEventListener('mouseup', () => mouse.down = false);
+
+        // Game Entities & State Variables
+        let player = {
+            x: world.width / 2,
+            y: world.height / 2 + 500,
+            radius: 20,
+            speed: 4,
+            hp: 150,
+            maxHp: 150,
+            level: 1,
+            xp: 0,
+            maxXp: 100,
+            biomass: 75,
+            archetype: 'brute',
+            attackCooldown: 0,
+            abilityCooldown: 0
+        };
+
+        let core = {
+            x: world.width / 2,
+            y: world.height / 2,
+            hp: 100,
+            maxHp: 100,
+            radius: 60
+        };
+
+        let squad = []; // Minions
+        let portals = []; // Portals placed by player
+        let enemies = []; // Adventurers
+        let particles = [];
+        let floatingTexts = [];
+
+        let wave = 1;
+        let waveTimer = 0;
+        let enemiesRemainingInWave = 0;
+        let gameTime = 0;
+
+        function selectArchetype(type) {
+            selectedArchetype = type;
+            document.querySelectorAll('.archetype-card').forEach(c => {
+                c.classList.remove('border-amber-500');
+                c.classList.add('border-gray-800');
+            });
+            event.currentTarget.classList.remove('border-gray-800');
+            event.currentTarget.classList.add('border-amber-500');
+        }
+
+        function startGame() {
+            player.archetype = selectedArchetype;
+            if (selectedArchetype === 'brute') {
+                player.hp = 200; player.maxHp = 200; player.speed = 3.5;
+                document.getElementById('avatar-icon').innerText = 'B';
+                document.getElementById('player-title').innerText = 'Mycotic Brute';
+            } else if (selectedArchetype === 'stalker') {
+                player.hp = 120; player.maxHp = 120; player.speed = 5.5;
+                document.getElementById('avatar-icon').innerText = 'S';
+                document.getElementById('player-title').innerText = 'Venom Stalker';
+            } else {
+                player.hp = 100; player.maxHp = 100; player.speed = 4.2;
+                document.getElementById('avatar-icon').innerText = 'C';
+                document.getElementById('player-title').innerText = 'Subterranean Caster';
+            }
+
+            document.getElementById('menu-overlay').classList.add('hidden');
+            gameState = 'PLAYING';
+            startWave();
+        }
+
+        function startWave() {
+            waveTimer = 300; // frames before spawning next wave
+            let count = 4 + wave * 3;
+            enemiesRemainingInWave = count;
+            document.getElementById('wave-num').innerText = wave;
+            document.getElementById('wave-status').innerText = `Wave ${wave}: ${count} Adventurers approaching from surface!`;
+            
+            // Spawn adventurers in a ring around the center
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    if (gameState !== 'PLAYING') return;
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 1000 + Math.random() * 200;
+                    const types = ['knight', 'scout', 'cleric', 'mage'];
+                    const type = types[Math.floor(Math.random() * types.length)];
+                    
+                    enemies.push({
+                        x: core.x + Math.cos(angle) * dist,
+                        y: core.y + Math.sin(angle) * dist,
+                        radius: 16,
+                        type: type,
+                        hp: 40 + wave * 15,
+                        maxHp: 40 + wave * 15,
+                        dogmaShield: 30 + wave * 10,
+                        maxDogma: 30 + wave * 10,
+                        speed: 2 + Math.random() * 1.5,
+                        attackCooldown: 0
+                    });
+                }, i * 400);
+            }
+        }
+
+        // --- SPAWN MINION (E key) ---
+        function spawnMinion() {
+            if (player.biomass < 25) {
+                showFloatingText(player.x, player.y - 30, "Need 25 Biomass!", "#ef4444");
+                return;
+            }
+            if (squad.length >= 4 + (player.level * 2)) {
+                showFloatingText(player.x, player.y - 30, "Squad Full!", "#ef4444");
+                return;
+            }
+            player.biomass -= 25;
+            squad.push({
+                x: player.x + (Math.random() - 0.5) * 40,
+                y: player.y + (Math.random() - 0.5) * 40,
+                radius: 12,
+                hp: 60,
+                maxHp: 60,
+                speed: 4,
+                state: 'FOLLOW' // FOLLOW, ATTACK, HOLD
+            });
+            updateHUD();
+            showFloatingText(player.x, player.y - 30, "+1 Underworld Minion", "#10b981");
+        }
+
+        // --- PLACE PORTAL (R key) ---
+        function placePortal() {
+            if (player.biomass < 50) {
+                showFloatingText(player.x, player.y - 30, "Need 50 Biomass!", "#ef4444");
+                return;
+            }
+            if (portals.length >= 2) {
+                portals.shift(); // Remove oldest
+            }
+            player.biomass -= 50;
+            portals.push({
+                x: player.x,
+                y: player.y,
+                radius: 35,
+                timer: 1800 // lasts 30 seconds
+            });
+            updateHUD();
+            showFloatingText(player.x, player.y - 30, "Portal Deployed!", "#06b6d4");
+        }
+
+        // --- PLAYER ABILITY (Q key) ---
+        function playerAbility() {
+            if (player.abilityCooldown > 0) return;
+            player.abilityCooldown = 180; // 3 sec cooldown
+
+            if (player.archetype === 'brute') {
+                // Spore Burst (AOE damage & knockback)
+                showFloatingText(player.x, player.y, "SPORE BURST!", "#10b981");
+                for (let i = 0; i < 30; i++) {
+                    particles.push({
+                        x: player.x, y: player.y,
+                        vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10,
+                        color: '#10b981', life: 40, size: 4
+                    });
+                }
+                enemies.forEach(e => {
+                    let dist = Math.hypot(e.x - player.x, e.y - player.y);
+                    if (dist < 180) {
+                        e.hp -= 50;
+                        e.dogmaShield -= 40;
+                    }
+                });
+            } else if (player.archetype === 'stalker') {
+                // Venom Dash
+                showFloatingText(player.x, player.y, "VENOM DASH!", "#10b981");
+                player.x += Math.cos(Math.atan2(mouse.worldY - player.y, mouse.worldX - player.x)) * 200;
+                player.y += Math.sin(Math.atan2(mouse.worldY - player.y, mouse.worldX - player.x)) * 200;
+            } else {
+                // Crystal Geyser
+                showFloatingText(player.x, player.y, "CRYSTAL GEYSER!", "#06b6d4");
+                enemies.forEach(e => {
+                    let dist = Math.hypot(e.x - mouse.worldX, e.y - mouse.worldY);
+                    if (dist < 120) {
+                        e.hp -= 70;
+                    }
+                });
+            }
+        }
+
+        // --- SQUAD COMMAND (Space) ---
+        function commandSquad() {
+            squad.forEach(m => {
+                m.state = m.state === 'FOLLOW' ? 'HOLD' : 'FOLLOW';
+            });
+            showFloatingText(player.x, player.y - 40, "Squad Order toggled!", "#f59e0b");
+        }
+
+        function showFloatingText(x, y, text, color) {
+            floatingTexts.push({ x, y, text, color, life: 50 });
+        }
+
+        // --- MAIN UPDATE LOOP ---
+        function update() {
+            if (gameState !== 'PLAYING') return;
+
+            gameTime++;
+
+            // Player Movement
+            let dx = 0, dy = 0;
+            if (keys.w) dy -= 1;
+            if (keys.s) dy += 1;
+            if (keys.a) dx -= 1;
+            if (keys.d) dx += 1;
+            if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+            
+            player.x += dx * player.speed;
+            player.y += dy * player.speed;
+
+            // Constrain player to world
+            player.x = Math.max(100, Math.min(world.width - 100, player.x));
+            player.y = Math.max(100, Math.min(world.height - 100, player.y));
+
+            // Camera follow player
+            camera.x = player.x - camera.width / 2;
+            camera.y = player.y - camera.height / 2;
+
+            // Cooldowns
+            if (player.attackCooldown > 0) player.attackCooldown--;
+            if (player.abilityCooldown > 0) player.abilityCooldown--;
+
+            // Player Attack (Left Click)
+            if (mouse.down && player.attackCooldown === 0) {
+                player.attackCooldown = 15;
+                let angle = Math.atan2(mouse.worldY - player.y, mouse.worldX - player.x);
+                
+                // Spawn projectile
+                particles.push({
+                    x: player.x, y: player.y,
+                    vx: Math.cos(angle) * 12, vy: Math.sin(angle) * 12,
+                    color: player.archetype === 'caster' ? '#06b6d4' : '#f59e0b',
+                    life: 25, size: 6, isProjectile: true, damage: 25 + player.level * 5
+                });
+            }
+
+            // Update Projectiles & Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+
+                if (p.isProjectile) {
+                    // Check collision with enemies
+                    enemies.forEach(e => {
+                        if (Math.hypot(e.x - p.x, e.y - p.y) < e.radius + p.size) {
+                            e.dogmaShield -= p.damage;
+                            if (e.dogmaShield <= 0) {
+                                e.hp -= p.damage;
+                            }
+                            p.life = 0;
+                            showFloatingText(e.x, e.y - 15, `-${p.damage}`, '#f59e0b');
+                        }
+                    });
+                }
+
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            // Update Squad Minions
+            squad.forEach(m => {
+                if (m.state === 'FOLLOW') {
+                    let targetX = player.x + (Math.random() - 0.5) * 60;
+                    let targetY = player.y + (Math.random() - 0.5) * 60;
+                    let angle = Math.atan2(targetY - m.y, targetX - m.x);
+                    let dist = Math.hypot(targetX - m.x, targetY - m.y);
+                    if (dist > 10) {
+                        m.x += Math.cos(angle) * m.speed;
+                        m.y += Math.sin(angle) * m.speed;
+                    }
+                }
+
+                // Minion attacks nearest enemy
+                let nearest = null;
+                let minDist = 200;
+                enemies.forEach(e => {
+                    let d = Math.hypot(e.x - m.x, e.y - m.y);
+                    if (d < minDist) {
+                        minDist = d;
+                        nearest = e;
+                    }
+                });
+
+                if (nearest) {
+                    let angle = Math.atan2(nearest.y - m.y, nearest.x - m.x);
+                    m.x += Math.cos(angle) * (m.speed * 0.8);
+                    m.y += Math.sin(angle) * (m.speed * 0.8);
+                    if (minDist < 25) {
+                        nearest.hp -= 1;
+                    }
+                }
+            });
+
+            // Update Enemies (Adventurers)
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+                
+                // Target Core or Player
+                let targetX = core.x;
+                let targetY = core.y;
+                if (Math.hypot(player.x - e.x, player.y - e.y) < 300) {
+                    targetX = player.x;
+                    targetY = player.y;
+                }
+
+                let angle = Math.atan2(targetY - e.y, targetX - e.x);
+                e.x += Math.cos(angle) * e.speed;
+                e.y += Math.sin(angle) * e.speed;
+
+                // Check collision with core
+                if (Math.hypot(core.x - e.x, core.y - e.y) < core.radius + e.radius) {
+                    core.hp -= 0.5;
+                    if (core.hp <= 0) {
+                        gameOver();
+                    }
+                }
+
+                // Check death or exorcism conversion
+                if (e.hp <= 0) {
+                    // Check if dogma shield is completely broken -> Exorcism Conversion!
+                    if (e.dogmaShield <= 0 && Math.random() < 0.5) {
+                        // Converted to squad minion!
+                        squad.push({ x: e.x, y: e.y, radius: 12, hp: 50, maxHp: 50, speed: 4, state: 'FOLLOW' });
+                        showFloatingText(e.x, e.y, "EXORCISED & CONVERTED!", "#10b981");
+                    } else {
+                        // Turned to dust / biomass
+                        player.biomass += 15;
+                        player.xp += 25;
+                        checkLevelUp();
+                        showFloatingText(e.x, e.y, "+15 Biomass", "#f59e0b");
+                    }
+                    enemies.splice(i, 1);
+                    enemiesRemainingInWave--;
+                    updateHUD();
+
+                    if (enemiesRemainingInWave <= 0) {
+                        wave++;
+                        if (wave > 10) {
+                            victory();
+                        } else {
+                            startWave();
+                        }
+                    }
+                }
+            }
+
+            // Update floating texts
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                let ft = floatingTexts[i];
+                ft.y -= 0.8;
+                ft.life--;
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
+            }
+
+            // Portals countdown
+            for (let i = portals.length - 1; i >= 0; i--) {
+                portals[i].timer--;
+                if (portals[i].timer <= 0) portals.splice(i, 1);
+            }
+
+            updateHUD();
+        }
+
+        function checkLevelUp() {
+            if (player.xp >= player.maxXp) {
+                player.xp -= player.maxXp;
+                player.level++;
+                player.maxXp = Math.floor(player.maxXp * 1.5);
+                player.maxHp += 30;
+                player.hp = player.maxHp;
+                showFloatingText(player.x, player.y - 50, `LEVEL UP! Captain Rank ${player.level}`, "#f59e0b");
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('player-level').innerText = player.level;
+            document.getElementById('xp-bar').style.width = `${(player.xp / player.maxXp) * 100}%`;
+            document.getElementById('biomass-count').innerText = player.biomass;
+            document.getElementById('squad-count').innerText = `${squad.length} / ${4 + player.level * 2}`;
+            document.getElementById('portal-count').innerText = `${portals.length} / 2`;
+            document.getElementById('core-hp').innerText = `${Math.max(0, Math.floor((core.hp / core.maxHp) * 100))}%`;
+        }
+
+        function gameOver() {
+            gameState = 'GAMEOVER';
+            document.getElementById('end-title').innerText = "BIOGENESIS BREACHED";
+            document.getElementById('end-title').className = "cinzel text-3xl font-black text-red-500 mb-2";
+            document.getElementById('end-message').innerText = "The crusaders breached Loki's sanctuary and extinguished the Ymir engine.";
+            document.getElementById('end-overlay').classList.remove('hidden');
+        }
+
+        function victory() {
+            gameState = 'VICTORY';
+            document.getElementById('end-title').innerText = "SANCTUARY LIBERATED";
+            document.getElementById('end-title').className = "cinzel text-3xl font-black text-amber-500 mb-2";
+            document.getElementById('end-message').innerText = "All 10 levels cleansed. The underworld army is forged. The surface awaits.";
+            document.getElementById('end-overlay').classList.remove('hidden');
+        }
+
+        // --- RENDER LOOP ---
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (gameState !== 'PLAYING' && gameState !== 'GAMEOVER' && gameState !== 'VICTORY') return;
+
+            ctx.save();
+            ctx.translate(-camera.x, -camera.y);
+
+            // Draw Cavern Floor Grid / Texture
+            ctx.strokeStyle = 'rgba(217, 119, 6, 0.05)';
+            ctx.lineWidth = 1;
+            let gridSize = 100;
+            let startX = Math.floor(camera.x / gridSize) * gridSize;
+            let startY = Math.floor(camera.y / gridSize) * gridSize;
+            for (let x = startX; x < camera.x + camera.width + gridSize; x += gridSize) {
+                ctx.beginPath(); ctx.moveTo(x, camera.y); ctx.lineTo(x, camera.y + camera.height); ctx.stroke();
+            }
+            for (let y = startY; y < camera.y + camera.height + gridSize; y += gridSize) {
+                ctx.beginPath(); ctx.moveTo(camera.x, y); ctx.lineTo(camera.x + camera.width, y); ctx.stroke();
+            }
+
+            // Draw Ymir Biogenesis Engine (Core at Level 10)
+            ctx.fillStyle = 'rgba(127, 29, 29, 0.3)';
+            ctx.beginPath(); ctx.arc(core.x, core.y, core.radius + Math.sin(gameTime * 0.05) * 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 3; ctx.stroke();
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 14px Cinzel';
+            ctx.textAlign = 'center';
+            ctx.fillText("LOKI'S BIOGENESIS CORE", core.x, core.y - core.radius - 15);
+
+            // Draw Portals
+            portals.forEach(p => {
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius + Math.sin(gameTime * 0.1) * 4, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
+                ctx.fill();
+            });
+
+            // Draw Squad Minions
+            squad.forEach(m => {
+                ctx.fillStyle = '#10b981';
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#047857'; ctx.lineWidth = 2; ctx.stroke();
+            });
+
+            // Draw Enemies (Adventurers)
+            enemies.forEach(e => {
+                ctx.fillStyle = e.type === 'knight' ? '#3b82f6' : e.type === 'cleric' ? '#eab308' : '#ec4899';
+                ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+
+                // Dogma Shield Bar (Blue) & HP Bar (Red)
+                let barW = 30;
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(e.x - barW/2, e.y - e.radius - 12, barW, 4);
+                ctx.fillStyle = '#3b82f6'; // Dogma
+                ctx.fillRect(e.x - barW/2, e.y - e.radius - 12, barW * (e.dogmaShield / e.maxDogma), 2);
+                ctx.fillStyle = '#ef4444'; // HP
+                ctx.fillRect(e.x - barW/2, e.y - e.radius - 8, barW * (e.hp / e.maxHp), 2);
+            });
+
+            // Draw Player
+            ctx.fillStyle = player.archetype === 'stalker' ? '#10b981' : player.archetype === 'caster' ? '#06b6d4' : '#d97706';
+            ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.stroke();
+
+            // Draw Particles & Projectiles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Draw Floating Texts
+            ctx.font = 'bold 12px JetBrains Mono';
+            floatingTexts.forEach(ft => {
+                ctx.fillStyle = ft.color;
+                ctx.textAlign = 'center';
+                ctx.fillText(ft.text, ft.x, ft.y);
+            });
+
+            ctx.restore();
+        }
+
+        // Main Loop
+        function loop() {
+            update();
+            render();
+            requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
