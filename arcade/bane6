@@ -464,8 +464,9 @@
     // =========================================================================
     const TILE_SIZE = 1000;
     const FIREPIT_POS = { x: 500, y: 500,
-```javascript
-      radius: 64, safeRadius: 390 };
+
+
+radius: 64, safeRadius: 390 };
 
     // Bounded Stage 1: Exactly 9 Curated Chambers in a 3x3 Grid (gx: -1..1, gy: -1..1)
     const STAGE_SECTORS = {
@@ -1451,4 +1452,5 @@
 </body>
 </html>
 
-```
+
+
