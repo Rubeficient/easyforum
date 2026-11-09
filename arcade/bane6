@@ -174,11 +174,6 @@
       display: none; flex-direction: column; gap: 10px; z-index: 165;
     }
     .loot-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(5,4,8,0.9); border: 1px solid #4a3520; padding: 7px 10px; border-radius: 2px; }
-    .rarity-common { color: #e2e8f0; }
-    .rarity-rare { color: #38bdf8; }
-    .rarity-epic { color: #facc15; }
-    .rarity-legendary { color: #f87171; text-shadow: 0 0 8px rgba(248,113,113,0.4); }
-
     .equip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .equip-box { background: rgba(5,4,8,0.85); border: 1px solid #574129; padding: 7px; text-align: center; cursor: pointer; }
     .bag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -289,7 +284,7 @@
     </div>
   </div>
 
-  <!-- Multi-Item Chest Loot & Appraisal Modal -->
+  <!-- Multi-Item Chest Loot Modal -->
   <div id="loot-modal">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3520; padding-bottom:6px;">
       <span id="loot-modal-title" style="font-family:'Cinzel',serif; font-size:15px; font-weight:900; color:var(--tartaria-gold-bright);">📦 ANCIENT COFFER</span>
@@ -460,17 +455,68 @@
 
   <script>
     // =========================================================================
-    // 1. BOUNDED STAGE 1: THE PURGATORY OF DILMUN (9 UNIQUE CURATED ROOMS)
+    // 1. DATA STRUCTURES & CREATION OPTIONS
+    // =========================================================================
+    const LORE_NAME_PREFIXES = ['Hawkwind', 'Werdna', 'Trebor', 'Lanac\'toor', 'Namis', 'Phoebus', 'Asura', 'Abeshu', 'Zhad', 'Shinobi'];
+    const LORE_NAME_TITLES = ['of Dilmun', 'of Zhad', 'the Unaged', 'of Purgatory', 'of Llylgamyn', ''];
+
+    function generateLoreName() {
+      const p = LORE_NAME_PREFIXES[Math.floor(Math.random() * LORE_NAME_PREFIXES.length)];
+      const t = LORE_NAME_TITLES[Math.floor(Math.random() * LORE_NAME_TITLES.length)];
+      return (t ? `${p} ${t}` : p).slice(0, 18);
+    }
+
+    const ARMOR_PALETTE = ['#2b3d54', '#7c0a0a', '#1b3624', '#6b21a8', '#b45309', '#1f1e26'];
+    const HAIR_PALETTE  = ['#eab308', '#e5dccb', '#dc2626', '#121016', '#4a321d', '#38bdf8'];
+
+    const RACE_TREE = {
+      'Elf': {
+        desc: 'Ancient subterranean and twilight fey shaped from Krita seeds.',
+        subraces: {
+          'Highlander': { name: 'Elf (Highlander Archer)', scale: 1.0, skin: '#e8cbb1', hpBonus: 40, speedMod: 1.15, ears: true, bow: true, projType: 'arrow', projColor: '#fde047', desc: '"Blonde elven Highlander firing rapid recurve arrows."' },
+          'Sorceress':  { name: 'Elf (Gaiden Sorceress)', scale: 0.99, skin: '#f3e5d8', hpBonus: 30, speedMod: 1.10, ears: true, orb: true, projType: 'orb', projColor: '#38bdf8', desc: '"Draped in flowing silk robes firing levitating astral orbs."' }
+        }
+      },
+      'Halfling': {
+        desc: 'Pint-sized subterranean kin—Cobold Kings and Imps.',
+        subraces: {
+          'Kobold': { name: 'Halfling (Cobold King)', scale: 0.92, skin: '#3f7d4c', hpBonus: 45, speedMod: 1.14, snout: true, ears: true, sunShield: true, projType: 'sunbeam', projColor: '#facc15', desc: '"Bearing the blazing Golden Sun-Eye Shield & Scimitar."' },
+          'Imp':    { name: 'Halfling (Imp)', scale: 0.82, skin: '#b83232', hpBonus: 25, speedMod: 1.18, wings: true, horns: true, projType: 'flame', projColor: '#f97316', desc: '"Barbed-tail firepit trickster hurling sulfur firebolts."' }
+        }
+      },
+      'Dwarf': {
+        desc: 'Unyielding stone-carvers and fire giants.',
+        subraces: {
+          'Fire-Giant': { name: 'Dwarf (Fire Giant)', scale: 1.25, skin: '#d98a6c', hpBonus: 110, speedMod: 0.95, beard: true, flamberge: true, shellChest: true, projType: 'magma', projColor: '#ef4444', desc: '"Flame-bearded colossus launching Flamberge magma waves."' }
+        }
+      }
+    };
+
+    const CLASS_PROGRESSION = {
+      'Fighter': { elite: 'Warrior', hp: 185, mana: 55 },
+      'Rogue':   { elite: 'Thief',   hp: 140, mana: 80 },
+      'Mage':    { elite: 'Wizard',  hp: 115, mana: 155 },
+      'Cleric':  { elite: 'Priest',  hp: 150, mana: 125 }
+    };
+
+    const GRIMOIRE_SPELLS = [
+      { id: 'muramasa',   name: 'Kubi-Kiri Dash',    dmgType: 'SLASH',  icon: '🩸', mp: 12, cd: 1.1, type: 'dash', count: 3, spread: 0.3, speed: 660, dmg: 68, color: '#84cc16', chant: '"KUBI-KIRI!"', desc: '[SLASH] Decapitating blade dash.' },
+      { id: 'zhad_stylus',name: 'Voice of Zhad',     dmgType: 'BLUNT',  icon: '📐', mp: 14, cd: 1.3, type: 'proj_nova', count: 10, spread: 6.28, speed: 500, dmg: 56, color: '#fbbf24', chant: '"SHUSI & KUSH!"', desc: '[BLUNT] Shatters stone & skeletons.' },
+      { id: 'multishot',  name: 'Highlander Fan',    dmgType: 'PIERCE', icon: '🎯', mp: 10, cd: 0.9, type: 'proj_fan', count: 4, spread: 0.36, speed: 650, dmg: 44, color: '#38bdf8', chant: '"PIERCING FAN!"', desc: '[PIERCE] Pierces winged & scaled foes.' },
+      { id: 'mahalito',   name: 'MAHALITO Fireball', dmgType: 'BLUNT',  icon: '🔥', mp: 14, cd: 1.2, type: 'proj_aoe', count: 1, spread: 0, speed: 500, dmg: 68, color: '#f97316', chant: '"MAHALITO!!"', desc: '[BLUNT/BLAST] Exploding fireball.' },
+      { id: 'porfic',     name: 'PORFIC Sun-Shield', dmgType: 'BUFF',   icon: '🛡️', mp: 12, cd: 2.5, type: 'buff', count: 0, spread: 0, speed: 0, dmg: 45, color: '#38bdf8', chant: '"PORFIC!"', desc: '[BUFF] +60% speed & defense.' },
+      { id: 'madi',       name: 'MADI Restoration',  dmgType: 'HEAL',   icon: '✨', mp: 16, cd: 2.0, type: 'heal', count: 0, spread: 0, speed: 0, dmg: 95, color: '#22c55e', chant: '"MADI!!"', desc: '[HEAL] Restores flesh & vitality.' }
+    ];
+
+    // =========================================================================
+    // 2. BOUNDED 3x3 STAGE DEFINITION & HAZARDS
     // =========================================================================
     const TILE_SIZE = 1000;
     const FIREPIT_POS = { x: 500, y: 500, radius: 64, safeRadius: 390 };
 
-    // Bounded Stage 1: Exactly 9 Curated Chambers in a 3x3 Grid (gx: -1..1, gy: -1..1)
     const STAGE_SECTORS = {
-      // Center (0, 0): Firepit Sanctum (Safezone Hub)
       '0,0': {
-        gx: 0, gy: 0, name: 'Stage 1: Firepit Sanctum (0, 0)',
-        floor: 'stone_slate', safe: true, isBossRoom: false,
+        gx: 0, gy: 0, name: 'Stage 1: Firepit Sanctum (0, 0)', floor: 'stone_slate', safe: true, isBossRoom: false,
         rects: [
           { x: 340, y: -90, w: 320, h: 1180, isSpine: true },
           { x: -90, y: 340, w: 1180, h: 320, isSpine: true },
@@ -479,53 +525,785 @@
         hazards: [],
         pillars: [{ x: 260, y: 260, r: 32 }, { x: 740, y: 260, r: 32 }, { x: 260, y: 740, r: 32 }, { x: 740, y: 740, r: 32 }]
       },
-      // North (0, -1): Spike Gauntlet Hallway
       '0,-1': {
-        gx: 0, gy: -1, name: 'North: Spike Gauntlet Corridor',
-        floor: 'stone_dark', safe: false, isBossRoom: false,
+        gx: 0, gy: -1, name: 'North: Spike Gauntlet Corridor', floor: 'stone_dark', safe: false, isBossRoom: false,
         rects: [
           { x: 340, y: -1090, w: 320, h: 1180, isSpine: true },
           { x: -90, y: -660, w: 1180, h: 320, isSpine: true },
           { x: 160, y: -840, w: 680, h: 680, isMain: true }
         ],
-        hazards: [
-          { type: 'spikes', x: 500, y: -500, w: 180, h: 180 },
-          { type: 'spikes', x: 320, y: -720, w: 120, h: 120 },
-          { type: 'spikes', x: 680, y: -720, w: 120, h: 120 }
-        ],
+        hazards: [{ type: 'spikes', x: 500, y: -500, w: 180, h: 180 }],
         pillars: [{ x: 300, y: -700, r: 28 }, { x: 700, y: -700, r: 28 }]
       },
-      // East (1, 0): Sunken Library (Sun Seal Altar)
       '1,0': {
-        gx: 1, gy: 0, name: 'East: Sunken Archives (Sun Seal)',
-        floor: 'stone_slate', safe: false, isBossRoom: false,
-        sealType: 'sun',
+        gx: 1, gy: 0, name: 'East: Sunken Archives (Sun Seal)', floor: 'stone_slate', safe: false, isBossRoom: false, sealType: 'sun',
         rects: [
           { x: 1340, y: -90, w: 320, h: 1180, isSpine: true },
           { x: 910, y: 340, w: 1180, h: 320, isSpine: true },
           { x: 1120, y: 120, w: 760, h: 760, isMain: true }
         ],
-        hazards: [
-          { type: 'acid', x: 1360, y: 360, r: 65 },
-          { type: 'acid', x: 1640, y: 640, r: 70 }
-        ],
-        pillars: [{ x: 1280, y: 280, r: 30 }, { x: 1720, y: 280, r: 30 }, { x: 1280, y: 720, r: 30 }, { x: 1720, y: 720, r: 30 }]
+        hazards: [{ type: 'acid', x: 1360, y: 360, r: 65 }],
+        pillars: [{ x: 1280, y: 280, r: 30 }, { x: 1720, y: 720, r: 30 }]
       },
-      // South (0, 1): Blood Mire of Namis (Blood Seal Altar)
       '0,1': {
-        gx: 0, gy: 1, name: 'South: Blood Mire of Namis (Blood Seal)',
-        floor: 'stone_crimson', safe: false, isBossRoom: false,
-        sealType: 'blood',
+        gx: 0, gy: 1, name: 'South: Blood Mire of Namis (Blood Seal)', floor: 'stone_crimson', safe: false, isBossRoom: false, sealType: 'blood',
         rects: [
           { x: 340, y: 910, w: 320, h: 1180, isSpine: true },
           { x: -90, y: 1340, w: 1180, h: 320, isSpine: true },
           { x: 120, y: 1120, w: 760, h: 760, isMain: true }
         ],
-        hazards: [
-          { type: 'lava', x: 500, y: 1500, r: 85 },
-          { type: 'lava', x: 300, y: 1300, r: 55 },
-          { type: 'lava', x: 700, y: 1700, r: 55 }
-        ],
-        pillars: [{ x: 300, y: 1300, r: 32 }, { x: 700, y: 1300, r: 32 }, { x: 300, y: 1700, r: 32 }, { x: 700, y: 1700, r: 32 }]
+        hazards: [{ type: 'lava', x: 500, y: 1500, r: 80 }],
+        pillars: [{ x: 300, y: 1300, r: 32 }, { x: 700, y: 1700, r: 32 }]
       },
-      // West (-1, 0): Bone Crypt of Werdna (
+      '-1,0': {
+        gx: -1, gy: 0, name: 'West: Bone Crypt (Bone Seal)', floor: 'stone_moss', safe: false, isBossRoom: false, sealType: 'bone',
+        rects: [
+          { x: -660, y: -90, w: 320, h: 1180, isSpine: true },
+          { x: -1090, y: 340, w: 1180, h: 320, isSpine: true },
+          { x: -880, y: 120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'spikes', x: -500, y: 500, w: 160, h: 160 }],
+        pillars: [{ x: -720, y: 280, r: 30 }, { x: -280, y: 720, r: 30 }]
+      },
+      '-1,-1': {
+        gx: -1, gy: -1, name: 'North-West: Citadel of Father Abeshu', floor: 'stone_dark', safe: false, isBossRoom: true,
+        rects: [
+          { x: -660, y: -1090, w: 320, h: 1180, isSpine: true },
+          { x: -1090, y: -660, w: 1180, h: 320, isSpine: true },
+          { x: -900, y: -900, w: 800, h: 800, isMain: true }
+        ],
+        hazards: [{ type: 'lava', x: -650, y: -350, r: 50 }],
+        pillars: [{ x: -720, y: -720, r: 38 }, { x: -280, y: -280, r: 38 }]
+      },
+      '1,-1': {
+        gx: 1, gy: -1, name: 'North-East: Sentry Bastion', floor: 'stone_violet', safe: false, isBossRoom: false,
+        rects: [
+          { x: 1340, y: -1090, w: 320, h: 1180, isSpine: true },
+          { x: 910, y: -660, w: 1180, h: 320, isSpine: true },
+          { x: 1120, y: -880, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'spikes', x: 1500, y: -500, w: 140, h: 140 }],
+        pillars: [{ x: 1300, y: -700, r: 30 }]
+      },
+      '-1,1': {
+        gx: -1, gy: 1, name: 'South-West: Quagmire Drainage', floor: 'stone_moss', safe: false, isBossRoom: false,
+        rects: [
+          { x: -660, y: 910, w: 320, h: 1180, isSpine: true },
+          { x: -1090, y: 1340, w: 1180, h: 320, isSpine: true },
+          { x: -880, y: 1120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'acid', x: -500, y: 1500, r: 75 }],
+        pillars: [{ x: -700, y: 1300, r: 30 }]
+      },
+      '1,1': {
+        gx: 1, gy: 1, name: 'South-East: Dilmun Smelter Forge', floor: 'stone_crimson', safe: false, isBossRoom: false,
+        rects: [
+          { x: 1340, y: 910, w: 320, h: 1180, isSpine: true },
+          { x: 910, y: 1340, w: 1180, h: 320, isSpine: true },
+          { x: 1120, y: 1120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'lava', x: 1500, y: 1500, r: 70 }],
+        pillars: [{ x: 1300, y: 1300, r: 30 }]
+      }
+    };
+
+    const stage1Seals = { sun: false, blood: false, bone: false };
+    let bossDefeated = false;
+    const stage2PortalPos = { x: -500, y: -500, radius: 45 };
+
+    const worldSectors = new Map();
+    const SOLID_PILLARS = [];
+    const WALL_TORCHES = [];
+    const GATES = [];
+    const gateSet = new Set();
+    const activeHazards = [];
+    const enemies = [];
+    const projectiles = [];
+    const atmanMotes = [];
+    const lootChests = [];
+    const combatTexts = [];
+    let screenShake = 0;
+    let spikeTrapTick = 0;
+
+    function sectorKey(gx, gy) { return `${gx},${gy}`; }
+
+    // =========================================================================
+    // 3. PLAYER STATE & PROCEDURAL TEXTURES
+    // =========================================================================
+    let localPlayer = {
+      id: 'p-' + Math.random().toString(36).substring(2, 9),
+      slotNum: 1, shardCode: 'MAIN', name: 'Hawkwind',
+      raceCategory: 'Elf', subraceKey: 'Highlander', raceLabel: 'Elf (Highlander Archer)',
+      coreClass: 'Rogue', regionalSect: 'Classic',
+      armorColor: ARMOR_PALETTE[0], hairColor: HAIR_PALETTE[0],
+      x: FIREPIT_POS.x, y: FIREPIT_POS.y + 125,
+      targetX: null, targetY: null, aimAngle: 0, facing: 1, isMoving: false, autoAim: true,
+      combatStance: 'fury', activeWeaponIdx: 0,
+      weapons: [
+        { name: 'Cobold Scimitar', slot: 'weapon', wpnSlot: 0, dmgType: 'SLASH', ranged: false, atk: 18, hp: 10, mp: 0 },
+        { name: 'Zhad Stone-Maul', slot: 'weapon', wpnSlot: 1, dmgType: 'BLUNT', ranged: false, atk: 20, hp: 15, mp: 0 },
+        { name: 'Highlander Recurve Bow', slot: 'weapon', wpnSlot: 2, dmgType: 'PIERCE', ranged: true, atk: 17, hp: 10, mp: 10 }
+      ],
+      baseSpeed: 255, speed: 255, hp: 250, maxHp: 250, mana: 90, maxMana: 90, atman: 45, maxAtman: 100,
+      level: 1, xp: 0, nextXp: 100, gold: 150, dmgBonus: 0,
+      backpack: [],
+      spellBar: ['muramasa', 'zhad_stylus', 'multishot', 'mahalito', 'porfic', 'madi'],
+      targetEntityId: null, swingTimer: 0, autoAttackTimer: 0, dodgeTimer: 0, hitFlash: 0, chatBubble: null, chatTimer: 0
+    };
+
+    function getActiveWeapon() {
+      return localPlayer.weapons[localPlayer.activeWeaponIdx || 0] || localPlayer.weapons[0];
+    }
+
+    function selectWeaponSlot(idx) {
+      localPlayer.activeWeaponIdx = idx;
+      for (let i = 0; i < 3; i++) {
+        const c = document.getElementById(`wpn-card-${i}`);
+        if (c) c.classList.toggle('active', i === idx);
+      }
+      playSfx('gate');
+      showToast(`Active: Slot ${idx + 1} (${getActiveWeapon().dmgType})`);
+    }
+
+    function setCombatStance(stance) {
+      localPlayer.combatStance = stance;
+      ['fury', 'precision', 'bastion'].forEach(s => {
+        const btn = document.getElementById(`stance-${s}`);
+        if (btn) btn.classList.toggle('active', s === stance);
+      });
+      showToast(`Stance: ${stance.toUpperCase()}`);
+    }
+
+    function getSubraceMeta(p) {
+      return RACE_TREE[p.raceCategory]?.subraces[p.subraceKey] || RACE_TREE['Elf'].subraces['Highlander'];
+    }
+
+    const floorPatterns = {};
+    function generateProceduralTextures(c) {
+      const pals = {
+        'stone_slate':   { slab1: '#232a38', slab2: '#171c26', mortar: '#0c0e14', accent: '#3b4963' },
+        'stone_dark':    { slab1: '#1e1b29', slab2: '#12101a', mortar: '#09070d', accent: '#352f4a' },
+        'stone_crimson': { slab1: '#2b161b', slab2: '#1a0d11', mortar: '#0d0608', accent: '#592029' },
+        'stone_violet':  { slab1: '#211a33', slab2: '#120e1c', mortar: '#08060d', accent: '#452f63' },
+        'stone_moss':    { slab1: '#19272a', slab2: '#0f1719', mortar: '#070b0c', accent: '#25473a' }
+      };
+      Object.keys(pals).forEach(k => {
+        const pal = pals[k];
+        const off = document.createElement('canvas'); off.width = 160; off.height = 160;
+        const oCtx = off.getContext('2d');
+        oCtx.fillStyle = pal.mortar; oCtx.fillRect(0, 0, 160, 160);
+        for (let r = 0; r < 4; r++) {
+          for (let col = 0; col < 4; col++) {
+            const sx = (col * 40 + (r % 2) * 20) % 160;
+            const sy = r * 40;
+            oCtx.fillStyle = (r + col) % 2 === 0 ? pal.slab1 : pal.slab2;
+            oCtx.fillRect(sx + 2, sy + 2, 36, 36);
+            oCtx.strokeStyle = pal.accent; oCtx.lineWidth = 1;
+            oCtx.strokeRect(sx + 2, sy + 2, 36, 36);
+          }
+        }
+        floorPatterns[k] = c.createPattern(off, 'repeat');
+      });
+    }
+
+    // =========================================================================
+    // 4. AUDIO ENGINE
+    // =========================================================================
+    let audioCtx = null, bgmEnabled = true, bgmTimer = null, bgmTick = 0, currentMusicTheme = 'tavern';
+
+    const MUSIC_THEMES = {
+      'tavern': { tempoMs: 420, leadNotes: [293.66, 349.23, 440.00, 349.23], bassNotes: [146.83, 174.61] },
+      'labyrinth': { tempoMs: 480, leadNotes: [220.00, 233.08, 293.66, 220.00], bassNotes: [110.00, 116.54] },
+      'boss': { tempoMs: 240, leadNotes: [293.66, 440.00, 466.16, 587.33], bassNotes: [146.83, 174.61] }
+    };
+
+    function scheduleMusicStep() {
+      if (bgmTimer) clearTimeout(bgmTimer);
+      const th = MUSIC_THEMES[currentMusicTheme] || MUSIC_THEMES['tavern'];
+      if (bgmEnabled && audioCtx && document.getElementById('char-modal').style.display === 'none') {
+        try {
+          const now = audioCtx.currentTime;
+          const idx = bgmTick % th.leadNotes.length;
+          const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+          osc.type = currentMusicTheme === 'boss' ? 'sawtooth' : 'triangle';
+          osc.frequency.setValueAtTime(th.leadNotes[idx], now);
+          gain.gain.setValueAtTime(0.025, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + (th.tempoMs / 1000) * 0.9);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + (th.tempoMs / 1000));
+          bgmTick++;
+        } catch(e) {}
+      }
+      bgmTimer = setTimeout(scheduleMusicStep, th.tempoMs);
+    }
+
+    function initAudioEngine() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!bgmTimer) scheduleMusicStep();
+    }
+
+    function playSfx(kind) {
+      if (!audioCtx || !bgmEnabled) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if (kind === 'resist_clang') {
+          osc.type = 'square'; osc.frequency.setValueAtTime(920, now);
+          gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
+          osc.start(now); osc.stop(now + 0.12);
+        } else if (kind === 'crush_weakness') {
+          osc.type = 'sawtooth'; osc.frequency.setValueAtTime(220, now); osc.frequency.exponentialRampToValueAtTime(52, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+          osc.start(now); osc.stop(now + 0.2);
+        } else if (kind === 'bow' || kind === 'slash') {
+          osc.type = 'triangle'; osc.frequency.setValueAtTime(450, now); osc.frequency.exponentialRampToValueAtTime(120, now + 0.1);
+          gain.gain.setValueAtTime(0.14, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+          osc.start(now); osc.stop(now + 0.1);
+        } else if (kind === 'atman' || kind === 'spell') {
+          osc.type = 'sine'; osc.frequency.setValueAtTime(140, now); osc.frequency.exponentialRampToValueAtTime(750, now + 0.3);
+          gain.gain.setValueAtTime(0.16, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now); osc.stop(now + 0.3);
+        } else if (kind === 'loot' || kind === 'gate') {
+          osc.type = 'triangle'; osc.frequency.setValueAtTime(260, now); osc.frequency.linearRampToValueAtTime(520, now + 0.18);
+          gain.gain.setValueAtTime(0.14, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+          osc.start(now); osc.stop(now + 0.18);
+        }
+      } catch(e) {}
+    }
+
+    // =========================================================================
+    // 5. STAGE 1 INITIALIZATION
+    // =========================================================================
+    function initStage1World() {
+      worldSectors.clear();
+      SOLID_PILLARS.length = 0;
+      WALL_TORCHES.length = 0;
+      GATES.length = 0;
+      gateSet.clear();
+      activeHazards.length = 0;
+
+      Object.keys(STAGE_SECTORS).forEach(key => {
+        const sec = STAGE_SECTORS[key];
+        worldSectors.set(key, sec);
+        (sec.pillars || []).forEach(p => SOLID_PILLARS.push(p));
+        (sec.hazards || []).forEach(hz => activeHazards.push(hz));
+
+        const cx = sec.gx * TILE_SIZE + 500;
+        const cy = sec.gy * TILE_SIZE + 500;
+        WALL_TORCHES.push({ x: cx - 180, y: cy - 220 }, { x: cx + 180, y: cy + 220 });
+
+        const adj = [
+          { gx2: sec.gx, gy2: sec.gy - 1, x: cx, y: sec.gy * TILE_SIZE, horiz: true },
+          { gx2: sec.gx, gy2: sec.gy + 1, x: cx, y: (sec.gy + 1) * TILE_SIZE, horiz: true },
+          { gx2: sec.gx - 1, gy2: sec.gy, x: sec.gx * TILE_SIZE, y: cy, horiz: false },
+          { gx2: sec.gx + 1, gy2: sec.gy, x: (sec.gx + 1) * TILE_SIZE, y: cy, horiz: false }
+        ];
+
+        adj.forEach(a => {
+          const nKey = sectorKey(a.gx2, a.gy2);
+          if (STAGE_SECTORS[nKey]) {
+            const gKey = `${Math.round(a.x)},${Math.round(a.y)}`;
+            if (!gateSet.has(gKey)) {
+              gateSet.add(gKey);
+              const isBossGate = (sec.isBossRoom || STAGE_SECTORS[nKey].isBossRoom);
+              GATES.push({
+                id: `gate-${gKey}`, x: a.x, y: a.y, horiz: a.horiz,
+                isOpen: false, openAnim: 0, manualLock: false, isBossGate,
+                label: isBossGate ? '☠️ Archon Gate (Needs 3 Seals)' : 'Iron Gate'
+              });
+            }
+          }
+        });
+      });
+
+      enemies.length = 0;
+      lootChests.length = 0;
+
+      // Boss in (-1, -1)
+      enemies.push({
+        id: 'boss-abeshu', isBoss: true, name: 'PETRIFIED ARCHON ABESHU', weakTo: 'BLUNT',
+        x: -500, y: -620, hp: 1200, maxHp: 1200, radius: 38, speed: 125,
+        color: '#eab308', kind: 'abeshu_statue', xpValue: 400,
+        pattern: 'zhad_cymatic', hitFlash: 0, shootCooldown: 1.3
+      });
+
+      // Mobs per room
+      const configs = [
+        { gx: 0, gy: -1, mobs: [{ name: 'Spike Dungeon Skeleton', weakTo: 'BLUNT', kind: 'undead_warrior', color: '#38bdf8', hp: 120 }] },
+        { gx: 1, gy: 0,  mobs: [{ name: 'Dilmun High Sorceress', weakTo: 'SLASH', kind: 'sorceress', color: '#f43f5e', hp: 100 }, { name: 'Archive Gargoyle', weakTo: 'PIERCE', kind: 'greater_demon', color: '#28517a', hp: 140 }] },
+        { gx: 0, gy: 1,  mobs: [{ name: 'Boiling Blood Giant', weakTo: 'PIERCE', kind: 'fire_giant', color: '#ea580c', hp: 150 }] },
+        { gx: -1, gy: 0, mobs: [{ name: 'Crypt Lich Vanguard', weakTo: 'BLUNT', kind: 'undead_warrior', color: '#60a5fa', hp: 135 }] },
+        { gx: 1, gy: -1, mobs: [{ name: 'Bastion Winged Fiend', weakTo: 'PIERCE', kind: 'greater_demon', color: '#1e3a5f', hp: 155 }] },
+        { gx: -1, gy: 1, mobs: [{ name: 'Cobold Sun-Prowler', weakTo: 'SLASH', kind: 'cobold_king', color: '#3f7d4c', hp: 110 }] },
+        { gx: 1, gy: 1,  mobs: [{ name: 'Smelter Golem Construct', weakTo: 'BLUNT', kind: 'abeshu_statue', color: '#78716c', hp: 165 }] }
+      ];
+
+      configs.forEach(sc => {
+        const cx = sc.gx * TILE_SIZE + 500;
+        const cy = sc.gy * TILE_SIZE + 500;
+        sc.mobs.forEach((m, idx) => {
+          for (let i = 0; i < 2; i++) {
+            enemies.push({
+              id: `mob-${sc.gx}-${sc.gy}-${idx}-${i}`, isBoss: false,
+              name: m.name, weakTo: m.weakTo,
+              x: cx + (i === 0 ? -160 : 160), y: cy + (idx === 0 ? -120 : 120),
+              hp: m.hp, maxHp: m.hp, radius: 18, speed: 135,
+              color: m.color, kind: m.kind, xpValue: 65,
+              ranged: m.kind === 'sorceress' || m.kind === 'greater_demon',
+              hitFlash: 0, shootCooldown: 1.5 + Math.random()
+            });
+          }
+        });
+      });
+
+      // 3 Seals Coffers
+      lootChests.push({
+        id: 'chest-sun-seal', x: 1500, y: 500, label: '☀️ SUN SEAL COFFER', isSealChest: 'sun', gold: 120, atman: 25,
+        items: [{ name: 'Sun Seal of Vrana', slot: 'relic', isSeal: 'sun', atk: 12, hp: 40, mp: 30 }]
+      });
+      lootChests.push({
+        id: 'chest-blood-seal', x: 500, y: 1500, label: '🩸 BLOOD SEAL COFFER', isSealChest: 'blood', gold: 120, atman: 25,
+        items: [{ name: 'Blood Seal of Namis', slot: 'relic', isSeal: 'blood', atk: 14, hp: 50, mp: 20 }]
+      });
+      lootChests.push({
+        id: 'chest-bone-seal', x: -500, y: 500, label: '💀 BONE SEAL COFFER', isSealChest: 'bone', gold: 120, atman: 25,
+        items: [{ name: 'Bone Seal of Werdna', slot: 'relic', isSeal: 'bone', atk: 15, hp: 35, mp: 35 }]
+      });
+    }
+
+    // =========================================================================
+    // 6. CREATION & MODAL SETUP
+    // =========================================================================
+    function initCreationUI() {
+      const raceSel = document.getElementById('char-race');
+      const subSel = document.getElementById('char-subrace');
+      if (!raceSel || !subSel) return;
+
+      raceSel.innerHTML = '';
+      Object.keys(RACE_TREE).forEach(r => {
+        const o = document.createElement('option'); o.value = r; o.textContent = r;
+        raceSel.appendChild(o);
+      });
+
+      function populateSubraces() {
+        const rKey = raceSel.value;
+        const rObj = RACE_TREE[rKey];
+        subSel.innerHTML = '';
+        if (!rObj) return;
+        Object.keys(rObj.subraces).forEach(s => {
+          const o = document.createElement('option'); o.value = s; o.textContent = rObj.subraces[s].name;
+          subSel.appendChild(o);
+        });
+        updateLore();
+      }
+
+      function updateLore() {
+        const sObj = RACE_TREE[raceSel.value]?.subraces[subSel.value];
+        if (sObj) document.getElementById('race-lore-box').textContent = sObj.desc;
+      }
+
+      raceSel.addEventListener('change', populateSubraces);
+      subSel.addEventListener('change', updateLore);
+      populateSubraces();
+
+      const armorRow = document.getElementById('armor-swatches');
+      armorRow.innerHTML = '';
+      ARMOR_PALETTE.forEach((col, i) => {
+        const s = document.createElement('div');
+        s.className = 'swatch' + (i === 0 ? ' active' : '');
+        s.style.backgroundColor = col;
+        s.onclick = () => {
+          localPlayer.armorColor = col;
+          armorRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+          s.classList.add('active');
+        };
+        armorRow.appendChild(s);
+      });
+
+      const hairRow = document.getElementById('hair-swatches');
+      hairRow.innerHTML = '';
+      HAIR_PALETTE.forEach((col, i) => {
+        const s = document.createElement('div');
+        s.className = 'swatch' + (i === 0 ? ' active' : '');
+        s.style.backgroundColor = col;
+        s.onclick = () => {
+          localPlayer.hairColor = col;
+          hairRow.querySelectorAll('.swatch').forEach(el => el.classList.remove('active'));
+          s.classList.add('active');
+        };
+        hairRow.appendChild(s);
+      });
+    }
+
+    document.getElementById('btn-roll-name').onclick = () => {
+      document.getElementById('char-name').value = generateLoreName();
+    };
+
+    document.getElementById('btn-awaken').onclick = () => {
+      initAudioEngine();
+      localPlayer.name = document.getElementById('char-name').value.trim() || 'Hawkwind';
+      localPlayer.raceCategory = document.getElementById('char-race').value;
+      localPlayer.subraceKey = document.getElementById('char-subrace').value;
+      localPlayer.coreClass = document.getElementById('char-class').value;
+      localPlayer.regionalSect = document.getElementById('char-sect').value;
+
+      const sub = getSubraceMeta(localPlayer);
+      localPlayer.raceLabel = sub.name;
+      localPlayer.maxHp = CLASS_PROGRESSION[localPlayer.coreClass].hp + sub.hpBonus;
+      localPlayer.hp = localPlayer.maxHp;
+      localPlayer.maxMana = CLASS_PROGRESSION[localPlayer.coreClass].mana;
+      localPlayer.mana = localPlayer.maxMana;
+
+      document.getElementById('char-modal').style.display = 'none';
+      document.getElementById('hud').style.display = 'block';
+      document.getElementById('vitals-name').textContent = localPlayer.name;
+      document.getElementById('player-portrait-badge').textContent = localPlayer.name.charAt(0).toUpperCase();
+      document.getElementById('vitals-race').textContent = sub.name;
+
+      renderHotbarUI();
+      updateVitalsUI();
+      triggerSoulsBanner('STAGE 1: PURGATORY OF DILMUN');
+    };
+
+    function renderHotbarUI() {
+      const container = document.getElementById('hotbar-container');
+      container.innerHTML = '';
+      for (let i = 0; i < 6; i++) {
+        const sp = GRIMOIRE_SPELLS[i];
+        const slot = document.createElement('div');
+        slot.className = 'hotkey-slot';
+        slot.innerHTML = `
+          <span class="hotkey-num">${i + 1}</span>
+          <span class="hotkey-mp">${sp.mp}</span>
+          <span class="hotkey-icon">${sp.icon}</span>
+          <span class="hotkey-label">${sp.name.split(' ')[0]}</span>
+          <div class="cd-overlay" id="cd-slot-${i}"></div>
+        `;
+        slot.onclick = () => triggerSpellSlot(i);
+        container.appendChild(slot);
+      }
+    }
+
+    function updateVitalsUI() {
+      document.getElementById('hp-txt').textContent = `${Math.max(0, Math.round(localPlayer.hp))}/${localPlayer.maxHp}`;
+      document.getElementById('hp-fill').style.width = `${Math.max(0, (localPlayer.hp / localPlayer.maxHp) * 100)}%`;
+      document.getElementById('mana-txt').textContent = `${Math.max(0, Math.round(localPlayer.mana))}/${localPlayer.maxMana}`;
+      document.getElementById('mana-fill').style.width = `${Math.max(0, (localPlayer.mana / localPlayer.maxMana) * 100)}%`;
+      document.getElementById('atman-txt').textContent = `${Math.round(localPlayer.atman)}/${localPlayer.maxAtman}`;
+      document.getElementById('atman-fill').style.width = `${Math.min(100, (localPlayer.atman / localPlayer.maxAtman) * 100)}%`;
+      document.getElementById('gold-hud').textContent = `${localPlayer.gold}g`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.style.display = 'block';
+      clearTimeout(window._tTimer);
+      window._tTimer = setTimeout(() => { t.style.display = 'none'; }, 2600);
+    }
+
+    function triggerSoulsBanner(text) {
+      const b = document.getElementById('souls-banner');
+      b.textContent = text; b.style.display = 'block';
+      clearTimeout(window._bTimer);
+      window._bTimer = setTimeout(() => { b.style.display = 'none'; }, 3200);
+    }
+
+    // =========================================================================
+    // 7. INPUTS & COMBAT CONTROLS
+    // =========================================================================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let screenW = window.innerWidth, screenH = window.innerHeight;
+    canvas.width = screenW; canvas.height = screenH;
+    generateProceduralTextures(ctx);
+
+    window.onresize = () => {
+      screenW = window.innerWidth; screenH = window.innerHeight;
+      canvas.width = screenW; canvas.height = screenH;
+      generateProceduralTextures(ctx);
+    };
+
+    let mouseScreenX = screenW / 2, mouseScreenY = screenH / 2;
+    window.onmousemove = (e) => { mouseScreenX = e.clientX; mouseScreenY = e.clientY; };
+
+    const keys = {};
+    window.onkeydown = (e) => {
+      if (document.activeElement === document.getElementById('chat-input')) {
+        if (e.key === 'Enter') sendChat();
+        return;
+      }
+      keys[e.key.toLowerCase()] = true;
+      if (e.code === 'Space') { e.preventDefault(); performPrimaryWeaponAttack(); }
+      else if (e.key.toLowerCase() === 'z') selectWeaponSlot(0);
+      else if (e.key.toLowerCase() === 'x') selectWeaponSlot(1);
+      else if (e.key.toLowerCase() === 'c') selectWeaponSlot(2);
+      else if (e.key.toLowerCase() === 'v') {
+        const order = ['fury', 'precision', 'bastion'];
+        setCombatStance(order[(order.indexOf(localPlayer.combatStance) + 1) % order.length]);
+      }
+      else if (e.key.toLowerCase() === 'r') triggerAtmanCymaticBurst();
+      else if (e.key === 'Shift') { e.preventDefault(); triggerDodgeRoll(); }
+      else if (['1','2','3','4','5','6'].includes(e.key)) triggerSpellSlot(parseInt(e.key) - 1);
+      else if (e.key.toLowerCase() === 'e') interactWithWorldObject();
+      else if (e.key.toLowerCase() === 'i') toggleInventory();
+      else if (e.key.toLowerCase() === 'g') toggleGrimoire();
+      else if (e.key === 'Tab') { e.preventDefault(); cycleTabTarget(); }
+    };
+    window.onkeyup = (e) => { keys[e.key.toLowerCase()] = false; };
+
+    canvas.onmousedown = (e) => {
+      initAudioEngine();
+      const clickX = e.clientX + (localPlayer.x - screenW / 2);
+      const clickY = e.clientY + (localPlayer.y - screenH / 2);
+
+      for (let i = lootChests.length - 1; i >= 0; i--) {
+        if (Math.hypot(clickX - lootChests[i].x, clickY - lootChests[i].y) < 38) {
+          if (Math.hypot(localPlayer.x - lootChests[i].x, localPlayer.y - lootChests[i].y) < 135) openChestLootModal(i);
+          else { localPlayer.targetX = lootChests[i].x; localPlayer.targetY = lootChests[i].y; }
+          return;
+        }
+      }
+
+      for (const en of enemies) {
+        if (Math.hypot(clickX - en.x, clickY - en.y) < en.radius + 22) {
+          localPlayer.targetEntityId = en.id;
+          performPrimaryWeaponAttack();
+          return;
+        }
+      }
+
+      if (e.button === 2) performPrimaryWeaponAttack();
+      else { localPlayer.targetX = clickX; localPlayer.targetY = clickY; }
+    };
+
+    canvas.oncontextmenu = (e) => { e.preventDefault(); performPrimaryWeaponAttack(); };
+
+    function getAimAngle() {
+      if (localPlayer.autoAim) {
+        let lock = enemies.find(e => e.id === localPlayer.targetEntityId);
+        if (!lock) {
+          let bDist = 450;
+          enemies.forEach(en => {
+            const d = Math.hypot(en.x - localPlayer.x, en.y - localPlayer.y);
+            if (d < bDist) { bDist = d; lock = en; }
+          });
+        }
+        if (lock) {
+          localPlayer.facing = lock.x >= localPlayer.x ? 1 : -1;
+          return Math.atan2(lock.y - localPlayer.y, lock.x - localPlayer.x);
+        }
+      }
+      const wx = mouseScreenX + (localPlayer.x - screenW / 2);
+      const wy = mouseScreenY + (localPlayer.y - screenH / 2);
+      localPlayer.facing = wx >= localPlayer.x ? 1 : -1;
+      return Math.atan2(wy - localPlayer.y, wx - localPlayer.x);
+    }
+
+    function triggerDodgeRoll() {
+      if (localPlayer.dodgeTimer > 0) return;
+      playSfx('bow'); localPlayer.dodgeTimer = 18;
+      const ang = getAimAngle();
+      resolveDungeonMovement(localPlayer, localPlayer.x + Math.cos(ang) * 120, localPlayer.y + Math.sin(ang) * 120);
+    }
+
+    function triggerAtmanCymaticBurst() {
+      if (localPlayer.atman < 35) { showToast('Need 35 Atman in Urn! Slay foes to harvest.'); return; }
+      localPlayer.atman -= 35;
+      playSfx('atman'); screenShake = 12;
+      localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + Math.round(localPlayer.maxHp * 0.4));
+      spawnCombatText(localPlayer.x, localPlayer.y - 20, '+ATMAN CYMATIC BURST!', '#fbbf24');
+      for (let i = 0; i < 12; i++) {
+        projectiles.push({
+          ownerId: localPlayer.id, isEnemy: false, dmgType: 'ARCANE',
+          x: localPlayer.x, y: localPlayer.y - 18,
+          vx: Math.cos((i / 12) * Math.PI * 2) * 500, vy: Math.sin((i / 12) * Math.PI * 2) * 500,
+          angle: (i / 12) * Math.PI * 2, dmg: 75, color: '#fbbf24', radius: 10, life: 1.2
+        });
+      }
+      updateVitalsUI();
+    }
+
+    function triggerSpellSlot(slotIdx) {
+      const sp = GRIMOIRE_SPELLS[slotIdx];
+      if (!sp || localPlayer.mana < sp.mp) { showToast('Not enough Mana!'); return; }
+      localPlayer.mana -= sp.mp;
+      localPlayer.swingTimer = 18;
+      const baseAng = getAimAngle();
+      playSfx('spell');
+
+      if (sp.type === 'heal') {
+        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 90);
+        spawnCombatText(localPlayer.x, localPlayer.y - 20, '+90 MADI', '#4ade80');
+      } else if (sp.type === 'buff') {
+        localPlayer.speed = 400; setTimeout(() => { localPlayer.speed = localPlayer.baseSpeed; }, 2500);
+        showToast('PORFIC Shield Active!');
+      } else {
+        projectiles.push({
+          ownerId: localPlayer.id, isEnemy: false, dmgType: sp.dmgType,
+          x: localPlayer.x, y: localPlayer.y - 18,
+          vx: Math.cos(baseAng) * 550, vy: Math.sin(baseAng) * 550,
+          angle: baseAng, dmg: sp.dmg, color: sp.color, radius: 8, life: 1.3
+        });
+      }
+      updateVitalsUI();
+    }
+
+    function interactWithWorldObject() {
+      for (let i = lootChests.length - 1; i >= 0; i--) {
+        if (Math.hypot(localPlayer.x - lootChests[i].x, localPlayer.y - lootChests[i].y) < 135) {
+          openChestLootModal(i); return;
+        }
+      }
+      toggleNearestGate();
+    }
+
+    function cycleTabTarget() {
+      if (enemies.length === 0) return;
+      const next = enemies[(enemies.findIndex(e => e.id === localPlayer.targetEntityId) + 1) % enemies.length];
+      localPlayer.targetEntityId = next.id;
+      showToast(`Target: ${next.name} [Weakness: ${next.weakTo}]`);
+    }
+
+    function spawnCombatText(x, y, text, color) {
+      combatTexts.push({ x, y: y - 26, text, color, life: 48 });
+    }
+    function spawnSlashArc(x, y, facing, color, radius) {
+      slashArcs.push({ x, y, facing, color, radius, life: 14 });
+    }
+    function spawnSpellVortex(x, y, color, radius) {
+      spellVortexes.push({ x, y, color, radius, life: 25 });
+    }
+    function spawnOvaDecapitation(x, y, facing) {
+      playSfx('slash'); screenShake = 7;
+      flyingHeads.push({ x, y: y - 24, vx: facing * 140, vy: -150, rot: 0, life: 45 });
+    }
+
+    function toggleInventory(s) {
+      const el = document.getElementById('inventory-modal');
+      el.style.display = (typeof s === 'boolean' ? s : el.style.display !== 'flex') ? 'flex' : 'none';
+      if (el.style.display === 'flex') {
+        document.getElementById('eq-wpn1-name').textContent = localPlayer.weapons[0].name;
+        document.getElementById('eq-wpn2-name').textContent = localPlayer.weapons[1].name;
+        document.getElementById('eq-wpn3-name').textContent = localPlayer.weapons[2].name;
+        const grid = document.getElementById('bag-grid'); grid.innerHTML = '';
+        localPlayer.backpack.forEach(it => {
+          const slot = document.createElement('div'); slot.className = 'bag-slot';
+          slot.innerHTML = `<span style="font-size:10px; color:#fde047;">${it.name}</span>`;
+          grid.appendChild(slot);
+        });
+      }
+    }
+    function toggleGrimoire(s) {
+      const el = document.getElementById('grimoire-modal');
+      el.style.display = (typeof s === 'boolean' ? s : el.style.display !== 'flex') ? 'flex' : 'none';
+    }
+
+    function sendChat() {
+      const inp = document.getElementById('chat-input');
+      if (!inp.value.trim()) return;
+      const log = document.getElementById('chat-log');
+      const d = document.createElement('div'); d.className = 'chat-msg';
+      d.innerHTML = `<span class="author">${localPlayer.name}:</span><span>${inp.value}</span>`;
+      log.appendChild(d); log.scrollTop = log.scrollHeight;
+      inp.value = ''; inp.blur();
+    }
+
+    // =========================================================================
+    // 8. 2.5D ARTICULATED SPRITE ENGINE
+    // =========================================================================
+    function drawOVACharacter(c, p, cx, cy, timeSec, scOverride = 1.0, isTarget = false, alpha = 1.0) {
+      const sub = getSubraceMeta(p);
+      const sc = sub.scale * scOverride;
+      const facing = p.facing || 1;
+      const legSwing = p.isMoving ? Math.sin(timeSec * 12) * 0.5 : 0;
+
+      c.save(); c.globalAlpha = alpha; c.translate(cx, cy);
+      c.fillStyle = 'rgba(0,0,0,0.7)'; c.beginPath(); c.ellipse(0, 5, 18 * sc, 8 * sc, 0, 0, Math.PI * 2); c.fill();
+
+      c.save(); c.scale(facing * sc, sc);
+      c.strokeStyle = '#040306'; c.lineWidth = 2.2;
+
+      // Cloak
+      c.fillStyle = p.armorColor || '#2b3d54';
+      c.beginPath(); c.moveTo(-9, -28); c.lineTo(9, -28); c.lineTo(13, 2); c.lineTo(-13, 2); c.closePath();
+      c.fill(); c.stroke();
+
+      // Legs
+      c.fillStyle = '#17141f';
+      c.save(); c.translate(-4, -12); c.rotate(-legSwing); c.fillRect(-3, 0, 6, 14); c.strokeRect(-3, 0, 6, 14); c.restore();
+      c.save(); c.translate(4, -12); c.rotate(legSwing); c.fillRect(-3, 0, 6, 14); c.strokeRect(-3, 0, 6, 14); c.restore();
+
+      // Torso
+      c.fillStyle = p.hitFlash > 0 ? '#fff' : '#334155';
+      c.beginPath(); c.roundRect(-10, -29, 20, 19, 3); c.fill(); c.stroke();
+
+      // Head
+      c.fillStyle = p.hitFlash > 0 ? '#fff' : sub.skin;
+      c.beginPath(); c.arc(0, -38, 10, 0, Math.PI * 2); c.fill(); c.stroke();
+
+      c.fillStyle = p.hairColor || '#eab308';
+      c.beginPath(); c.moveTo(-10, -32); c.lineTo(-6, -46); c.lineTo(6, -46); c.lineTo(10, -32); c.closePath(); c.fill();
+
+      // Weapon
+      const wpn = getActiveWeapon();
+      c.save(); c.translate(9, -20);
+      if (wpn.dmgType === 'PIERCE') {
+        c.strokeStyle = '#d97706'; c.lineWidth = 2.5;
+        c.beginPath(); c.arc(0, 0, 15, -Math.PI * 0.45, Math.PI * 0.45); c.stroke();
+      } else if (wpn.dmgType === 'BLUNT') {
+        c.fillStyle = '#78350f'; c.fillRect(-2, -32, 4, 30);
+        c.fillStyle = '#fbbf24'; c.fillRect(-9, -38, 18, 10); c.strokeRect(-9, -38, 18, 10);
+      } else {
+        c.fillStyle = '#e2e8f0';
+        c.beginPath(); c.moveTo(-2, 0); c.lineTo(-3, -36); c.lineTo(2, -40); c.lineTo(3, 0); c.closePath(); c.fill(); c.stroke();
+      }
+      c.restore();
+
+      c.restore(); c.restore();
+    }
+
+    function drawCardArtHostile(c, en, timeSec, isTarget) {
+      c.save(); c.translate(en.x, en.y);
+      const sc = en.isBoss ? 1.8 : 1.0;
+      c.fillStyle = 'rgba(0,0,0,0.6)'; c.beginPath(); c.ellipse(0, 6, en.radius, en.radius * 0.5, 0, 0, Math.PI * 2); c.fill();
+
+      c.save(); c.scale(sc, sc);
+      c.strokeStyle = '#040306'; c.lineWidth = 2;
+      c.fillStyle = en.hitFlash > 0 ? '#fff' : en.color;
+      c.beginPath(); c.roundRect(-12, -26, 24, 25, 4); c.fill(); c.stroke();
+      c.beginPath(); c.arc(0, -34, 9, 0, Math.PI * 2); c.fill(); c.stroke();
+      c.restore();
+
+      const hpRatio = Math.max(0, en.hp / en.maxHp);
+      c.fillStyle = '#040306'; c.fillRect(-20, -en.radius - 24, 40, 5);
+      c.fillStyle = en.isBoss ? '#f97316' : '#ef4444'; c.fillRect(-19, -en.radius - 23, 38 * hpRatio, 3);
+      c.font = '800 9px JetBrains Mono'; c.textAlign = 'center';
+      c.fillStyle = en.weakTo === 'BLUNT' ? '#fde047' : (en.weakTo === 'PIERCE' ? '#93c5fd' : '#fca5a5');
+      c.fillText(`[WEAK: ${en.weakTo}]`, 0, -en.radius - 28);
+      c.restore();
+    }
+
+    function updatePreview(now) {
+      if (document.getElementById('char-modal').style.display !== 'none') {
+        const pc = document.getElementById('previewCanvas');
+        const pCtx = pc.getContext('2d');
+        pCtx.clearRect(0, 0, pc.width, pc.height);
+        drawOVACharacter(pCtx, localPlayer, 120, 160, now * 0.001, 1.5, false, 1.0);
+      }
+    }
+
+    // =========================================================================
+    // 9. MAP MINIMAP & STARTUP
+    // =========================================================================
+    const mapCanvas = document.getElementById('minimapCanvas');
+    const mapCtx = mapCanvas.getContext('2d');
+
+    // Run Initialization Immediately
+    initCreationUI();
+    initStage1World();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
