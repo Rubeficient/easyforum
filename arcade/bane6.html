@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Tartaria — The Purgatory of Dilmun</title>
+<style>
+:root{color-scheme:dark;--gold:#d9ad63;--red:#b83b36;--ink:#0a0910;--panel:rgba(12,11,18,.9);--muted:#a9a1a0}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08070c;color:#eee;font-family:Georgia,serif}
+#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%;cursor:crosshair}
+.panel{background:var(--panel);border:1px solid #765a39;box-shadow:0 8px 36px #000b, inset 0 0 28px #c18c3510;backdrop-filter:blur(8px)}
+#top{position:absolute;top:14px;left:14px;display:flex;gap:10px;align-items:flex-start;pointer-events:none}
+#vitals{width:220px;padding:10px 12px}#vitals b{font-size:12px;letter-spacing:2px;color:var(--gold)}
+.bar{height:9px;background:#28242b;border:1px solid #514238;margin:5px 0 8px;overflow:hidden}.fill{height:100%;width:100%;transition:width .12s}
+#stats{font:11px Arial,sans-serif;color:#c9c2bb;display:flex;justify-content:space-between}
+#objective{padding:10px 13px;max-width:280px;font-size:12px;line-height:1.5;color:#d6c9b5}
+#objective strong{display:block;color:var(--gold);letter-spacing:1.5px;margin-bottom:3px}
+#boss{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:min(420px,70vw);display:none;text-align:center}
+#boss .bar{height:12px}#bossname{font-size:13px;color:#f0c5a2;letter-spacing:2px}
+#map{position:absolute;right:14px;top:14px;width:142px;height:110px;background:#0a0a10bb;border:1px solid #6e583e}
+#bottom{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;align-items:center}
+.slot{width:48px;height:48px;border:1px solid #8d7049;background:#17131bd9;display:grid;place-items:center;position:relative;font-size:22px}
+.slot small{position:absolute;bottom:2px;right:4px;font:10px Arial;color:#d8c5a4}
+#hint{position:absolute;bottom:18px;left:16px;color:#c7bba9;font:11px Arial;line-height:1.6;text-shadow:0 2px 4px #000}
+#toast{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);color:#f2d79d;text-shadow:0 2px 12px #000;font-size:20px;letter-spacing:2px;text-align:center;pointer-events:none;opacity:0;transition:opacity .25s}
+#menu{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#211923dd,#050408f5)}
+#menu .card{width:min(500px,92vw);padding:30px;text-align:center}
+h1{font-size:clamp(28px,5vw,48px);font-weight:normal;letter-spacing:4px;color:#e3c18a;margin:0 0 6px}
+.sub{color:#b9a58c;letter-spacing:3px;font:11px Arial;margin-bottom:24px}
+#menu p{color:#c8c0b7;line-height:1.65;font-size:14px}
+button{background:linear-gradient(#70502e,#392817);border:1px solid #c49a5c;color:#f5dfb6;padding:12px 24px;font: bold 12px Arial;letter-spacing:2px;cursor:pointer;margin-top:12px}
+button:hover{filter:brightness(1.25)}
+#message{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#050408d9}
+#message .card{padding:30px;text-align:center;max-width:480px;width:90%}
+@media(max-width:650px){#objective{display:none}#map{width:100px;height:80px}#vitals{width:175px}#hint{font-size:10px}.slot{width:42px;height:42px}}
+</style>
+</head>
+<body>
+<div id="game"><canvas id="world"></canvas></div>
+<div id="top">
+ <div id="vitals" class="panel"><b id="hero">VESSEL · LEVEL 1</b>
+  <div class="bar"><div id="hp" class="fill" style="background:#a83c39"></div></div>
+  <div class="bar"><div id="mana" class="fill" style="background:#397eaa"></div></div>
+  <div id="stats"><span id="hptext">100 / 100 HP</span><span id="gold">0 G</span></div>
+ </div>
+ <div id="objective" class="panel"><strong>THE THREE SEALS</strong><span id="goal">Recover the Sun, Blood, and Bone seals. Find the Archon Gate.</span></div>
+</div>
+<div id="boss"><div id="bossname">ARCHON ABESHU</div><div class="bar"><div id="bosshp" class="fill" style="background:#a82e38"></div></div></div>
+<canvas id="map" width="284" height="220"></canvas>
+<div id="bottom"><div class="slot">⚔<small>1</small></div><div class="slot">✦<small>2</small></div><div class="slot">◈<small>3</small></div><div class="slot">◉<small>SPACE</small></div></div>
+<div id="hint">WASD / ARROWS · MOVE &nbsp; MOUSE · AIM &nbsp; CLICK / SPACE · ATTACK<br>SHIFT · DODGE &nbsp; E · INTERACT</div>
+<div id="toast"></div>
+<div id="menu"><div class="card panel"><h1>TARTARIA</h1><div class="sub">STAGE I · THE PURGATORY OF DILMUN</div><p>A broken vessel awakens beside the eternal fire. Three seals bind the Archon Gate. Recover them, survive the dead, and descend into the forbidden vaults.</p><p>Move with WASD. Aim with your mouse. Click or press Space to strike. Press E beside each glowing seal to collect it. Collect all three, then defeat Abeshu.</p><button id="start">ENTER THE PURGATORY</button></div></div>
+<div id="message"><div class="card panel"><h1 id="ending">VICTORY</h1><p id="endingText"></p><button id="again">RETURN TO THE FIRE</button></div></div>
+<script>
+(()=> {
+'use strict';
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d'),map=document.getElementById('map'),mctx=map.getContext('2d');
+let W=innerWidth,H=innerHeight,dpr=Math.min(devicePixelRatio||1,2);
+function resize(){W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+const world={w:2400,h:1800},keys={},mouse={x:W/2,y:H/2,down:false};
+const rooms=[
+{x:900,y:650,w:600,h:500,name:'THE FIREPIT',safe:true},
+{x:100,y:100,w:600,h:500,name:'SUN CHAMBER',seal:'sun'},
+{x:1700,y:100,w:600,h:500,name:'BLOOD CHAMBER',seal:'blood'},
+{x:100,y:1200,w:600,h:500,name:'BONE CHAMBER',seal:'bone'},
+{x:1700,y:1200,w:600,h:500,name:'ARCHON SANCTUM',boss:true}
+];
+const corridors=[
+ // One continuous cross-shaped passage connects all four seal chambers to the firepit.
+ {x:400,y:820,w:1600,h:130},
+ {x:335,y:550,w:130,h:750},
+ {x:1935,y:550,w:130,h:750}
+];
+const obstacles=[
+{x:1120,y:760,r:42},{x:1280,y:760,r:42},{x:1120,y:1040,r:42},{x:1280,y:1040,r:42},
+{x:330,y:330,r:38},{x:470,y:440,r:30},{x:1940,y:300,r:42},{x:2110,y:450,r:30},
+{x:320,y:1450,r:45},{x:500,y:1570,r:32},{x:1870,y:1420,r:42},{x:2160,y:1550,r:38}
+];
+const seals={sun:false,blood:false,bone:false};
+let player,enemies,shots,particles,loot,started=false,dead=false,boss,toastTimer=0,last=0,elapsed=0;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function reset(){
+ player={x:1200,y:900,r:17,hp:100,maxHp:100,mana:60,maxMana:60,speed:230,level:1,xp:0,gold:0,attack:0,dodge:0,invuln:0,face:0};
+ enemies=[];shots=[];particles=[];loot=[];Object.keys(seals).forEach(k=>seals[k]=false);
+ const spawns=[[280,280],[530,430],[1900,280],[2150,450],[280,1450],[510,1550],[1850,1450],[2150,1550]];
+ spawns.forEach((p,i)=>enemies.push(makeEnemy(p[0],p[1],i%3===0?'ranged':'wraith')));
+ boss=makeEnemy(2000,1450,'boss');boss.alive=false;boss.hp=600;boss.maxHp=600;boss.r=36;
+ dead=false;elapsed=0;updateUI();
+}
+function makeEnemy(x,y,type){let boss=type==='boss';return{x,y,r:boss?36:18,hp:boss?600:(type==='ranged'?55:75),maxHp:boss?600:(type==='ranged'?55:75),speed:boss?78:(type==='ranged'?65:92),type,attack:0,flash:0,alive:true}}
+function roomAt(x,y){return rooms.find(r=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)||corridors.find(r=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)}
+function walkable(x,y){if(x<20||y<20||x>world.w-20||y>world.h-20)return false;return !!roomAt(x,y)}
+function moveEntity(e,nx,ny){if(walkable(nx,e.y))e.x=nx;if(walkable(e.x,ny))e.y=ny;for(const o of obstacles){let dx=e.x-o.x,dy=e.y-o.y,d=Math.hypot(dx,dy),min=e.r+o.r;if(d<min&&d>.001){e.x=o.x+dx/d*min;e.y=o.y+dy/d*min}}}
+function notify(t){const el=document.getElementById('toast');el.textContent=t;el.style.opacity=1;toastTimer=2.3}
+function updateUI(){document.getElementById('hp').style.width=player.hp/player.maxHp*100+'%';document.getElementById('mana').style.width=player.mana/player.maxMana*100+'%';document.getElementById('hptext').textContent=Math.ceil(player.hp)+' / '+player.maxHp+' HP';document.getElementById('gold').textContent=player.gold+' G';document.getElementById('hero').textContent='VESSEL · LEVEL '+player.level;let n=Object.values(seals).filter(Boolean).length;document.getElementById('goal').textContent=n+'/3 seals recovered · '+(n===3?'Archon Gate unlocked. Enter the Sanctum.':'Search for the '+['Sun','Blood','Bone'].filter((s)=>!seals[s.toLowerCase()]).join(', ')+' seal'+(n===2?'':'s')+'. Press E beside a glowing seal.')}
+function attack(){if(!started||dead||player.attack>0)return;player.attack=.34;const cam=camera(),ax=mouse.x+cam.x,ay=mouse.y+cam.y,ang=Math.atan2(ay-player.y,ax-player.x);player.face=ang;shots.push({x:player.x+Math.cos(ang)*22,y:player.y+Math.sin(ang)*22,vx:Math.cos(ang)*600,vy:Math.sin(ang)*600,life:.48,damage:34,r:7,enemy:false});burst(player.x+Math.cos(ang)*28,player.y+Math.sin(ang)*28,'#e8c17c',5)}
+function dodge(){if(player.dodge>0||player.mana<8)return;player.mana-=8;player.invuln=.42;player.dodge=.75;let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy){dx=Math.cos(player.face);dy=Math.sin(player.face)}let l=Math.hypot(dx,dy)||1;moveEntity(player,player.x+dx/l*150,player.y+dy/l*150)}
+function burst(x,y,color,n){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,s=30+Math.random()*170;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.3+Math.random()*.45,color})}}
+function damagePlayer(n){if(player.invuln>0||dead)return;player.hp=Math.max(0,player.hp-n);player.invuln=.45;burst(player.x,player.y,'#d34b43',10);if(player.hp<=0){dead=true;endGame(false)}updateUI()}
+function killEnemy(e){e.alive=false;player.xp+=e.type==='boss'?500:35;player.gold+=e.type==='boss'?250:18;burst(e.x,e.y,'#d8ae68',20);if(e.type==='boss'){notify('ARCHON ABESHU SLAIN');endGame(true)}else if(Math.random()<.55)loot.push({x:e.x,y:e.y,r:9,value:12});if(player.xp>=player.level*100){player.xp-=player.level*100;player.level++;player.maxHp+=12;player.hp=player.maxHp;notify('VESSEL STRENGTHENED · LEVEL '+player.level)}updateUI()}
+function endGame(win){document.getElementById('message').style.display='flex';document.getElementById('ending').textContent=win?'THE GATE IS OPEN':'VESSEL BROKEN';document.getElementById('endingText').textContent=win?'Abeshu has fallen. The descent into the Forbidden Vaults awaits. Stage I complete.':'The fire calls your Atman home. Gather yourself and return to the Purgatory.'}
+function camera(){return{x:clamp(player.x-W/2,0,world.w-W),y:clamp(player.y-H/2,0,world.h-H)}}
+function update(dt){
+ if(!started||dead)return;elapsed+=dt;player.attack=Math.max(0,player.attack-dt);player.dodge=Math.max(0,player.dodge-dt);player.invuln=Math.max(0,player.invuln-dt);player.mana=Math.min(player.maxMana,player.mana+7*dt);
+ let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),len=Math.hypot(dx,dy);if(len){moveEntity(player,player.x+dx/len*player.speed*dt,player.y+dy/len*player.speed*dt);player.face=Math.atan2(dy,dx)}
+ if(mouse.down&&player.attack<=0)attack();
+ for(let i=shots.length-1;i>=0;i--){let s=shots[i];s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;if(s.life<=0||!walkable(s.x,s.y)){shots.splice(i,1);continue}if(!s.enemy){let hit=enemies.concat(boss.alive?[boss]:[]).find(e=>e.alive&&Math.hypot(e.x-s.x,e.y-s.y)<e.r+s.r);if(hit){hit.hp-=s.damage;hit.flash=.12;burst(s.x,s.y,'#f1cf8b',5);if(hit.hp<=0)killEnemy(hit);shots.splice(i,1)}}else if(Math.hypot(player.x-s.x,player.y-s.y)<player.r+s.r){damagePlayer(s.damage);shots.splice(i,1)}}
+ for(const e of enemies.concat(boss.alive?[boss]:[])){if(!e.alive)continue;e.attack=Math.max(0,e.attack-dt);e.flash=Math.max(0,e.flash-dt);let d=dist(e,player),ang=Math.atan2(player.y-e.y,player.x-e.x);if(d<520&&d>e.r+player.r+5){if(e.type!=='ranged'||d>220)moveEntity(e,e.x+Math.cos(ang)*e.speed*dt,e.y+Math.sin(ang)*e.speed*dt)}if(d<e.r+player.r+8&&e.attack<=0){e.attack=1.05;damagePlayer(e.type==='boss'?18:10)}if((e.type==='ranged'||e.type==='boss')&&d<440&&e.attack<=0){e.attack=e.type==='boss'?1.35:2;let a=ang;let count=e.type==='boss'?7:1;for(let j=0;j<count;j++){let aa=a+(j-(count-1)/2)*.22;shots.push({x:e.x,y:e.y,vx:Math.cos(aa)*260,vy:Math.sin(aa)*260,life:2,damage:e.type==='boss'?13:9,r:7,enemy:true})}}}
+ for(let i=loot.length-1;i>=0;i--)if(dist(loot[i],player)<28){player.gold+=loot[i].value;loot.splice(i,1);updateUI()}
+ for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt}particles=particles.filter(p=>p.life>0);
+ if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)document.getElementById('toast').style.opacity=0}
+ if(Object.values(seals).every(Boolean)&&!boss.alive&&boss.hp>0){boss.alive=true;document.getElementById('boss').style.display='block';notify('THE ARCHON AWAKENS');}
+ updateUI();
+}
+function interact(){if(!started||dead)return;for(const r of rooms){if(!r.seal||seals[r.seal])continue;if(Math.hypot(player.x-(r.x+r.w/2),player.y-(r.y+r.h/2))<190){seals[r.seal]=true;notify(r.seal.toUpperCase()+' SEAL RECOVERED');updateUI();return}}if(boss.alive&&dist(player,boss)<100)notify('THE ARCHON HAS NO MERCY')}
+function draw(){
+ ctx.clearRect(0,0,W,H);let cam=camera();ctx.save();ctx.translate(-cam.x,-cam.y);ctx.fillStyle='#07060b';ctx.fillRect(cam.x,cam.y,W,H);
+ for(const r of rooms){ctx.fillStyle=r.safe?'#29231f':r.boss?'#281619':'#171925';ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle=r.safe?'#a57c49':r.boss?'#8c3438':'#596276';ctx.lineWidth=7;ctx.strokeRect(r.x+3,r.y+3,r.w-6,r.h-6);ctx.fillStyle='#c8b38e';ctx.font='14px Georgia';ctx.textAlign='center';ctx.fillText(r.name,r.x+r.w/2,r.y+34);if(r.seal&&!seals[r.seal]){let x=r.x+r.w/2,y=r.y+r.h/2;ctx.shadowBlur=22;ctx.shadowColor='#e3bd69';ctx.fillStyle='#d7b36d';ctx.beginPath();ctx.arc(x,y,17+Math.sin(elapsed*3)*3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#211a18';ctx.font='bold 10px Arial';ctx.fillText(r.seal.toUpperCase(),x,y+4)}}
+ for(const c of corridors){ctx.fillStyle='#1b1b25';ctx.fillRect(c.x,c.y,c.w,c.h);ctx.strokeStyle='#50505c';ctx.lineWidth=3;ctx.strokeRect(c.x,c.y,c.w,c.h)}
+ for(const o of obstacles){ctx.fillStyle='#34303a';ctx.strokeStyle='#8d7655';ctx.lineWidth=3;ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#65513b';ctx.beginPath();ctx.arc(o.x-8,o.y-9,o.r*.45,0,Math.PI*2);ctx.fill()}
+ // central bonfire
+ let f=rooms[0];ctx.shadowBlur=42;ctx.shadowColor='#e65d1d';ctx.fillStyle='#c4511d';ctx.beginPath();ctx.arc(1200,900,32+Math.sin(elapsed*8)*5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#ffce69';ctx.beginPath();ctx.arc(1200,900,13,0,Math.PI*2);ctx.fill();
+ for(const l of loot){ctx.fillStyle='#f4d27e';ctx.shadowBlur=15;ctx.shadowColor='#f4d27e';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0}
+ for(const e of enemies.concat(boss.alive?[boss]:[])){if(!e.alive)continue;ctx.save();ctx.translate(e.x,e.y);ctx.fillStyle=e.flash>0?'#fff':e.type==='boss'?'#9d3039':e.type==='ranged'?'#547c9b':'#7b657c';ctx.shadowBlur=e.type==='boss'?28:10;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#eee';ctx.beginPath();ctx.arc(-6,-4,3,0,Math.PI*2);ctx.arc(6,-4,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#20151a';ctx.fillRect(-e.r,-e.r-12,e.r*2,4);ctx.fillStyle='#bd4c43';ctx.fillRect(-e.r,-e.r-12,e.r*2*Math.max(0,e.hp/e.maxHp),4);ctx.restore()}
+ for(const s of shots){ctx.fillStyle=s.enemy?'#db6552':'#f3d18a';ctx.shadowBlur=12;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0}
+ for(const p of particles){ctx.globalAlpha=clamp(p.life*2,0,1);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,3,3)}ctx.globalAlpha=1;
+ ctx.save();ctx.translate(player.x,player.y);ctx.rotate(player.face);ctx.globalAlpha=player.invuln>0&&Math.floor(elapsed*18)%2===0?.35:1;ctx.fillStyle='#c8b18b';ctx.strokeStyle='#f0d5a5';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,17,14,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#31202a';ctx.fillRect(2,-4,25,8);ctx.fillStyle='#e7d6b4';ctx.fillRect(20,-2,18,4);ctx.restore();
+ ctx.restore();drawMap(cam);
+}
+function drawMap(cam){mctx.clearRect(0,0,map.width,map.height);mctx.fillStyle='#08080d';mctx.fillRect(0,0,map.width,map.height);let sx=map.width/world.w,sy=map.height/world.h;for(const r of rooms){mctx.fillStyle=r.safe?'#675038':r.boss?'#6e2429':'#34394a';mctx.fillRect(r.x*sx,r.y*sy,r.w*sx,r.h*sy);if(r.seal&&!seals[r.seal]){mctx.fillStyle='#f4d17c';mctx.fillRect((r.x+r.w/2)*sx-2,(r.y+r.h/2)*sy-2,4,4)}}mctx.fillStyle='#f5e4bd';mctx.beginPath();mctx.arc(player.x*sx,player.y*sy,4,0,Math.PI*2);mctx.fill();mctx.strokeStyle='#fff';mctx.strokeRect(cam.x*sx,cam.y*sy,W*sx,H*sy)}
+function frame(t){let dt=Math.min((t-last)/1000,.04||0);last=t;update(dt);draw();requestAnimationFrame(frame)}
+addEventListener('keydown',e=>{let k=e.key.toLowerCase();keys[k]=true;if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(k===' ')attack();if(k==='shift')dodge();if(k==='e')interact()});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+canvas.addEventListener('mousemove',e=>{let r=canvas.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top});
+canvas.addEventListener('mousedown',()=>{mouse.down=true;attack()});addEventListener('mouseup',()=>mouse.down=false);
+document.getElementById('start').onclick=()=>{document.getElementById('menu').style.display='none';started=true;notify('THE FIRE REMEMBERS YOU')};
+document.getElementById('again').onclick=()=>{document.getElementById('message').style.display='none';document.getElementById('boss').style.display='none';reset();started=true;notify('RETURN TO THE FIRE')};
+reset();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
