@@ -464,3 +464,991 @@
     // =========================================================================
     const TILE_SIZE = 1000;
     const FIREPIT_POS = { x: 500, y: 500,
+```javascript
+      radius: 64, safeRadius: 390 };
+
+    // Bounded Stage 1: Exactly 9 Curated Chambers in a 3x3 Grid (gx: -1..1, gy: -1..1)
+    const STAGE_SECTORS = {
+      // Center (0, 0): Firepit Sanctum (Safezone Hub)
+      '0,0': {
+        gx: 0, gy: 0, name: 'Stage 1: Firepit Sanctum (0, 0)',
+        floor: 'stone_slate', safe: true, isBossRoom: false,
+        rects: [
+          { x: 340, y: -90, w: 320, h: 1180, isSpine: true },
+          { x: -90, y: 340, w: 1180, h: 320, isSpine: true },
+          { x: 100, y: 100, w: 800, h: 800, isMain: true }
+        ],
+        hazards: [],
+        pillars: [{ x: 260, y: 260, r: 32 }, { x: 740, y: 260, r: 32 }, { x: 260, y: 740, r: 32 }, { x: 740, y: 740, r: 32 }]
+      },
+      // North (0, -1): Spike Gauntlet Hallway
+      '0,-1': {
+        gx: 0, gy: -1, name: 'North: Spike Gauntlet Corridor',
+        floor: 'stone_dark', safe: false, isBossRoom: false,
+        rects: [
+          { x: 340, y: -1090, w: 320, h: 1180, isSpine: true },
+          { x: -90, y: -660, w: 1180, h: 320, isSpine: true },
+          { x: 160, y: -840, w: 680, h: 680, isMain: true }
+        ],
+        hazards: [
+          { type: 'spikes', x: 500, y: -500, w: 180, h: 180 },
+          { type: 'spikes', x: 320, y: -720, w: 120, h: 120 },
+          { type: 'spikes', x: 680, y: -720, w: 120, h: 120 }
+        ],
+        pillars: [{ x: 300, y: -700, r: 28 }, { x: 700, y: -700, r: 28 }]
+      },
+      // East (1, 0): Sunken Library (Sun Seal Altar)
+      '1,0': {
+        gx: 1, gy: 0, name: 'East: Sunken Archives (Sun Seal)',
+        floor: 'stone_slate', safe: false, isBossRoom: false,
+        sealType: 'sun',
+        rects: [
+          { x: 1340, y: -90, w: 320, h: 1180, isSpine: true },
+          { x: 910, y: 340, w: 1180, h: 320, isSpine: true },
+          { x: 1120, y: 120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [
+          { type: 'acid', x: 1360, y: 360, r: 65 },
+          { type: 'acid', x: 1640, y: 640, r: 70 }
+        ],
+        pillars: [{ x: 1280, y: 280, r: 30 }, { x: 1720, y: 280, r: 30 }, { x: 1280, y: 720, r: 30 }, { x: 1720, y: 720, r: 30 }]
+      },
+      // South (0, 1): Blood Mire of Namis (Blood Seal Altar)
+      '0,1': {
+        gx: 0, gy: 1, name: 'South: Blood Mire of Namis (Blood Seal)',
+        floor: 'stone_crimson', safe: false, isBossRoom: false,
+        sealType: 'blood',
+        rects: [
+          { x: 340, y: 910, w: 320, h: 1180, isSpine: true },
+          { x: -90, y: 1340, w: 1180, h: 320, isSpine: true },
+          { x: 120, y: 1120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [
+          { type: 'lava', x: 500, y: 1500, r: 85 },
+          { type: 'lava', x: 300, y: 1300, r: 55 },
+          { type: 'lava', x: 700, y: 1700, r: 55 }
+        ],
+        pillars: [{ x: 300, y: 1300, r: 32 }, { x: 700, y: 1300, r: 32 }, { x: 300, y: 1700, r: 32 }, { x: 700, y: 1700, r: 32 }]
+      },
+      // West (-1, 0): Bone Crypt of Werdna (Bone Seal Altar)
+      '-1,0': {
+        gx: -1, gy: 0, name: 'West: Bone Crypt (Bone Seal)',
+        floor: 'stone_moss', safe: false, isBossRoom: false,
+        sealType: 'bone',
+        rects: [
+          { x: -660, y: -90, w: 320, h: 1180, isSpine: true },
+          { x: -1090, y: 340, w: 1180, h: 320, isSpine: true },
+          { x: -880, y: 120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [
+          { type: 'spikes', x: -500, y: 500, w: 160, h: 160 },
+          { type: 'acid', x: -700, y: 300, r: 60 }
+        ],
+        pillars: [{ x: -720, y: 280, r: 30 }, { x: -280, y: 280, r: 30 }, { x: -720, y: 720, r: 30 }, { x: -280, y: 720, r: 30 }]
+      },
+      // North-West (-1, -1): Boss Chamber: Petrified Archon Abeshu & Descent Portal!
+      '-1,-1': {
+        gx: -1, gy: -1, name: 'North-West: Citadel of Father Abeshu',
+        floor: 'stone_dark', safe: false, isBossRoom: true,
+        rects: [
+          { x: -660, y: -1090, w: 320, h: 1180, isSpine: true },
+          { x: -1090, y: -660, w: 1180, h: 320, isSpine: true },
+          { x: -900, y: -900, w: 800, h: 800, isMain: true }
+        ],
+        hazards: [
+          { type: 'lava', x: -650, y: -350, r: 50 },
+          { type: 'lava', x: -350, y: -650, r: 50 }
+        ],
+        pillars: [{ x: -720, y: -720, r: 38 }, { x: -280, y: -720, r: 38 }, { x: -720, y: -280, r: 38 }, { x: -280, y: -280, r: 38 }]
+      },
+      // North-East (1, -1): Sentry Bastion
+      '1,-1': {
+        gx: 1, gy: -1, name: 'North-East: Sentry Bastion',
+        floor: 'stone_violet', safe: false, isBossRoom: false,
+        rects: [
+          { x: 1340, y: -1090, w: 320, h: 1180, isSpine: true },
+          { x: 910, y: -660, w: 1180, h: 320, isSpine: true },
+          { x: 1120, y: -880, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'spikes', x: 1500, y: -500, w: 140, h: 140 }],
+        pillars: [{ x: 1300, y: -700, r: 30 }, { x: 1700, y: -700, r: 30 }]
+      },
+      // South-West (-1, 1): Quagmire Drainage
+      '-1,1': {
+        gx: -1, gy: 1, name: 'South-West: Quagmire Drainage',
+        floor: 'stone_moss', safe: false, isBossRoom: false,
+        rects: [
+          { x: -660, y: 910, w: 320, h: 1180, isSpine: true },
+          { x: -1090, y: 1340, w: 1180, h: 320, isSpine: true },
+          { x: -880, y: 1120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'acid', x: -500, y: 1500, r: 75 }],
+        pillars: [{ x: -700, y: 1300, r: 30 }, { x: -300, y: 1700, r: 30 }]
+      },
+      // South-East (1, 1): Smelter Forge
+      '1,1': {
+        gx: 1, gy: 1, name: 'South-East: Dilmun Smelter Forge',
+        floor: 'stone_crimson', safe: false, isBossRoom: false,
+        rects: [
+          { x: 1340, y: 910, w: 320, h: 1180, isSpine: true },
+          { x: 910, y: 1340, w: 1180, h: 320, isSpine: true },
+          { x: 1120, y: 1120, w: 760, h: 760, isMain: true }
+        ],
+        hazards: [{ type: 'lava', x: 1500, y: 1500, r: 70 }],
+        pillars: [{ x: 1300, y: 1300, r: 30 }, { x: 1700, y: 1700, r: 30 }]
+      }
+    };
+
+    // Stage 1 Progression State
+    const stage1Seals = { sun: false, blood: false, bone: false };
+    let bossDefeated = false;
+    const stage2PortalPos = { x: -500, y: -500, radius: 45 };
+
+    const worldSectors = new Map();
+    const SOLID_PILLARS = [];
+    const WALL_TORCHES = [];
+    const GATES = [];
+    const gateSet = new Set();
+    const activeHazards = [];
+
+    function sectorKey(gx, gy) { return `${gx},${gy}`; }
+
+    function initStage1World() {
+      worldSectors.clear();
+      SOLID_PILLARS.length = 0;
+      WALL_TORCHES.length = 0;
+      GATES.length = 0;
+      gateSet.clear();
+      activeHazards.length = 0;
+
+      Object.keys(STAGE_SECTORS).forEach(key => {
+        const sec = STAGE_SECTORS[key];
+        worldSectors.set(key, sec);
+
+        // Add Solid Pillars
+        (sec.pillars || []).forEach(p => SOLID_PILLARS.push(p));
+
+        // Add Hazards
+        (sec.hazards || []).forEach(hz => activeHazards.push(hz));
+
+        // Add Torches
+        const cx = sec.gx * TILE_SIZE + 500;
+        const cy = sec.gy * TILE_SIZE + 500;
+        WALL_TORCHES.push({ x: cx - 180, y: cy - 220 }, { x: cx + 180, y: cy + 220 });
+
+        // Add Connecting Gates between adjacent rooms
+        const adj = [
+          { dir: 'n', gx2: sec.gx, gy2: sec.gy - 1, x: cx, y: sec.gy * TILE_SIZE, horiz: true },
+          { dir: 's', gx2: sec.gx, gy2: sec.gy + 1, x: cx, y: (sec.gy + 1) * TILE_SIZE, horiz: true },
+          { dir: 'w', gx2: sec.gx - 1, gy2: sec.gy, x: sec.gx * TILE_SIZE, y: cy, horiz: false },
+          { dir: 'e', gx2: sec.gx + 1, gy2: sec.gy, x: (sec.gx + 1) * TILE_SIZE, y: cy, horiz: false }
+        ];
+
+        adj.forEach(a => {
+          const neighborKey = sectorKey(a.gx2, a.gy2);
+          if (STAGE_SECTORS[neighborKey]) {
+            const gKey = `${Math.round(a.x)},${Math.round(a.y)}`;
+            if (!gateSet.has(gKey)) {
+              gateSet.add(gKey);
+              const isBossGate = (sec.isBossRoom || STAGE_SECTORS[neighborKey].isBossRoom);
+              GATES.push({
+                id: `gate-${gKey}`, x: a.x, y: a.y, horiz: a.horiz,
+                isOpen: false, openAnim: 0, manualLock: false, isBossGate,
+                label: isBossGate ? '☠️ Archon Gate (Needs 3 Seals)' : 'Iron Portcullis'
+              });
+            }
+          }
+        });
+      });
+
+      spawnStage1Entities();
+    }
+
+    // =========================================================================
+    // 2. STAGE 1 ENEMY & OBJECTIVE SEAL COFFERS SPAWNER
+    // =========================================================================
+    const enemies = [];
+    const projectiles = [];
+    const atmanMotes = [];
+    const dodgeAfterimages = [];
+    const floorDecals = [];
+    const lootChests = [];
+    const spellVortexes = [];
+    const slashArcs = [];
+    const bloodSparks = [];
+    const flyingHeads = [];
+    const combatTexts = [];
+    let screenShake = 0;
+    let spikeTrapTick = 0;
+
+    function spawnStage1Entities() {
+      enemies.length = 0;
+      lootChests.length = 0;
+
+      // 1. Unique Boss in (-1, -1): Petrified Father Abeshu
+      enemies.push({
+        id: 'boss-abeshu', isBoss: true,
+        name: 'PETRIFIED ARCHON ABESHU',
+        weakTo: 'BLUNT',
+        x: -500, y: -620, hp: 1200, maxHp: 1200, radius: 38, speed: 125,
+        color: '#eab308', kind: 'abeshu_statue', xpValue: 400,
+        pattern: 'zhad_cymatic', hitFlash: 0, shootCooldown: 1.3
+      });
+
+      // 2. Mobs per room, strictly tailored to weaknesses
+      const spawnConfigs = [
+        { gx: 0, gy: -1, mobs: [{ name: 'Spike Dungeon Skeleton', weakTo: 'BLUNT', kind: 'undead_warrior', color: '#38bdf8', hp: 120, ranged: false }] },
+        { gx: 1, gy: 0,  mobs: [{ name: 'Dilmun High Sorceress', weakTo: 'SLASH', kind: 'sorceress', color: '#f43f5e', hp: 100, ranged: true }, { name: 'Archive Gargoyle', weakTo: 'PIERCE', kind: 'greater_demon', color: '#28517a', hp: 140, ranged: true }] },
+        { gx: 0, gy: 1,  mobs: [{ name: 'Boiling Blood Giant', weakTo: 'PIERCE', kind: 'fire_giant', color: '#ea580c', hp: 150, ranged: true }, { name: 'Namis Pit Executioner', weakTo: 'SLASH', kind: 'fire_giant', color: '#ef4444', hp: 130, ranged: false }] },
+        { gx: -1, gy: 0, mobs: [{ name: 'Crypt Lich Vanguard', weakTo: 'BLUNT', kind: 'undead_warrior', color: '#60a5fa', hp: 135, ranged: false }, { name: 'Skeletal Archer', weakTo: 'BLUNT', kind: 'undead_warrior', color: '#bae6fd', hp: 95, ranged: true }] },
+        { gx: 1, gy: -1, mobs: [{ name: 'Bastion Winged Fiend', weakTo: 'PIERCE', kind: 'greater_demon', color: '#1e3a5f', hp: 155, ranged: true }] },
+        { gx: -1, gy: 1, mobs: [{ name: 'Cobold Sun-Prowler', weakTo: 'SLASH', kind: 'cobold_king', color: '#3f7d4c', hp: 110, ranged: true }] },
+        { gx: 1, gy: 1,  mobs: [{ name: 'Smelter Golem Construct', weakTo: 'BLUNT', kind: 'abeshu_statue', color: '#78716c', hp: 165, ranged: false }] }
+      ];
+
+      spawnConfigs.forEach(sc => {
+        const cx = sc.gx * TILE_SIZE + 500;
+        const cy = sc.gy * TILE_SIZE + 500;
+        sc.mobs.forEach((m, idx) => {
+          for (let i = 0; i < 2; i++) {
+            enemies.push({
+              id: `mob-${sc.gx}-${sc.gy}-${idx}-${i}`,
+              isBoss: false, name: m.name, weakTo: m.weakTo,
+              x: cx + (i === 0 ? -160 : 160), y: cy + (idx === 0 ? -120 : 120),
+              hp: m.hp, maxHp: m.hp, radius: 18, speed: 135,
+              color: m.color, kind: m.kind, xpValue: 65,
+              ranged: m.ranged, hitFlash: 0, shootCooldown: 1.5 + Math.random()
+            });
+          }
+        });
+      });
+
+      // 3. The 3 Primary Objective Seal Coffers
+      lootChests.push({
+        id: 'chest-sun-seal', x: 1500, y: 500,
+        label: '☀️ SUN SEAL COFFER', rarity: 'legendary',
+        isSealChest: 'sun', isCorpse: false, gold: 120, atman: 25,
+        items: [{ name: 'Sun Seal of Vrana', slot: 'relic', isSeal: 'sun', atk: 12, hp: 40, mp: 30, rarity: 'legendary' }]
+      });
+
+      lootChests.push({
+        id: 'chest-blood-seal', x: 500, y: 1500,
+        label: '🩸 BLOOD SEAL COFFER', rarity: 'legendary',
+        isSealChest: 'blood', isCorpse: false, gold: 120, atman: 25,
+        items: [{ name: 'Blood Seal of Namis', slot: 'relic', isSeal: 'blood', atk: 14, hp: 50, mp: 20, rarity: 'legendary' }]
+      });
+
+      lootChests.push({
+        id: 'chest-bone-seal', x: -500, y: 500,
+        label: '💀 BONE SEAL COFFER', rarity: 'legendary',
+        isSealChest: 'bone', isCorpse: false, gold: 120, atman: 25,
+        items: [{ name: 'Bone Seal of Werdna', slot: 'relic', isSeal: 'bone', atk: 15, hp: 35, mp: 35, rarity: 'legendary' }]
+      });
+    }
+
+    // =========================================================================
+    // 3. COLLISION, GATES & ENVIRONMENTAL HAZARD ENGINE
+    // =========================================================================
+    function updateStageHazards(dt) {
+      spikeTrapTick = (spikeTrapTick + dt) % 3.0;
+      const spikesActive = spikeTrapTick > 1.4;
+
+      if (isInsideFirepitSafezone(localPlayer.x, localPlayer.y) || localPlayer.dodgeTimer > 0) return;
+
+      activeHazards.forEach(hz => {
+        if (hz.type === 'lava') {
+          if (Math.hypot(localPlayer.x - hz.x, localPlayer.y - hz.y) < hz.r) {
+            localPlayer.hp = Math.max(0, localPlayer.hp - 16 * dt);
+            localPlayer.hitFlash = 3;
+            if (Math.random() < 0.1) spawnCombatText(localPlayer.x, localPlayer.y, '-16 LAVA BURN!', '#f97316');
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+          }
+        } else if (hz.type === 'acid') {
+          if (Math.hypot(localPlayer.x - hz.x, localPlayer.y - hz.y) < hz.r) {
+            localPlayer.hp = Math.max(0, localPlayer.hp - 11 * dt);
+            localPlayer.hitFlash = 2;
+            if (Math.random() < 0.1) spawnCombatText(localPlayer.x, localPlayer.y, '-11 ACID SLIME!', '#84cc16');
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+          }
+        } else if (hz.type === 'spikes' && spikesActive) {
+          if (localPlayer.x >= hz.x - hz.w/2 && localPlayer.x <= hz.x + hz.w/2 &&
+              localPlayer.y >= hz.y - hz.h/2 && localPlayer.y <= hz.y + hz.h/2) {
+            localPlayer.hp = Math.max(0, localPlayer.hp - 24 * dt);
+            localPlayer.hitFlash = 4;
+            playSfx('slash');
+            if (Math.random() < 0.1) spawnCombatText(localPlayer.x, localPlayer.y, '-24 SPIKE TRAP!', '#ef4444');
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+          }
+        }
+      });
+    }
+
+    function updateGatesAutoProximity(dt) {
+      const allSealsCollected = stage1Seals.sun && stage1Seals.blood && stage1Seals.bone;
+
+      GATES.forEach(g => {
+        if (!g.manualLock) {
+          const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
+          if (g.isBossGate && !allSealsCollected) {
+            g.isOpen = false;
+          } else if (d < 145 && !g.isOpen) {
+            g.isOpen = true;
+            playSfx('gate');
+          } else if (d > 200 && g.isOpen) {
+            g.isOpen = false;
+          }
+        }
+        const targetAnim = g.isOpen ? 1 : 0;
+        g.openAnim = (g.openAnim || 0) + (targetAnim - (g.openAnim || 0)) * Math.min(1, dt * 10);
+      });
+    }
+
+    function toggleNearestGate() {
+      let nearest = null, minDist = 185;
+      GATES.forEach(g => {
+        const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
+        if (d < minDist) { minDist = d; nearest = g; }
+      });
+      if (nearest) {
+        if (nearest.isBossGate && !(stage1Seals.sun && stage1Seals.blood && stage1Seals.bone)) {
+          showToast('Archon Gate Sealed! Recover Sun, Blood, and Bone Seals first.');
+          return;
+        }
+        nearest.isOpen = !nearest.isOpen;
+        nearest.manualLock = !nearest.isOpen;
+        playSfx('gate');
+        showToast(`${nearest.label}: ${nearest.isOpen ? 'OPENED ⛩️' : 'LOCKED SHUT 🔒'}`);
+      }
+    }
+
+    function isNearOpenGateThreshold(px, py) {
+      for (const g of GATES) {
+        if (!g.isOpen) continue;
+        if (g.horiz) {
+          if (Math.abs(px - g.x) < 130 && Math.abs(py - g.y) < 95) return true;
+        } else {
+          if (Math.abs(px - g.x) < 95 && Math.abs(py - g.y) < 130) return true;
+        }
+      }
+      return false;
+    }
+
+    function isBlockedByClosedGate(px, py) {
+      for (const g of GATES) {
+        if (g.isOpen) continue;
+        if (g.horiz) {
+          if (Math.abs(px - g.x) < 120 && Math.abs(py - g.y) < 18) return true;
+        } else {
+          if (Math.abs(px - g.x) < 18 && Math.abs(py - g.y) < 120) return true;
+        }
+      }
+      return false;
+    }
+
+    function getWalkableSectorAt(px, py) {
+      if (isBlockedByClosedGate(px, py)) return null;
+
+      const gx = Math.floor(px / TILE_SIZE);
+      const gy = Math.floor(py / TILE_SIZE);
+      const sec = STAGE_SECTORS[sectorKey(gx, gy)];
+      if (!sec) return null; // Outside bounded 3x3 stage!
+
+      if (isNearOpenGateThreshold(px, py)) return sec;
+
+      for (let i = 0; i < sec.rects.length; i++) {
+        const r = sec.rects[i];
+        if (px >= r.x + 8 && px <= r.x + r.w - 8 && py >= r.y + 8 && py <= r.y + r.h - 8) {
+          return sec;
+        }
+      }
+      return null;
+    }
+
+    function resolveDungeonMovement(entity, nextX, nextY) {
+      if (getWalkableSectorAt(nextX, entity.y)) entity.x = nextX;
+      if (getWalkableSectorAt(entity.x, nextY)) entity.y = nextY;
+
+      for (let i = 0; i < SOLID_PILLARS.length; i++) {
+        const pil = SOLID_PILLARS[i];
+        const dist = Math.hypot(entity.x - pil.x, entity.y - pil.y);
+        const minR = pil.r + 14;
+        if (dist < minR && dist > 0.001) {
+          const ang = Math.atan2(entity.y - pil.y, entity.x - pil.x);
+          entity.x = pil.x + Math.cos(ang) * minR;
+          entity.y = pil.y + Math.sin(ang) * minR;
+        }
+      }
+
+      const fDist = Math.hypot(entity.x - FIREPIT_POS.x, entity.y - FIREPIT_POS.y);
+      if (fDist < FIREPIT_POS.radius + 14) {
+        const ang = Math.atan2(entity.y - FIREPIT_POS.y, entity.x - FIREPIT_POS.x);
+        entity.x = FIREPIT_POS.x + Math.cos(ang) * (FIREPIT_POS.radius + 14);
+        entity.y = FIREPIT_POS.y + Math.sin(ang) * (FIREPIT_POS.radius + 14);
+      }
+    }
+
+    // =========================================================================
+    // 4. DAMAGE-TYPE WEAKNESS ENGINE & AUTO-ATTACK
+    // =========================================================================
+    function applyDamageWithTypeCheck(en, rawDmg, atkType) {
+      let mult = 0.15; // 85% damage penalty for wrong attack type!
+      let tag = '';
+      let color = '#94a3b8';
+
+      if (atkType === 'ARCANE' || atkType === en.weakTo) {
+        mult = localPlayer.combatStance === 'precision' ? 2.15 : 1.75;
+        tag = `💥 ${atkType} WEAKNESS!`;
+        color = '#84cc16';
+        playSfx('crush_weakness');
+      } else {
+        tag = `🛡️ RESISTED! (USE ${en.weakTo})`;
+        color = '#94a3b8';
+        playSfx('resist_clang');
+      }
+
+      const finalDmg = Math.max(2, Math.round(rawDmg * mult));
+      en.hp -= finalDmg;
+      en.hitFlash = 6;
+      spawnCombatText(en.x, en.y, `-${finalDmg} ${tag}`, color);
+      return { finalDmg, exploitedWeakness: mult > 1.0 };
+    }
+
+    function performPrimaryWeaponAttack() {
+      if (localPlayer.autoAttackTimer > 0) return;
+      initAudioEngine();
+
+      const wpn = getActiveWeapon();
+      const stanceCdMod = localPlayer.combatStance === 'fury' ? 0.65 : (localPlayer.combatStance === 'bastion' ? 1.15 : 0.9);
+      localPlayer.autoAttackTimer = 0.42 * stanceCdMod;
+      localPlayer.swingTimer = 16;
+
+      const baseAngle = getAimAngle();
+      localPlayer.aimAngle = baseAngle;
+      const rawPower = 24 + localPlayer.dmgBonus;
+
+      if (wpn.ranged || wpn.dmgType === 'PIERCE') {
+        playSfx('bow');
+        spawnProjectile({
+          ownerId: localPlayer.id, isEnemy: false, dmgType: wpn.dmgType,
+          x: localPlayer.x + Math.cos(baseAngle) * 18,
+          y: localPlayer.y - 18 + Math.sin(baseAngle) * 18,
+          angle: baseAngle, speed: 680, dmg: rawPower, color: '#93c5fd', projType: 'arrow', radius: 7
+        });
+      } else {
+        playSfx('slash');
+        const arcColor = wpn.dmgType === 'BLUNT' ? '#fde047' : '#fca5a5';
+        spawnSlashArc(localPlayer.x + Math.cos(baseAngle) * 32, localPlayer.y + Math.sin(baseAngle) * 32, localPlayer.facing, arcColor, 54);
+        spawnProjectile({
+          ownerId: localPlayer.id, isEnemy: false, dmgType: wpn.dmgType,
+          x: localPlayer.x + Math.cos(baseAngle) * 24,
+          y: localPlayer.y - 18 + Math.sin(baseAngle) * 24,
+          angle: baseAngle, speed: 440, dmg: rawPower, color: arcColor,
+          projType: wpn.dmgType === 'BLUNT' ? 'orb' : 'kunai', radius: 13, life: 0.28
+        });
+      }
+      broadcastState();
+    }
+
+    // =========================================================================
+    // 5. STAGE OBJECTIVES & SEAL DISCOVERY
+    // =========================================================================
+    function checkCollectSeal(sealType) {
+      if (sealType && !stage1Seals[sealType]) {
+        stage1Seals[sealType] = true;
+        playSfx('loot');
+        triggerSoulsBanner(`RECOVERED: ${sealType.toUpperCase()} SEAL!`);
+
+        document.getElementById(`seal-${sealType}-status`).textContent = `✅ ${sealType.toUpperCase()} Seal (Recovered!)`;
+        document.getElementById(`seal-${sealType}-status`).style.color = '#4ade80';
+
+        if (stage1Seals.sun && stage1Seals.blood && stage1Seals.bone) {
+          triggerSoulsBanner('ALL 3 SEALS BROKEN! ARCHON GATE UNLOCKED!');
+          document.getElementById('portal-status').textContent = '⛩️ Archon Gate: UNLOCKED! Slay Abeshu!';
+          document.getElementById('portal-status').style.color = '#fde047';
+        }
+      }
+    }
+
+    function checkDescentPortal() {
+      if (!bossDefeated) return;
+      const d = Math.hypot(localPlayer.x - stage2PortalPos.x, localPlayer.y - stage2PortalPos.y);
+      if (d < stage2PortalPos.radius + 15) {
+        triggerSoulsBanner('VICTORY! DESCENDING INTO STAGE 2: THE FORBIDDEN VAULTS...');
+        playSfx('atman');
+        setTimeout(() => {
+          showToast('Stage 1 Cleared! Preparing Stage 2 descent...');
+        }, 1200);
+      }
+    }
+
+    // =========================================================================
+    // 6. MAIN GAME LOOP, GRAPHICS & PROCEDURAL RENDERER
+    // =========================================================================
+    let lastTime = performance.now();
+    let netTickTimer = 0;
+
+    function gameLoop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      const nowSec = now * 0.001;
+
+      updatePreview(now);
+      updateGatesAutoProximity(dt);
+      updateStageHazards(dt);
+      checkDescentPortal();
+
+      if (localPlayer.autoAttackTimer > 0) {
+        localPlayer.autoAttackTimer = Math.max(0, localPlayer.autoAttackTimer - dt);
+      }
+
+      const inSafezone = isInsideFirepitSafezone(localPlayer.x, localPlayer.y);
+      if (!inSafezone && localPlayer.autoAttackTimer <= 0 && document.getElementById('char-modal').style.display === 'none') {
+        const wpn = getActiveWeapon();
+        const maxRange = wpn.ranged ? 380 : 125;
+        let autoTarget = enemies.find(e => e.id === localPlayer.targetEntityId && Math.hypot(e.x - localPlayer.x, e.y - localPlayer.y) <= maxRange);
+        if (!autoTarget) autoTarget = enemies.find(e => Math.hypot(e.x - localPlayer.x, e.y - localPlayer.y) <= maxRange);
+        if (autoTarget) {
+          localPlayer.targetEntityId = autoTarget.id;
+          performPrimaryWeaponAttack();
+        }
+      }
+
+      // Movement Input
+      let moveX = 0, moveY = 0;
+      if (keys['w'] || keys['arrowup']) moveY -= 1;
+      if (keys['s'] || keys['arrowdown']) moveY += 1;
+      if (keys['a'] || keys['arrowleft']) moveX -= 1;
+      if (keys['d'] || keys['arrowright']) moveX += 1;
+
+      if (moveX !== 0 || moveY !== 0) {
+        localPlayer.targetX = null; localPlayer.targetY = null;
+        const len = Math.hypot(moveX, moveY);
+        resolveDungeonMovement(localPlayer, localPlayer.x + (moveX / len) * localPlayer.speed * dt, localPlayer.y + (moveY / len) * localPlayer.speed * dt);
+        if (Math.abs(moveX) > 0.05) localPlayer.facing = moveX > 0 ? 1 : -1;
+        localPlayer.isMoving = true;
+      } else if (localPlayer.targetX !== null && localPlayer.targetY !== null) {
+        const dx = localPlayer.targetX - localPlayer.x;
+        const dy = localPlayer.targetY - localPlayer.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 8) {
+          resolveDungeonMovement(localPlayer, localPlayer.x + (dx / dist) * localPlayer.speed * dt, localPlayer.y + (dy / dist) * localPlayer.speed * dt);
+          if (Math.abs(dx) > 2) localPlayer.facing = dx > 0 ? 1 : -1;
+          localPlayer.isMoving = true;
+        } else {
+          localPlayer.targetX = null; localPlayer.targetY = null;
+          localPlayer.isMoving = false;
+        }
+      } else {
+        localPlayer.isMoving = false;
+      }
+
+      const activeSector = getWalkableSectorAt(localPlayer.x, localPlayer.y);
+      if (activeSector) {
+        document.getElementById('shard-status').textContent = activeSector.name;
+      }
+
+      const pvpBadge = document.getElementById('pvp-badge');
+      if (inSafezone) {
+        pvpBadge.textContent = '[SAFEZONE]';
+        pvpBadge.style.color = '#4ade80';
+        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 15 * dt);
+        localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 18 * dt);
+      } else {
+        pvpBadge.textContent = '[⚔️ STAGE 1 PURGATORY]';
+        pvpBadge.style.color = '#ef4444';
+        localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 5 * dt);
+      }
+
+      // Collect Atman Motes
+      for (let i = atmanMotes.length - 1; i >= 0; i--) {
+        const am = atmanMotes[i];
+        const dist = Math.hypot(localPlayer.x - am.x, (localPlayer.y - 18) - am.y);
+        if (dist < 240) {
+          const ang = Math.atan2((localPlayer.y - 18) - am.y, localPlayer.x - am.x);
+          am.x += Math.cos(ang) * 340 * dt;
+          am.y += Math.sin(ang) * 340 * dt;
+        }
+        if (dist < 24) {
+          localPlayer.atman = Math.min(localPlayer.maxAtman, localPlayer.atman + am.val);
+          spawnCombatText(localPlayer.x, localPlayer.y - 34, `+${am.val} ATMAN`, '#fde047');
+          atmanMotes.splice(i, 1);
+        }
+      }
+
+      updateVitalsUI();
+      renderStage1Minimap();
+
+      // Projectiles & Collision
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const pj = projectiles[i];
+        pj.x += pj.vx * dt; pj.y += pj.vy * dt; pj.life -= dt;
+
+        let hitWall = !getWalkableSectorAt(pj.x, pj.y);
+        if (!hitWall) {
+          for (const pil of SOLID_PILLARS) {
+            if (Math.hypot(pj.x - pil.x, pj.y - pil.y) < pil.r) { hitWall = true; break; }
+          }
+        }
+        if (hitWall || pj.life <= 0) {
+          if (pj.explosive) spawnSpellVortex(pj.x, pj.y, pj.color, 65);
+          projectiles.splice(i, 1);
+          continue;
+        }
+
+        if (pj.isEnemy) {
+          if (!inSafezone && localPlayer.dodgeTimer <= 0 && Math.hypot(pj.x - localPlayer.x, pj.y - (localPlayer.y - 16)) < 22 + pj.radius) {
+            const taken = Math.max(1, Math.round(pj.dmg * (localPlayer.combatStance === 'bastion' ? 0.7 : 1.0)));
+            localPlayer.hp = Math.max(0, localPlayer.hp - taken);
+            localPlayer.hitFlash = 7;
+            playSfx('slash');
+            spawnCombatText(localPlayer.x, localPlayer.y, `-${taken}`, '#ef4444');
+            projectiles.splice(i, 1);
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+            continue;
+          }
+        } else if (!pj.isRemote) {
+          let hitMob = false;
+          for (let m = enemies.length - 1; m >= 0; m--) {
+            const en = enemies[m];
+            if (Math.hypot(pj.x - en.x, pj.y - (en.y - 16)) < en.radius + pj.radius + 6) {
+              const res = applyDamageWithTypeCheck(en, pj.dmg, pj.dmgType || 'SLASH');
+              if (pj.explosive) spawnSpellVortex(en.x, en.y, pj.color, 85);
+              else spawnSlashArc(en.x, en.y, pj.vx >= 0 ? 1 : -1, pj.color, 36);
+
+              if (en.hp <= 0) {
+                if (res.exploitedWeakness) spawnOvaDecapitation(en.x, en.y, pj.vx >= 0 ? 1 : -1);
+                handleEnemyKilled(en, m);
+              }
+              hitMob = true;
+              break;
+            }
+          }
+          if (hitMob) { projectiles.splice(i, 1); continue; }
+        }
+      }
+
+      // Update Enemies & Boss
+      let activeBoss = null;
+      enemies.forEach(en => {
+        if (en.hitFlash > 0) en.hitFlash--;
+        const distToPlayer = Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y);
+        if (en.isBoss && distToPlayer < 680) activeBoss = en;
+
+        if (distToPlayer < 520 && distToPlayer > 38 && !inSafezone) {
+          const ang = Math.atan2(localPlayer.y - en.y, localPlayer.x - en.x);
+          const nx = en.x + Math.cos(ang) * en.speed * dt;
+          const ny = en.y + Math.sin(ang) * en.speed * dt;
+          if (!isInsideFirepitSafezone(nx, ny)) resolveDungeonMovement(en, nx, ny);
+
+          if (en.isBoss || en.ranged) {
+            en.shootCooldown = (en.shootCooldown || 1.8) - dt;
+            if (en.shootCooldown <= 0) {
+              en.shootCooldown = en.isBoss ? 1.4 : 2.3;
+              if (en.isBoss) {
+                for (let b = 0; b < 8; b++) {
+                  spawnProjectile({
+                    ownerId: en.id, isEnemy: true, x: en.x, y: en.y - 20,
+                    angle: (b / 8) * Math.PI * 2, speed: 330, dmg: 18, color: '#facc15', projType: 'orb', radius: 9, life: 2.0
+                  });
+                }
+              } else {
+                spawnProjectile({
+                  ownerId: en.id, isEnemy: true, x: en.x, y: en.y - 16,
+                  angle: ang, speed: 330, dmg: 14, color: en.color, projType: 'arrow', radius: 6, life: 1.5
+                });
+              }
+            }
+          }
+        }
+      });
+
+      currentMusicTheme = activeBoss ? 'boss' : (inSafezone ? 'tavern' : 'labyrinth');
+
+      const bossWrap = document.getElementById('boss-bar-wrap');
+      if (activeBoss) {
+        bossWrap.style.display = 'flex';
+        document.getElementById('boss-bar-title').textContent = `☠️ ${activeBoss.name} [WEAKNESS: ${activeBoss.weakTo}] (${Math.max(0, Math.round(activeBoss.hp))}/${activeBoss.maxHp})`;
+        document.getElementById('boss-hp-fill').style.width = `${Math.max(0, (activeBoss.hp / activeBoss.maxHp) * 100)}%`;
+      } else {
+        bossWrap.style.display = 'none';
+      }
+
+      if (localPlayer.swingTimer > 0) localPlayer.swingTimer--;
+      if (localPlayer.dodgeTimer > 0) localPlayer.dodgeTimer--;
+      if (localPlayer.hitFlash > 0) localPlayer.hitFlash--;
+      if (screenShake > 0) screenShake = Math.max(0, screenShake - 40 * dt);
+
+      renderWorld(nowSec);
+      requestAnimationFrame(gameLoop);
+    }
+
+    // =========================================================================
+    // 7. RENDERER (UNIQUE ROOM MASONRY, HAZARDS, DESCENT PORTAL)
+    // =========================================================================
+    function renderWorld(timeSec) {
+      ctx.clearRect(0, 0, screenW, screenH);
+      const camX = localPlayer.x - screenW / 2;
+      const camY = localPlayer.y - screenH / 2;
+
+      ctx.save();
+      ctx.translate(-camX, -camY);
+
+      // Draw Void Bounds outside the 3x3 Stage
+      ctx.fillStyle = '#040307';
+      ctx.fillRect(camX, camY, screenW, screenH);
+
+      // Draw Rooms with Unique Floor Patterns & Wall Highlights
+      worldSectors.forEach(sec => {
+        sec.rects.forEach(r => {
+          ctx.fillStyle = '#0c0e14';
+          ctx.fillRect(r.x - 10, r.y - 24, r.w + 20, r.h + 34);
+          ctx.fillStyle = floorPatterns[sec.floor] || '#191d26';
+          ctx.fillRect(r.x, r.y, r.w, r.h);
+
+          if (r.isMain) {
+            ctx.strokeStyle = sec.safe ? 'rgba(207, 163, 84, 0.45)' : (sec.isBossRoom ? 'rgba(220, 38, 38, 0.65)' : 'rgba(71, 85, 105, 0.4)');
+            ctx.lineWidth = 3;
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+          }
+        });
+
+        const scx = sec.gx * TILE_SIZE + 500;
+        const scy = sec.gy * TILE_SIZE + 145;
+        ctx.font = '900 13px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = sec.safe ? 'rgba(248, 226, 168, 0.65)' : (sec.isBossRoom ? 'rgba(252, 165, 165, 0.75)' : 'rgba(203, 213, 225, 0.5)');
+        ctx.fillText(sec.name.toUpperCase(), scx, scy);
+      });
+
+      // Draw Environmental Hazards
+      activeHazards.forEach(hz => {
+        if (hz.type === 'lava') {
+          const flick = Math.sin(timeSec * 8 + hz.x) * 6;
+          const grad = ctx.createRadialGradient(hz.x, hz.y, 10, hz.x, hz.y, hz.r + flick);
+          grad.addColorStop(0, '#f97316'); grad.addColorStop(0.7, '#dc2626'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.arc(hz.x, hz.y, hz.r + flick, 0, Math.PI * 2); ctx.fill();
+        } else if (hz.type === 'acid') {
+          ctx.fillStyle = 'rgba(132, 204, 22, 0.35)';
+          ctx.strokeStyle = '#84cc16'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(hz.x, hz.y, hz.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        } else if (hz.type === 'spikes') {
+          const spikesActive = (spikeTrapTick > 1.4);
+          ctx.fillStyle = spikesActive ? 'rgba(220, 38, 38, 0.3)' : 'rgba(30, 41, 59, 0.5)';
+          ctx.strokeStyle = spikesActive ? '#ef4444' : '#64748b';
+          ctx.lineWidth = 2;
+          ctx.fillRect(hz.x - hz.w/2, hz.y - hz.h/2, hz.w, hz.h);
+          ctx.strokeRect(hz.x - hz.w/2, hz.y - hz.h/2, hz.w, hz.h);
+          if (spikesActive) {
+            ctx.fillStyle = '#f8fafc';
+            for (let sx = hz.x - hz.w/2 + 20; sx < hz.x + hz.w/2; sx += 35) {
+              for (let sy = hz.y - hz.h/2 + 20; sy < hz.y + hz.h/2; sy += 35) {
+                ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI * 2); ctx.fill();
+              }
+            }
+          }
+        }
+      });
+
+      // Draw Descent Portal in (-1, -1) when Boss is Slain
+      if (bossDefeated) {
+        ctx.save();
+        ctx.translate(stage2PortalPos.x, stage2PortalPos.y);
+        ctx.rotate(timeSec * 3);
+        const pGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, stage2PortalPos.radius);
+        pGrad.addColorStop(0, '#fde047'); pGrad.addColorStop(0.5, '#38bdf8'); pGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = pGrad;
+        ctx.beginPath(); ctx.arc(0, 0, stage2PortalPos.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '900 11px Cinzel, serif'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+        ctx.fillText('STAGE 2 DESCENT', 0, 4);
+        ctx.restore();
+      }
+
+      // Draw Central Firepit
+      ctx.save();
+      ctx.strokeStyle = 'rgba(74, 222, 128, 0.28)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.safeRadius, 0, Math.PI * 2); ctx.stroke();
+      const fireGrad = ctx.createRadialGradient(FIREPIT_POS.x, FIREPIT_POS.y, 16, FIREPIT_POS.x, FIREPIT_POS.y, 350);
+      fireGrad.addColorStop(0, 'rgba(251, 146, 60, 0.58)'); fireGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = fireGrad; ctx.beginPath(); ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, 350, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // Draw Gates
+      GATES.forEach(g => {
+        ctx.save();
+        ctx.translate(g.x, g.y);
+        const openRatio = g.openAnim || 0;
+        ctx.fillStyle = '#334155'; ctx.strokeStyle = '#040306'; ctx.lineWidth = 3;
+        if (g.horiz) {
+          ctx.fillRect(-140, -18, 28, 36); ctx.fillRect(112, -18, 28, 36);
+          if (openRatio < 0.8) {
+            ctx.fillStyle = g.isBossGate ? 'rgba(220,38,38,0.7)' : 'rgba(15,23,42,0.88)';
+            ctx.fillRect(-110, -10, 220 * (1 - openRatio), 20);
+          } else {
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.2)';
+            ctx.fillRect(-110, -14, 220, 28);
+          }
+        } else {
+          ctx.fillRect(-18, -140, 36, 28); ctx.fillRect(-18, 112, 36, 28);
+          if (openRatio < 0.8) {
+            ctx.fillStyle = g.isBossGate ? 'rgba(220,38,38,0.7)' : 'rgba(15,23,42,0.88)';
+            ctx.fillRect(-10, -110, 20, 220 * (1 - openRatio));
+          } else {
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.2)';
+            ctx.fillRect(-14, -110, 28, 220);
+          }
+        }
+        ctx.font = '800 9px Cinzel, serif'; ctx.textAlign = 'center';
+        ctx.fillStyle = g.isOpen ? '#4ade80' : (g.isBossGate ? '#f87171' : '#facc15');
+        ctx.fillText(g.label, 0, -24);
+        ctx.restore();
+      });
+
+      // Draw Pillars
+      SOLID_PILLARS.forEach(pil => {
+        ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#040306'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(pil.x, pil.y, pil.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      });
+
+      // Draw Chests
+      lootChests.forEach(ch => {
+        ctx.save();
+        ctx.translate(ch.x, ch.y);
+        ctx.fillStyle = ch.isSealChest ? '#b45309' : '#5c3a18';
+        ctx.strokeStyle = ch.isSealChest ? '#fde047' : '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.fillRect(-16, -12, 32, 24); ctx.strokeRect(-16, -12, 32, 24);
+        ctx.font = '800 10px Cinzel, serif'; ctx.textAlign = 'center';
+        ctx.fillStyle = ch.isSealChest ? '#fde047' : '#fff';
+        ctx.fillText(`📦 ${ch.label} [E]`, 0, -17);
+        ctx.restore();
+      });
+
+      // Draw Enemies
+      enemies.forEach(en => {
+        drawCardArtHostile(ctx, en, timeSec, en.id === localPlayer.targetEntityId);
+      });
+
+      // Draw Projectiles
+      projectiles.forEach(pj => {
+        ctx.save();
+        ctx.translate(pj.x, pj.y); ctx.rotate(pj.angle);
+        ctx.fillStyle = pj.color; ctx.beginPath(); ctx.arc(0, 0, pj.radius || 7, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      });
+
+      // Draw Character
+      drawOVACharacter(ctx, localPlayer, localPlayer.x, localPlayer.y, timeSec, 1.0, false, 1.0);
+
+      // Draw Combat Texts
+      combatTexts.forEach(ct => {
+        ctx.font = '900 13px Cinzel, serif'; ctx.textAlign = 'center'; ctx.fillStyle = ct.color;
+        ctx.fillText(ct.text, ct.x, ct.y);
+      });
+
+      ctx.restore();
+    }
+
+    // Stage 1 Bounded Minimap Renderer
+    function renderStage1Minimap() {
+      mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+      const myGx = Math.floor(localPlayer.x / TILE_SIZE);
+      const myGy = Math.floor(localPlayer.y / TILE_SIZE);
+      const cellW = 42, cellH = 34;
+      const offX = 30, offY = 14;
+
+      for (let gy = -1; gy <= 1; gy++) {
+        for (let gx = -1; gx <= 1; gx++) {
+          const sec = STAGE_SECTORS[sectorKey(gx, gy)];
+          const rx = offX + (gx + 1) * (cellW + 4);
+          const ry = offY + (gy + 1) * (cellH + 4);
+
+          mapCtx.fillStyle = sec.safe ? '#166534' : (sec.isBossRoom ? '#7f1d1d' : '#1e293b');
+          mapCtx.strokeStyle = (gx === myGx && gy === myGy) ? '#fde047' : '#4a3520';
+          mapCtx.lineWidth = (gx === myGx && gy === myGy) ? 2 : 1;
+          mapCtx.fillRect(rx, ry, cellW, cellH);
+          mapCtx.strokeRect(rx, ry, cellW, cellH);
+
+          mapCtx.font = '8px Cinzel, serif';
+          mapCtx.fillStyle = '#fff';
+          mapCtx.textAlign = 'center';
+          if (sec.isBossRoom) mapCtx.fillText('☠️ ABESHU', rx + cellW/2, ry + cellH/2 + 3);
+          else if (sec.sealType) mapCtx.fillText(sec.sealType.toUpperCase(), rx + cellW/2, ry + cellH/2 + 3);
+          else if (sec.safe) mapCtx.fillText('HUB', rx + cellW/2, ry + cellH/2 + 3);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 8. LOOT CLAIMING & BOSS DEFEAT
+    // =========================================================================
+    function handleEnemyKilled(en, idx) {
+      enemies.splice(idx, 1);
+      localPlayer.xp += en.xpValue || 65;
+      localPlayer.gold += en.isBoss ? 280 : 25;
+
+      if (en.isBoss) {
+        bossDefeated = true;
+        triggerSoulsBanner('ARCHON ABESHU SLAIN! STAGE 2 PORTAL ACTIVATED!');
+        document.getElementById('portal-status').textContent = '🌟 Stage 2 Portal: OPEN AT (-1, -1)!';
+        document.getElementById('portal-status').style.color = '#38bdf8';
+      }
+
+      if (localPlayer.xp >= localPlayer.nextXp) {
+        localPlayer.level++;
+        localPlayer.xp -= localPlayer.nextXp;
+        localPlayer.nextXp = Math.round(localPlayer.nextXp * 1.3);
+        recalcEquipmentStats();
+        renderHotbarUI();
+        triggerSoulsBanner(`SOUL LEVEL ${localPlayer.level}!`);
+      }
+      savePersistentProgress();
+      updateVitalsUI();
+    }
+
+    function openChestLootModal(chestIdx) {
+      const ch = lootChests[chestIdx];
+      if (!ch) return;
+      activeOpenChestIdx = chestIdx;
+
+      document.getElementById('loot-modal-title').textContent = ch.label;
+      document.getElementById('loot-modal-rarity').textContent = `[💰 ${ch.gold}g • ⚱️ +${ch.atman || 15} Atman]`;
+
+      const list = document.getElementById('loot-items-list');
+      list.innerHTML = '';
+      (ch.items || []).forEach((it, idx) => {
+        const row = document.createElement('div');
+        row.className = 'loot-item-row';
+        row.innerHTML = `
+          <div>
+            <strong style="color:#fde047; font-family:'Cinzel',serif;">${it.name}</strong>
+            <div style="font-size:10px; color:#a89984;">+${it.atk || 0} ATK • +${it.hp || 0} HP</div>
+          </div>
+          <button class="action-btn" id="claim-it-${idx}">Claim</button>
+        `;
+        row.querySelector(`#claim-it-${idx}`).onclick = () => {
+          if (it.isSeal) checkCollectSeal(it.isSeal);
+          if (localPlayer.backpack.length < 8) localPlayer.backpack.push(it);
+          ch.items.splice(idx, 1);
+          playSfx('loot');
+          if (ch.items.length === 0) {
+            lootChests.splice(chestIdx, 1);
+            document.getElementById('loot-modal').style.display = 'none';
+          }
+          savePersistentProgress();
+          updateVitalsUI();
+        };
+        list.appendChild(row);
+      });
+
+      document.getElementById('loot-modal').style.display = 'flex';
+    }
+
+    // Kickoff bounded stage
+    initStage1World();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
+
+```
