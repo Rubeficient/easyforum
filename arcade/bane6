@@ -8,28 +8,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Crimson+Pro:ital,wght@0,500;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink-black: #040306;
-      --tartaria-bg: #07060b;
-      --tartaria-gold: #cfa354;
-      --tartaria-gold-bright: #f8e2a8;
+      --ink-black: #050409;
+      --tartaria-bg: #0d0c14;
+      --tartaria-gold: #d4a755;
+      --tartaria-gold-bright: #fae8b8;
       --atman-amber: #fbbf24;
-      --wiz-red: #dc2626;
+      --wiz-red: #ef4444;
       --hazard-green: #84cc16;
       --hazard-orange: #f97316;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: var(--ink-black); font-family: 'Crimson Pro', Georgia, serif; color: #e6dcc8; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: var(--ink-black); font-family: 'Crimson Pro', Georgia, serif; color: #ece4d8; }
     canvas#gameCanvas { display: block; width: 100vw; height: 100vh; background: var(--tartaria-bg); cursor: crosshair; }
 
     #crt-overlay {
       position: fixed; inset: 0; pointer-events: none; z-index: 90;
-      background: linear-gradient(rgba(14,12,18,0) 50%, rgba(0,0,0,0.25) 50%), radial-gradient(circle at center, transparent 58%, rgba(2,1,5,0.82) 100%);
-      background-size: 100% 3px, 100% 100%;
+      background: linear-gradient(rgba(18, 16, 24, 0) 50%, rgba(0, 0, 0, 0.18) 50%);
+      background-size: 100% 3px;
     }
     .tartaria-window {
-      background: linear-gradient(180deg, rgba(18,16,26,0.94) 0%, rgba(7,6,12,0.98) 100%);
+      background: linear-gradient(180deg, rgba(24, 21, 34, 0.96) 0%, rgba(12, 10, 18, 0.98) 100%);
       border: 1.5px solid var(--tartaria-gold); outline: 2px solid #000;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,230,160,0.12);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,230,160,0.15);
       border-radius: 3px;
     }
 
@@ -40,19 +40,19 @@
     }
     .char-card { width: 100%; max-width: 900px; padding: 18px 22px; display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 16px; }
     @media (max-width: 740px) { .char-card { grid-template-columns: 1fr; } }
-    .title-banner { grid-column: 1 / -1; text-align: center; border-bottom: 2px solid #3a2818; padding-bottom: 10px; }
+    .title-banner { grid-column: 1 / -1; text-align: center; border-bottom: 2px solid #4a3520; padding-bottom: 10px; }
     .wiz-logo-wrap { position: relative; display: inline-block; padding: 0 46px; }
     .wiz-logo-sword { position: absolute; top: 52%; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ef4444 0%, #dc2626 85%, #facc15 100%); z-index: 1; }
     .wiz-logo-sword::after { content: ''; position: absolute; right: 12px; top: -9px; width: 4px; height: 22px; background: #ef4444; }
     .title-banner h1 { position: relative; z-index: 2; font-family: 'Cinzel', serif; font-size: 32px; font-weight: 900; letter-spacing: 7px; color: #ef4444; text-shadow: 2px 2px 0 #000; }
     .title-banner h2 { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px; color: var(--tartaria-gold-bright); margin-top: 4px; }
     .form-col { display: flex; flex-direction: column; gap: 8px; }
-    .preview-col { display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #07080d; border: 2px solid #3a2818; padding: 10px; }
-    #previewCanvas { width: 240px; height: 215px; background: radial-gradient(circle at 50% 65%, #232a3b 0%, #050508 78%); border: 1px solid #2d2016; }
-    .lore-box { font-size: 12px; line-height: 1.35; color: #d8c8b4; font-style: italic; text-align: center; padding: 6px 8px; background: rgba(12,10,16,0.92); border-left: 3px solid var(--tartaria-gold); width: 100%; }
+    .preview-col { display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #0c0e17; border: 2px solid #4a3520; padding: 10px; }
+    #previewCanvas { width: 240px; height: 215px; background: radial-gradient(circle at 50% 65%, #2a354d 0%, #080a12 78%); border: 1px solid #3d2d1f; }
+    .lore-box { font-size: 12px; line-height: 1.35; color: #d8c8b4; font-style: italic; text-align: center; padding: 6px 8px; background: rgba(18,15,26,0.92); border-left: 3px solid var(--tartaria-gold); width: 100%; }
     .form-group { display: flex; flex-direction: column; gap: 3px; }
     label { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 800; color: var(--tartaria-gold); letter-spacing: 1px; }
-    input[type="text"], select { background: #050408; border: 1.5px solid #4a3520; color: #f3ebd6; padding: 6px 10px; border-radius: 2px; font-family: 'Crimson Pro', serif; font-size: 14px; font-weight: 600; outline: none; }
+    input[type="text"], select { background: #08070d; border: 1.5px solid #4a3520; color: #f3ebd6; padding: 6px 10px; border-radius: 2px; font-family: 'Crimson Pro', serif; font-size: 14px; font-weight: 600; outline: none; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .name-row { display: flex; gap: 6px; }
     .name-row input { flex: 1; }
@@ -66,35 +66,36 @@
     .interactive { pointer-events: auto; }
 
     .top-ribbon {
-      position: absolute; top: 0; left: 0; right: 0; height: 34px;
-      background: linear-gradient(180deg, rgba(12,10,18,0.96) 0%, rgba(6,5,10,0.92) 100%);
+      position: absolute; top: 0; left: 0; right: 0; height: 36px;
+      background: linear-gradient(180deg, rgba(18, 15, 26, 0.98) 0%, rgba(9, 7, 14, 0.94) 100%);
       border-bottom: 1.5px solid var(--tartaria-gold);
       display: flex; justify-content: space-between; align-items: center; padding: 0 12px;
-      font-family: 'Cinzel', serif; font-size: 10.5px; z-index: 60;
+      font-family: 'Cinzel', serif; font-size: 11px; z-index: 60;
     }
     .ribbon-left, .ribbon-right { display: flex; align-items: center; gap: 8px; }
     .action-btn {
-      background: linear-gradient(180deg, #241b29 0%, #120d16 100%);
+      background: linear-gradient(180deg, #2d2334 0%, #150f1b 100%);
       border: 1px solid var(--tartaria-gold); color: var(--tartaria-gold-bright);
-      padding: 3px 8px; font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700;
+      padding: 4px 9px; font-family: 'Cinzel', serif; font-size: 9.5px; font-weight: 700;
       cursor: pointer; text-transform: uppercase; border-radius: 2px;
+      transition: background 0.12s;
     }
-    .action-btn:hover { background: #382833; border-color: #fff; }
+    .action-btn:hover { background: #44344e; border-color: #fff; }
 
     /* Top-Left Profile + Party Dock */
-    #top-left-dock { position: absolute; top: 40px; left: 10px; width: 252px; display: flex; flex-direction: column; gap: 6px; }
-    .profile-card { padding: 8px 10px; font-size: 10px; }
+    #top-left-dock { position: absolute; top: 44px; left: 10px; width: 254px; display: flex; flex-direction: column; gap: 6px; }
+    .profile-card { padding: 9px 12px; font-size: 10.5px; }
     .profile-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
     .portrait-badge {
       width: 36px; height: 36px; border-radius: 50%;
-      background: radial-gradient(circle at 50% 40%, #3b2838 0%, #09070d 100%);
+      background: radial-gradient(circle at 50% 40%, #4a3346 0%, #0e0a14 100%);
       border: 2px solid var(--tartaria-gold-bright);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Cinzel', serif; font-weight: 900; font-size: 14px; color: #fde047;
     }
     .bar-row { margin-top: 3px; }
     .bar-label { display: flex; justify-content: space-between; font-size: 8.5px; font-family: 'JetBrains Mono', monospace; }
-    .bar-container { width: 100%; height: 6px; background: #050408; border: 1px solid #3d2d1f; margin-top: 1px; overflow: hidden; border-radius: 1px; }
+    .bar-container { width: 100%; height: 7px; background: #08070d; border: 1px solid #3d2d1f; margin-top: 1px; overflow: hidden; border-radius: 1px; }
     .bar-fill { height: 100%; width: 100%; transition: width 0.12s linear; }
     #hp-fill { background: linear-gradient(90deg, #991b1b 0%, #ef4444 100%); }
     #mana-fill { background: linear-gradient(90deg, #1e40af 0%, #38bdf8 100%); }
@@ -102,22 +103,22 @@
     #xp-fill { background: linear-gradient(90deg, #854d0e 0%, #f4dca6 100%); }
 
     #party-mates-box { padding: 6px 8px; font-size: 9.5px; display: flex; flex-direction: column; gap: 4px; }
-    .party-member { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: rgba(5,4,9,0.85); border: 1px solid #3a2a18; padding: 4px 6px; border-radius: 2px; }
+    .party-member { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: rgba(9,7,14,0.88); border: 1px solid #3a2a18; padding: 4px 6px; border-radius: 2px; }
     .mate-avatar { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #38bdf8; background: #111827; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #38bdf8; }
     .party-warp-btn { background: #1e293b; border: 1px solid #64748b; color: #e2e8f0; font-family: 'Cinzel', serif; font-size: 8px; padding: 2px 5px; cursor: pointer; }
 
     /* Right Dock: Stage Map & Weapon Loadout */
-    #right-dock { position: absolute; top: 40px; right: 10px; width: 206px; display: flex; flex-direction: column; gap: 6px; }
+    #right-dock { position: absolute; top: 44px; right: 10px; width: 210px; display: flex; flex-direction: column; gap: 6px; }
     #minimap-box { padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    #minimapCanvas { width: 188px; height: 130px; background: #050408; border: 1px solid #4a3520; }
-    #stage-objective-card { padding: 6px 8px; font-size: 9px; line-height: 1.25; }
+    #minimapCanvas { width: 194px; height: 130px; background: #08070d; border: 1px solid #4a3520; }
+    #stage-objective-card { padding: 7px 9px; font-size: 9.5px; line-height: 1.3; }
 
     #weapon-stance-dock { padding: 8px; display: flex; flex-direction: column; gap: 5px; }
     .stance-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-    .stance-btn { background: #0b0912; border: 1px solid #4a3520; color: #a89984; padding: 4px 2px; font-family: 'Cinzel', serif; font-size: 8px; font-weight: 800; text-align: center; cursor: pointer; border-radius: 2px; }
-    .stance-btn.active { background: linear-gradient(180deg, #5c1919 0%, #2a0a0a 100%); border-color: var(--tartaria-gold-bright); color: #fff; }
-    .weapon-slot-card { display: flex; align-items: center; justify-content: space-between; background: rgba(6,5,10,0.9); border: 1.5px solid #42301b; padding: 5px 7px; border-radius: 3px; cursor: pointer; }
-    .weapon-slot-card.active { background: linear-gradient(90deg, rgba(85,48,18,0.65) 0%, rgba(16,12,22,0.95) 100%); border-color: var(--tartaria-gold-bright); box-shadow: 0 0 10px rgba(248,226,168,0.3); }
+    .stance-btn { background: #110e19; border: 1px solid #4a3520; color: #a89984; padding: 4px 2px; font-family: 'Cinzel', serif; font-size: 8px; font-weight: 800; text-align: center; cursor: pointer; border-radius: 2px; }
+    .stance-btn.active { background: linear-gradient(180deg, #6b1b1b 0%, #300a0a 100%); border-color: var(--tartaria-gold-bright); color: #fff; }
+    .weapon-slot-card { display: flex; align-items: center; justify-content: space-between; background: rgba(9,7,14,0.92); border: 1.5px solid #42301b; padding: 5px 7px; border-radius: 3px; cursor: pointer; }
+    .weapon-slot-card.active { background: linear-gradient(90deg, rgba(95,54,20,0.7) 0%, rgba(20,15,28,0.95) 100%); border-color: var(--tartaria-gold-bright); box-shadow: 0 0 10px rgba(248,226,168,0.3); }
     .wpn-key-badge { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; font-weight: 800; color: #000; background: var(--tartaria-gold); padding: 1px 4px; border-radius: 2px; margin-right: 5px; }
     .wpn-dmg-tag { font-family: 'Cinzel', serif; font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 2px; }
     .tag-slash { background: #7f1d1d; color: #fca5a5; }
@@ -125,25 +126,24 @@
     .tag-pierce { background: #1e3a8a; color: #93c5fd; }
 
     /* Top-Center Boss Bar */
-    #boss-bar-wrap { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); width: 440px; max-width: calc(100vw - 490px); padding: 6px 12px; display: none; flex-direction: column; gap: 3px; z-index: 70; pointer-events: none; }
+    #boss-bar-wrap { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 440px; max-width: calc(100vw - 490px); padding: 6px 12px; display: none; flex-direction: column; gap: 3px; z-index: 70; pointer-events: none; }
     #boss-bar-title { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 900; color: #fca5a5; letter-spacing: 1.5px; text-align: center; }
     .boss-hp-track { width: 100%; height: 10px; background: #090508; border: 1.5px solid #cfa354; overflow: hidden; }
     #boss-hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #7f1d1d 0%, #ef4444 50%, #f97316 100%); transition: width 0.1s linear; }
 
     /* Bottom-Left Chat */
-    .chat-container { position: absolute; bottom: 68px; left: 10px; width: 290px; max-width: calc(100vw - 24px); display: flex; flex-direction: column; gap: 3px; opacity: 0.86; }
-    .chat-container:hover { opacity: 1.0; }
-    .chat-log { height: 80px; padding: 6px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; font-size: 11px; background: rgba(8,7,14,0.78); }
+    .chat-container { position: absolute; bottom: 68px; left: 10px; width: 290px; max-width: calc(100vw - 24px); display: flex; flex-direction: column; gap: 3px; opacity: 0.9; }
+    .chat-log { height: 82px; padding: 6px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; font-size: 11px; background: rgba(10,8,16,0.85); }
     .chat-msg { word-break: break-word; line-height: 1.22; }
     .chat-msg .author { color: var(--tartaria-gold-bright); font-weight: 700; font-family: 'Cinzel', serif; margin-right: 4px; }
     .chat-input-row { display: flex; gap: 4px; }
-    .chat-input { flex: 1; background: rgba(5,4,8,0.92); border: 1.5px solid #4a3520; padding: 4px 8px; color: #f3ebd6; font-size: 11.5px; outline: none; }
+    .chat-input { flex: 1; background: rgba(7,5,10,0.92); border: 1.5px solid #4a3520; padding: 4px 8px; color: #f3ebd6; font-size: 11.5px; outline: none; }
 
     /* Bottom-Center Specials */
     .bottom-action-dock {
       position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-      display: flex; align-items: center; gap: 6px; padding: 4px 8px;
-      background: rgba(8,7,13,0.94); border: 1.5px solid var(--tartaria-gold); border-radius: 4px;
+      display: flex; align-items: center; gap: 6px; padding: 5px 9px;
+      background: rgba(12,10,18,0.96); border: 1.5px solid var(--tartaria-gold); border-radius: 4px;
     }
     .special-orb-btn {
       width: 46px; height: 46px; border-radius: 50%;
@@ -154,37 +154,34 @@
     }
     .hotbar { display: flex; gap: 4px; }
     .hotkey-slot {
-      width: 46px; height: 46px; background: linear-gradient(180deg, #1b1724 0%, #09080d 100%);
-      border: 1.5px solid #6b532e; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 46px; height: 46px; background: linear-gradient(180deg, #1e1929 0%, #0a0910 100%);
+      border: 1.5px solid #785d34; display: flex; flex-direction: column; align-items: center; justify-content: center;
       cursor: pointer; position: relative; border-radius: 2px; overflow: hidden;
     }
-    .hotkey-slot.locked { opacity: 0.38; cursor: not-allowed; }
-    .hotkey-slot:not(.locked):hover { border-color: var(--tartaria-gold-bright); }
     .hotkey-num { position: absolute; top: 1px; left: 3px; font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; color: var(--tartaria-gold); }
     .hotkey-mp { position: absolute; top: 1px; right: 3px; font-family: 'JetBrains Mono', monospace; font-size: 7px; color: #38bdf8; }
     .hotkey-icon { font-size: 15px; margin-top: 3px; }
     .hotkey-label { font-family: 'Cinzel', serif; font-size: 6.5px; color: #dfd0ba; text-transform: uppercase; margin-top: 1px; text-align: center; }
-    .cd-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 0%; background: rgba(0,0,0,0.72); pointer-events: none; }
 
     /* Modals */
     #loot-modal, #inventory-modal, #grimoire-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 92%; max-width: 560px; background: rgba(10,8,15,0.94); backdrop-filter: blur(8px);
+      width: 92%; max-width: 560px; background: rgba(14,12,20,0.96); backdrop-filter: blur(8px);
       border: 2px solid var(--tartaria-gold); outline: 2px solid #000; padding: 16px 20px;
       display: none; flex-direction: column; gap: 10px; z-index: 165;
     }
-    .loot-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(5,4,8,0.9); border: 1px solid #4a3520; padding: 7px 10px; border-radius: 2px; }
+    .loot-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(7,5,10,0.9); border: 1px solid #4a3520; padding: 7px 10px; border-radius: 2px; }
     .equip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .equip-box { background: rgba(5,4,8,0.85); border: 1px solid #574129; padding: 7px; text-align: center; cursor: pointer; }
+    .equip-box { background: rgba(7,5,10,0.85); border: 1px solid #574129; padding: 7px; text-align: center; cursor: pointer; }
     .bag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .bag-slot { min-height: 64px; background: rgba(5,4,8,0.82); border: 1px solid #3a2a18; padding: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+    .bag-slot { min-height: 64px; background: rgba(7,5,10,0.82); border: 1px solid #3a2a18; padding: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
     .spell-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 260px; overflow-y: auto; }
-    .spell-card { background: #060509; border: 1px solid #4a3520; padding: 8px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .spell-card { background: #08070d; border: 1px solid #4a3520; padding: 8px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
 
     #souls-banner {
       position: absolute; top: 22%; left: 0; right: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(10,4,6,0.92) 25%, rgba(10,4,6,0.92) 75%, transparent 100%);
-      border-top: 1px solid rgba(200,157,84,0.45); border-bottom: 1px solid rgba(200,157,84,0.45);
+      background: linear-gradient(90deg, transparent 0%, rgba(14,8,8,0.94) 25%, rgba(14,8,8,0.94) 75%, transparent 100%);
+      border-top: 1.5px solid var(--tartaria-gold); border-bottom: 1.5px solid var(--tartaria-gold);
       padding: 12px 0; text-align: center; font-family: 'Cinzel', serif; font-size: 23px; font-weight: 900; letter-spacing: 5px; color: #fbbf24;
       display: none; z-index: 190; pointer-events: none;
     }
@@ -293,7 +290,7 @@
     <div id="loot-items-list" style="display:flex; flex-direction:column; gap:6px; max-height:240px; overflow-y:auto;"></div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
       <button class="action-btn" id="btn-take-all-loot" style="background:#166534; border-color:#4ade80; color:#fff; padding:6px 14px;">✨ Take All & Harvest</button>
-      <button class="action-btn" onclick="document.getElementById('loot-modal').style.display='none'">Close</button>
+      <button class="action-btn" id="btn-close-loot">Close</button>
     </div>
   </div>
 
@@ -321,18 +318,18 @@
       </div>
     </div>
     <div class="bag-grid" id="bag-grid"></div>
-    <button class="action-btn" onclick="toggleInventory(false)" style="align-self:flex-end;">Close [I]</button>
+    <button class="action-btn" id="btn-close-inv" style="align-self:flex-end;">Close [I]</button>
   </div>
 
   <!-- Specials Grimoire Modal -->
   <div id="grimoire-modal" class="tartaria-window">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #4a3520; padding-bottom:6px;">
       <span style="font-family:'Cinzel',serif; font-size:15px; font-weight:900; color:var(--tartaria-gold-bright);">📖 DILMUN SPECIALS GRIMOIRE [G]</span>
-      <span id="grimoire-slot-info" style="font-size:11px; color:#cfa354;">Unlocked Slots: 1 / 9</span>
+      <span id="grimoire-slot-info" style="font-size:11px; color:#cfa354;">Unlocked Slots: 1 / 6</span>
     </div>
     <div style="display:flex; gap:6px; flex-wrap:wrap;" id="grimoire-slot-selector"></div>
     <div class="spell-list" id="grimoire-spell-list"></div>
-    <button class="action-btn" onclick="toggleGrimoire(false)" style="align-self:flex-end;">Close [G]</button>
+    <button class="action-btn" id="btn-close-grim" style="align-self:flex-end;">Close [G]</button>
   </div>
 
   <canvas id="gameCanvas"></canvas>
@@ -352,7 +349,7 @@
         <button id="btn-inv" class="action-btn">🎒 Bag [I]</button>
         <button id="btn-grim" class="action-btn">📖 Specials [G]</button>
         <button id="btn-audio" class="action-btn">🔊 BGM</button>
-        <button id="btn-crt" class="action-btn">📺 CRT</button>
+        <button id="btn-crt" class="action-btn">📺 CRT: OFF</button>
         <button id="btn-invite" class="action-btn">🔗 Invite</button>
       </div>
     </div>
@@ -392,7 +389,7 @@
           <span>🗺️ STAGE 1 MAP (9 ROOMS)</span>
           <span id="mapped-count-txt" style="color:#4ade80;">3/3 Seals</span>
         </div>
-        <canvas id="minimapCanvas" width="188" height="130"></canvas>
+        <canvas id="minimapCanvas" width="194" height="130"></canvas>
       </div>
 
       <div id="stage-objective-card" class="tartaria-window">
@@ -681,11 +678,11 @@
     const floorPatterns = {};
     function generateProceduralTextures(c) {
       const pals = {
-        'stone_slate':   { slab1: '#232a38', slab2: '#171c26', mortar: '#0c0e14', accent: '#3b4963' },
-        'stone_dark':    { slab1: '#1e1b29', slab2: '#12101a', mortar: '#09070d', accent: '#352f4a' },
-        'stone_crimson': { slab1: '#2b161b', slab2: '#1a0d11', mortar: '#0d0608', accent: '#592029' },
-        'stone_violet':  { slab1: '#211a33', slab2: '#120e1c', mortar: '#08060d', accent: '#452f63' },
-        'stone_moss':    { slab1: '#19272a', slab2: '#0f1719', mortar: '#070b0c', accent: '#25473a' }
+        'stone_slate':   { slab1: '#313a4d', slab2: '#242b3b', mortar: '#131620', accent: '#4f5d79' },
+        'stone_dark':    { slab1: '#2b273b', slab2: '#1d192a', mortar: '#100d17', accent: '#463e60' },
+        'stone_crimson': { slab1: '#42222a', slab2: '#2c141a', mortar: '#14080b', accent: '#692f3b' },
+        'stone_violet':  { slab1: '#31274a', slab2: '#211933', mortar: '#100b1a', accent: '#533f7d' },
+        'stone_moss':    { slab1: '#263d36', slab2: '#182924', mortar: '#0b1411', accent: '#3d6156' }
       };
       Object.keys(pals).forEach(k => {
         const pal = pals[k];
@@ -698,7 +695,7 @@
             const sy = r * 40;
             oCtx.fillStyle = (r + col) % 2 === 0 ? pal.slab1 : pal.slab2;
             oCtx.fillRect(sx + 2, sy + 2, 36, 36);
-            oCtx.strokeStyle = pal.accent; oCtx.lineWidth = 1;
+            oCtx.strokeStyle = pal.accent; oCtx.lineWidth = 1.2;
             oCtx.strokeRect(sx + 2, sy + 2, 36, 36);
           }
         }
@@ -874,7 +871,7 @@
     }
 
     // =========================================================================
-    // 6. CREATION & MODAL SETUP
+    // 6. CREATION & ALL HUD BUTTON EVENT LISTENERS
     // =========================================================================
     function initCreationUI() {
       const raceSel = document.getElementById('char-race');
@@ -935,6 +932,44 @@
         };
         hairRow.appendChild(s);
       });
+
+      // Hook up all HUD top-bar and modal action buttons
+      document.getElementById('btn-crt').onclick = () => {
+        const crt = document.getElementById('crt-overlay');
+        const isOff = crt.style.display === 'none';
+        crt.style.display = isOff ? 'block' : 'none';
+        document.getElementById('btn-crt').textContent = isOff ? '📺 CRT: ON' : '📺 CRT: OFF';
+      };
+
+      document.getElementById('btn-audio').onclick = () => {
+        initAudioEngine();
+        bgmEnabled = !bgmEnabled;
+        document.getElementById('btn-audio').textContent = bgmEnabled ? '🔊 BGM' : '🔇 MUTE';
+      };
+
+      document.getElementById('btn-inv').onclick = () => toggleInventory();
+      document.getElementById('btn-close-inv').onclick = () => toggleInventory(false);
+
+      document.getElementById('btn-grim').onclick = () => toggleGrimoire();
+      document.getElementById('btn-close-grim').onclick = () => toggleGrimoire(false);
+
+      document.getElementById('btn-gates').onclick = () => toggleNearestGate();
+
+      document.getElementById('btn-autoaim').onclick = (e) => {
+        localPlayer.autoAim = !localPlayer.autoAim;
+        e.currentTarget.textContent = `🎯 Aim [F]: ${localPlayer.autoAim ? 'ON' : 'OFF'}`;
+        e.currentTarget.style.color = localPlayer.autoAim ? '#4ade80' : '#f87171';
+      };
+
+      document.getElementById('btn-invite').onclick = () => {
+        const u = `${window.location.origin}${window.location.pathname}?shard=${localPlayer.shardCode}`;
+        navigator.clipboard?.writeText(u);
+        showToast('Invite link copied to clipboard!');
+      };
+
+      document.getElementById('btn-close-loot').onclick = () => {
+        document.getElementById('loot-modal').style.display = 'none';
+      };
     }
 
     document.getElementById('btn-roll-name').onclick = () => {
@@ -1295,15 +1330,701 @@
     }
 
     // =========================================================================
-    // 9. MAP MINIMAP & STARTUP
+    // 9. MAP MINIMAP, COMBAT LOOP & STARTUP
     // =========================================================================
     const mapCanvas = document.getElementById('minimapCanvas');
     const mapCtx = mapCanvas.getContext('2d');
 
-    // Run Initialization Immediately
-    initCreationUI();
-    initStage1World();
-    requestAnimationFrame(gameLoop);
-  </script>
-</body>
-</html>
+    function updateStageHazards(dt) {
+      spikeTrapTick = (spikeTrapTick + dt) % 3.0;
+      const spikesActive = spikeTrapTick > 1.4;
+
+      if (isInsideFirepitSafezone(localPlayer.x, localPlayer.y) || localPlayer.dodgeTimer > 0) return;
+
+      activeHazards.forEach(hz => {
+        if (hz.type === 'lava') {
+          if (Math.hypot(localPlayer.x - hz.x, localPlayer.y - hz.y) < hz.r) {
+            localPlayer.hp = Math.max(0, localPlayer.hp - 16 * dt);
+            localPlayer.hitFlash = 3;
+            if (Math.random() < 0.1) spawnCombatText(localPlayer.x, localPlayer.y, '-16 LAVA BURN!', '#f97316');
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+          }
+        } else if (hz.type === 'acid') {
+          if (Math.hypot(localPlayer.x - hz.x, localPlayer.y - hz.y) < hz.r) {
+            localPlayer.hp = Math.max(0, localPlayer.hp - 11 * dt);
+            localPlayer.hitFlash = 2;
+            if (Math.random() < 0.1) spawnCombatText(localPlayer.x, localPlayer.y, '-11 ACID SLIME!', '#84cc16');
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+          }
+        } else if (hz.type === 'spikes' && spikesActive) {
+          if (localPlayer.x >= hz.x - hz.w/2 && localPlayer.x <= hz.x + hz.w/2 &&
+              localPlayer.y >= hz.y - hz.h/2 && localPlayer.y <= hz.y + hz.h/2) {
+            localPlayer.hp = Math.max(0, localPlayer.hp - 24 * dt);
+            localPlayer.hitFlash = 4;
+            playSfx('slash');
+            if (Math.random() < 0.1) spawnCombatText(localPlayer.x, localPlayer.y, '-24 SPIKE TRAP!', '#ef4444');
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+          }
+        }
+      });
+    }
+
+    function updateGatesAutoProximity(dt) {
+      const allSealsCollected = stage1Seals.sun && stage1Seals.blood && stage1Seals.bone;
+
+      GATES.forEach(g => {
+        if (!g.manualLock) {
+          const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
+          if (g.isBossGate && !allSealsCollected) {
+            g.isOpen = false;
+          } else if (d < 145 && !g.isOpen) {
+            g.isOpen = true;
+            playSfx('gate');
+          } else if (d > 200 && g.isOpen) {
+            g.isOpen = false;
+          }
+        }
+        const targetAnim = g.isOpen ? 1 : 0;
+        g.openAnim = (g.openAnim || 0) + (targetAnim - (g.openAnim || 0)) * Math.min(1, dt * 10);
+      });
+    }
+
+    function toggleNearestGate() {
+      let nearest = null, minDist = 185;
+      GATES.forEach(g => {
+        const d = Math.hypot(localPlayer.x - g.x, localPlayer.y - g.y);
+        if (d < minDist) { minDist = d; nearest = g; }
+      });
+      if (nearest) {
+        if (nearest.isBossGate && !(stage1Seals.sun && stage1Seals.blood && stage1Seals.bone)) {
+          showToast('Archon Gate Sealed! Recover Sun, Blood, and Bone Seals first.');
+          return;
+        }
+        nearest.isOpen = !nearest.isOpen;
+        nearest.manualLock = !nearest.isOpen;
+        playSfx('gate');
+        showToast(`${nearest.label}: ${nearest.isOpen ? 'OPENED ⛩️' : 'LOCKED SHUT 🔒'}`);
+      }
+    }
+
+    function isNearOpenGateThreshold(px, py) {
+      for (const g of GATES) {
+        if (!g.isOpen) continue;
+        if (g.horiz) {
+          if (Math.abs(px - g.x) < 130 && Math.abs(py - g.y) < 95) return true;
+        } else {
+          if (Math.abs(px - g.x) < 95 && Math.abs(py - g.y) < 130) return true;
+        }
+      }
+      return false;
+    }
+
+    function isBlockedByClosedGate(px, py) {
+      for (const g of GATES) {
+        if (g.isOpen) continue;
+        if (g.horiz) {
+          if (Math.abs(px - g.x) < 120 && Math.abs(py - g.y) < 18) return true;
+        } else {
+          if (Math.abs(px - g.x) < 18 && Math.abs(py - g.y) < 120) return true;
+        }
+      }
+      return false;
+    }
+
+    function getWalkableSectorAt(px, py) {
+      if (isBlockedByClosedGate(px, py)) return null;
+
+      const gx = Math.floor(px / TILE_SIZE);
+      const gy = Math.floor(py / TILE_SIZE);
+      const sec = STAGE_SECTORS[sectorKey(gx, gy)];
+      if (!sec) return null;
+
+      if (isNearOpenGateThreshold(px, py)) return sec;
+
+      for (let i = 0; i < sec.rects.length; i++) {
+        const r = sec.rects[i];
+        if (px >= r.x + 8 && px <= r.x + r.w - 8 && py >= r.y + 8 && py <= r.y + r.h - 8) {
+          return sec;
+        }
+      }
+      return null;
+    }
+
+    function resolveDungeonMovement(entity, nextX, nextY) {
+      if (getWalkableSectorAt(nextX, entity.y)) entity.x = nextX;
+      if (getWalkableSectorAt(entity.x, nextY)) entity.y = nextY;
+
+      for (let i = 0; i < SOLID_PILLARS.length; i++) {
+        const pil = SOLID_PILLARS[i];
+        const dist = Math.hypot(entity.x - pil.x, entity.y - pil.y);
+        const minR = pil.r + 14;
+        if (dist < minR && dist > 0.001) {
+          const ang = Math.atan2(entity.y - pil.y, entity.x - pil.x);
+          entity.x = pil.x + Math.cos(ang) * minR;
+          entity.y = pil.y + Math.sin(ang) * minR;
+        }
+      }
+
+      const fDist = Math.hypot(entity.x - FIREPIT_POS.x, entity.y - FIREPIT_POS.y);
+      if (fDist < FIREPIT_POS.radius + 14) {
+        const ang = Math.atan2(entity.y - FIREPIT_POS.y, entity.x - FIREPIT_POS.x);
+        entity.x = FIREPIT_POS.x + Math.cos(ang) * (FIREPIT_POS.radius + 14);
+        entity.y = FIREPIT_POS.y + Math.sin(ang) * (FIREPIT_POS.radius + 14);
+      }
+    }
+
+    function isInsideFirepitSafezone(x, y) {
+      return Math.hypot(x - FIREPIT_POS.x, y - FIREPIT_POS.y) <= FIREPIT_POS.safeRadius;
+    }
+
+    function applyDamageWithTypeCheck(en, rawDmg, atkType) {
+      let mult = 0.15;
+      let tag = '';
+      let color = '#94a3b8';
+
+      if (atkType === 'ARCANE' || atkType === en.weakTo) {
+        mult = localPlayer.combatStance === 'precision' ? 2.15 : 1.75;
+        tag = `💥 ${atkType} WEAKNESS!`;
+        color = '#84cc16';
+        playSfx('crush_weakness');
+      } else {
+        tag = `🛡️ RESISTED! (USE ${en.weakTo})`;
+        color = '#94a3b8';
+        playSfx('resist_clang');
+      }
+
+      const finalDmg = Math.max(2, Math.round(rawDmg * mult));
+      en.hp -= finalDmg;
+      en.hitFlash = 6;
+      spawnCombatText(en.x, en.y, `-${finalDmg} ${tag}`, color);
+      return { finalDmg, exploitedWeakness: mult > 1.0 };
+    }
+
+    function performPrimaryWeaponAttack() {
+      if (localPlayer.autoAttackTimer > 0) return;
+      initAudioEngine();
+
+      const wpn = getActiveWeapon();
+      const stanceCdMod = localPlayer.combatStance === 'fury' ? 0.65 : (localPlayer.combatStance === 'bastion' ? 1.15 : 0.9);
+      localPlayer.autoAttackTimer = 0.42 * stanceCdMod;
+      localPlayer.swingTimer = 16;
+
+      const baseAngle = getAimAngle();
+      localPlayer.aimAngle = baseAngle;
+      const rawPower = 24 + localPlayer.dmgBonus;
+
+      if (wpn.ranged || wpn.dmgType === 'PIERCE') {
+        playSfx('bow');
+        projectiles.push({
+          ownerId: localPlayer.id, isEnemy: false, dmgType: wpn.dmgType,
+          x: localPlayer.x + Math.cos(baseAngle) * 18,
+          y: localPlayer.y - 18 + Math.sin(baseAngle) * 18,
+          vx: Math.cos(baseAngle) * 680, vy: Math.sin(baseAngle) * 680,
+          angle: baseAngle, speed: 680, dmg: rawPower, color: '#93c5fd', projType: 'arrow', radius: 7, life: 1.3
+        });
+      } else {
+        playSfx('slash');
+        const arcColor = wpn.dmgType === 'BLUNT' ? '#fde047' : '#fca5a5';
+        spawnSlashArc(localPlayer.x + Math.cos(baseAngle) * 32, localPlayer.y + Math.sin(baseAngle) * 32, localPlayer.facing, arcColor, 54);
+        projectiles.push({
+          ownerId: localPlayer.id, isEnemy: false, dmgType: wpn.dmgType,
+          x: localPlayer.x + Math.cos(baseAngle) * 24,
+          y: localPlayer.y - 18 + Math.sin(baseAngle) * 24,
+          vx: Math.cos(baseAngle) * 440, vy: Math.sin(baseAngle) * 440,
+          angle: baseAngle, speed: 440, dmg: rawPower, color: arcColor,
+          projType: wpn.dmgType === 'BLUNT' ? 'orb' : 'kunai', radius: 13, life: 0.28
+        });
+      }
+    }
+
+    function checkCollectSeal(sealType) {
+      if (sealType && !stage1Seals[sealType]) {
+        stage1Seals[sealType] = true;
+        playSfx('loot');
+        triggerSoulsBanner(`RECOVERED: ${sealType.toUpperCase()} SEAL!`);
+
+        document.getElementById(`seal-${sealType}-status`).textContent = `✅ ${sealType.toUpperCase()} Seal (Recovered!)`;
+        document.getElementById(`seal-${sealType}-status`).style.color = '#4ade80';
+
+        if (stage1Seals.sun && stage1Seals.blood && stage1Seals.bone) {
+          triggerSoulsBanner('ALL 3 SEALS BROKEN! ARCHON GATE UNLOCKED!');
+          document.getElementById('portal-status').textContent = '⛩️ Archon Gate: UNLOCKED! Slay Abeshu!';
+          document.getElementById('portal-status').style.color = '#fde047';
+        }
+      }
+    }
+
+    function checkDescentPortal() {
+      if (!bossDefeated) return;
+      const d = Math.hypot(localPlayer.x - stage2PortalPos.x, localPlayer.y - stage2PortalPos.y);
+      if (d < stage2PortalPos.radius + 15) {
+        triggerSoulsBanner('VICTORY! DESCENDING INTO STAGE 2: THE FORBIDDEN VAULTS...');
+        playSfx('atman');
+        setTimeout(() => {
+          showToast('Stage 1 Cleared! Preparing Stage 2 descent...');
+        }, 1200);
+      }
+    }
+
+    function handleEnemyKilled(en, idx) {
+      enemies.splice(idx, 1);
+      localPlayer.xp += en.xpValue || 65;
+      localPlayer.gold += en.isBoss ? 280 : 25;
+
+      if (en.isBoss) {
+        bossDefeated = true;
+        triggerSoulsBanner('ARCHON ABESHU SLAIN! STAGE 2 PORTAL ACTIVATED!');
+        document.getElementById('portal-status').textContent = '🌟 Stage 2 Portal: OPEN AT (-1, -1)!';
+        document.getElementById('portal-status').style.color = '#38bdf8';
+      }
+
+      if (localPlayer.xp >= localPlayer.nextXp) {
+        localPlayer.level++;
+        localPlayer.xp -= localPlayer.nextXp;
+        localPlayer.nextXp = Math.round(localPlayer.nextXp * 1.3);
+        renderHotbarUI();
+        triggerSoulsBanner(`SOUL LEVEL ${localPlayer.level}!`);
+      }
+      updateVitalsUI();
+    }
+
+    function handleFullLootDeath() {
+      playSfx('death');
+      spawnOvaDecapitation(localPlayer.x, localPlayer.y, -localPlayer.facing);
+      triggerSoulsBanner('VESSEL BROKEN — ATMAN RETURNED TO THE FIREPIT');
+
+      localPlayer.x = FIREPIT_POS.x;
+      localPlayer.y = FIREPIT_POS.y + 125;
+      localPlayer.targetX = null; localPlayer.targetY = null;
+      localPlayer.hp = localPlayer.maxHp;
+      localPlayer.mana = localPlayer.maxMana;
+      updateVitalsUI();
+    }
+
+    function openChestLootModal(chestIdx) {
+      const ch = lootChests[chestIdx];
+      if (!ch) return;
+
+      document.getElementById('loot-modal-title').textContent = ch.label;
+      document.getElementById('loot-modal-rarity').textContent = `[💰 ${ch.gold}g • ⚱️ +${ch.atman || 15} Atman]`;
+
+      const list = document.getElementById('loot-items-list');
+      list.innerHTML = '';
+      (ch.items || []).forEach((it, idx) => {
+        const row = document.createElement('div');
+        row.className = 'loot-item-row';
+        row.innerHTML = `
+          <div>
+            <strong style="color:#fde047; font-family:'Cinzel',serif;">${it.name}</strong>
+            <div style="font-size:10px; color:#a89984;">+${it.atk || 0} ATK • +${it.hp || 0} HP</div>
+          </div>
+          <button class="action-btn" id="claim-it-${idx}">Claim</button>
+        `;
+        row.querySelector(`#claim-it-${idx}`).onclick = () => {
+          if (it.isSeal) checkCollectSeal(it.isSeal);
+          if (localPlayer.backpack.length < 8) localPlayer.backpack.push(it);
+          ch.items.splice(idx, 1);
+          playSfx('loot');
+          if (ch.items.length === 0) {
+            lootChests.splice(chestIdx, 1);
+            document.getElementById('loot-modal').style.display = 'none';
+          }
+          updateVitalsUI();
+        };
+        list.appendChild(row);
+      });
+
+      document.getElementById('loot-modal').style.display = 'flex';
+    }
+
+    function renderStage1Minimap() {
+      mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+      const myGx = Math.floor(localPlayer.x / TILE_SIZE);
+      const myGy = Math.floor(localPlayer.y / TILE_SIZE);
+      const cellW = 44, cellH = 34;
+      const offX = 28, offY = 12;
+
+      for (let gy = -1; gy <= 1; gy++) {
+        for (let gx = -1; gx <= 1; gx++) {
+          const sec = STAGE_SECTORS[sectorKey(gx, gy)];
+          const rx = offX + (gx + 1) * (cellW + 4);
+          const ry = offY + (gy + 1) * (cellH + 4);
+
+          mapCtx.fillStyle = sec.safe ? '#166534' : (sec.isBossRoom ? '#7f1d1d' : '#1e293b');
+          mapCtx.strokeStyle = (gx === myGx && gy === myGy) ? '#fde047' : '#4a3520';
+          mapCtx.lineWidth = (gx === myGx && gy === myGy) ? 2 : 1;
+          mapCtx.fillRect(rx, ry, cellW, cellH);
+          mapCtx.strokeRect(rx, ry, cellW, cellH);
+
+          mapCtx.font = '8px Cinzel, serif';
+          mapCtx.fillStyle = '#fff';
+          mapCtx.textAlign = 'center';
+          if (sec.isBossRoom) mapCtx.fillText('☠️ ABESHU', rx + cellW/2, ry + cellH/2 + 3);
+          else if (sec.sealType) mapCtx.fillText(sec.sealType.toUpperCase(), rx + cellW/2, ry + cellH/2 + 3);
+          else if (sec.safe) mapCtx.fillText('HUB', rx + cellW/2, ry + cellH/2 + 3);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 10. MAIN 60 FPS GAME LOOP
+    // =========================================================================
+    let lastTime = performance.now();
+
+    function gameLoop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      const nowSec = now * 0.001;
+
+      updatePreview(now);
+      updateGatesAutoProximity(dt);
+      updateStageHazards(dt);
+      checkDescentPortal();
+
+      if (localPlayer.autoAttackTimer > 0) {
+        localPlayer.autoAttackTimer = Math.max(0, localPlayer.autoAttackTimer - dt);
+      }
+
+      const inSafezone = isInsideFirepitSafezone(localPlayer.x, localPlayer.y);
+      if (!inSafezone && localPlayer.autoAttackTimer <= 0 && document.getElementById('char-modal').style.display === 'none') {
+        const wpn = getActiveWeapon();
+        const maxRange = wpn.ranged ? 380 : 125;
+        let autoTarget = enemies.find(e => e.id === localPlayer.targetEntityId && Math.hypot(e.x - localPlayer.x, e.y - localPlayer.y) <= maxRange);
+        if (!autoTarget) autoTarget = enemies.find(e => Math.hypot(e.x - localPlayer.x, e.y - localPlayer.y) <= maxRange);
+        if (autoTarget) {
+          localPlayer.targetEntityId = autoTarget.id;
+          performPrimaryWeaponAttack();
+        }
+      }
+
+      let moveX = 0, moveY = 0;
+      if (keys['w'] || keys['arrowup']) moveY -= 1;
+      if (keys['s'] || keys['arrowdown']) moveY += 1;
+      if (keys['a'] || keys['arrowleft']) moveX -= 1;
+      if (keys['d'] || keys['arrowright']) moveX += 1;
+
+      if (moveX !== 0 || moveY !== 0) {
+        localPlayer.targetX = null; localPlayer.targetY = null;
+        const len = Math.hypot(moveX, moveY);
+        resolveDungeonMovement(localPlayer, localPlayer.x + (moveX / len) * localPlayer.speed * dt, localPlayer.y + (moveY / len) * localPlayer.speed * dt);
+        if (Math.abs(moveX) > 0.05) localPlayer.facing = moveX > 0 ? 1 : -1;
+        localPlayer.isMoving = true;
+      } else if (localPlayer.targetX !== null && localPlayer.targetY !== null) {
+        const dx = localPlayer.targetX - localPlayer.x;
+        const dy = localPlayer.targetY - localPlayer.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 8) {
+          resolveDungeonMovement(localPlayer, localPlayer.x + (dx / dist) * localPlayer.speed * dt, localPlayer.y + (dy / dist) * localPlayer.speed * dt);
+          if (Math.abs(dx) > 2) localPlayer.facing = dx > 0 ? 1 : -1;
+          localPlayer.isMoving = true;
+        } else {
+          localPlayer.targetX = null; localPlayer.targetY = null;
+          localPlayer.isMoving = false;
+        }
+      } else {
+        localPlayer.isMoving = false;
+      }
+
+      const activeSector = getWalkableSectorAt(localPlayer.x, localPlayer.y);
+      if (activeSector) {
+        document.getElementById('shard-status').textContent = activeSector.name;
+      }
+
+      const pvpBadge = document.getElementById('pvp-badge');
+      if (inSafezone) {
+        pvpBadge.textContent = '[SAFEZONE]';
+        pvpBadge.style.color = '#4ade80';
+        localPlayer.hp = Math.min(localPlayer.maxHp, localPlayer.hp + 15 * dt);
+        localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 18 * dt);
+      } else {
+        pvpBadge.textContent = '[⚔️ STAGE 1 PURGATORY]';
+        pvpBadge.style.color = '#ef4444';
+        localPlayer.mana = Math.min(localPlayer.maxMana, localPlayer.mana + 5 * dt);
+      }
+
+      for (let i = atmanMotes.length - 1; i >= 0; i--) {
+        const am = atmanMotes[i];
+        const dist = Math.hypot(localPlayer.x - am.x, (localPlayer.y - 18) - am.y);
+        if (dist < 240) {
+          const ang = Math.atan2((localPlayer.y - 18) - am.y, localPlayer.x - am.x);
+          am.x += Math.cos(ang) * 340 * dt;
+          am.y += Math.sin(ang) * 340 * dt;
+        }
+        if (dist < 24) {
+          localPlayer.atman = Math.min(localPlayer.maxAtman, localPlayer.atman + am.val);
+          spawnCombatText(localPlayer.x, localPlayer.y - 34, `+${am.val} ATMAN`, '#fde047');
+          atmanMotes.splice(i, 1);
+        }
+      }
+
+      updateVitalsUI();
+      renderStage1Minimap();
+
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const pj = projectiles[i];
+        pj.x += pj.vx * dt; pj.y += pj.vy * dt; pj.life -= dt;
+
+        let hitWall = !getWalkableSectorAt(pj.x, pj.y);
+        if (!hitWall) {
+          for (const pil of SOLID_PILLARS) {
+            if (Math.hypot(pj.x - pil.x, pj.y - pil.y) < pil.r) { hitWall = true; break; }
+          }
+        }
+        if (hitWall || pj.life <= 0) {
+          if (pj.explosive) spawnSpellVortex(pj.x, pj.y, pj.color, 65);
+          projectiles.splice(i, 1);
+          continue;
+        }
+
+        if (pj.isEnemy) {
+          if (!inSafezone && localPlayer.dodgeTimer <= 0 && Math.hypot(pj.x - localPlayer.x, pj.y - (localPlayer.y - 16)) < 22 + pj.radius) {
+            const taken = Math.max(1, Math.round(pj.dmg * (localPlayer.combatStance === 'bastion' ? 0.7 : 1.0)));
+            localPlayer.hp = Math.max(0, localPlayer.hp - taken);
+            localPlayer.hitFlash = 7;
+            playSfx('slash');
+            spawnCombatText(localPlayer.x, localPlayer.y, `-${taken}`, '#ef4444');
+            projectiles.splice(i, 1);
+            if (localPlayer.hp <= 0) handleFullLootDeath();
+            continue;
+          }
+        } else {
+          let hitMob = false;
+          for (let m = enemies.length - 1; m >= 0; m--) {
+            const en = enemies[m];
+            if (Math.hypot(pj.x - en.x, pj.y - (en.y - 16)) < en.radius + pj.radius + 6) {
+              const res = applyDamageWithTypeCheck(en, pj.dmg, pj.dmgType || 'SLASH');
+              if (pj.explosive) spawnSpellVortex(en.x, en.y, pj.color, 85);
+              else spawnSlashArc(en.x, en.y, pj.vx >= 0 ? 1 : -1, pj.color, 36);
+
+              if (en.hp <= 0) {
+                if (res.exploitedWeakness) spawnOvaDecapitation(en.x, en.y, pj.vx >= 0 ? 1 : -1);
+                handleEnemyKilled(en, m);
+              }
+              hitMob = true;
+              break;
+            }
+          }
+          if (hitMob) { projectiles.splice(i, 1); continue; }
+        }
+      }
+
+      let activeBoss = null;
+      enemies.forEach(en => {
+        if (en.hitFlash > 0) en.hitFlash--;
+        const distToPlayer = Math.hypot(localPlayer.x - en.x, localPlayer.y - en.y);
+        if (en.isBoss && distToPlayer < 680) activeBoss = en;
+
+        if (distToPlayer < 520 && distToPlayer > 38 && !inSafezone) {
+          const ang = Math.atan2(localPlayer.y - en.y, localPlayer.x - en.x);
+          const nx = en.x + Math.cos(ang) * en.speed * dt;
+          const ny = en.y + Math.sin(ang) * en.speed * dt;
+          if (!isInsideFirepitSafezone(nx, ny)) resolveDungeonMovement(en, nx, ny);
+
+          if (en.isBoss || en.ranged) {
+            en.shootCooldown = (en.shootCooldown || 1.8) - dt;
+            if (en.shootCooldown <= 0) {
+              en.shootCooldown = en.isBoss ? 1.4 : 2.3;
+              if (en.isBoss) {
+                for (let b = 0; b < 8; b++) {
+                  projectiles.push({
+                    ownerId: en.id, isEnemy: true, x: en.x, y: en.y - 20,
+                    vx: Math.cos((b / 8) * Math.PI * 2) * 330, vy: Math.sin((b / 8) * Math.PI * 2) * 330,
+                    angle: (b / 8) * Math.PI * 2, speed: 330, dmg: 18, color: '#facc15', projType: 'orb', radius: 9, life: 2.0
+                  });
+                }
+              } else {
+                projectiles.push({
+                  ownerId: en.id, isEnemy: true, x: en.x, y: en.y - 16,
+                  vx: Math.cos(ang) * 330, vy: Math.sin(ang) * 330,
+                  angle: ang, speed: 330, dmg: 14, color: en.color, projType: 'arrow', radius: 6, life: 1.5
+                });
+              }
+            }
+          }
+        }
+      });
+
+      currentMusicTheme = activeBoss ? 'boss' : (inSafezone ? 'tavern' : 'labyrinth');
+
+      const bossWrap = document.getElementById('boss-bar-wrap');
+      if (activeBoss) {
+        bossWrap.style.display = 'flex';
+        document.getElementById('boss-bar-title').textContent = `☠️ ${activeBoss.name} [WEAKNESS: ${activeBoss.weakTo}] (${Math.max(0, Math.round(activeBoss.hp))}/${activeBoss.maxHp})`;
+        document.getElementById('boss-hp-fill').style.width = `${Math.max(0, (activeBoss.hp / activeBoss.maxHp) * 100)}%`;
+      } else {
+        bossWrap.style.display = 'none';
+      }
+
+      if (localPlayer.swingTimer > 0) localPlayer.swingTimer--;
+      if (localPlayer.dodgeTimer > 0) localPlayer.dodgeTimer--;
+      if (localPlayer.hitFlash > 0) localPlayer.hitFlash--;
+      if (screenShake > 0) screenShake = Math.max(0, screenShake - 40 * dt);
+
+      renderWorld(nowSec);
+      requestAnimationFrame(gameLoop);
+    }
+
+    // =========================================================================
+    // 11. RENDER WORLD (ILLUMINATED WALLS, TORCHES, BONFIRE, HAZARDS)
+    // =========================================================================
+    function renderWorld(timeSec) {
+      ctx.clearRect(0, 0, screenW, screenH);
+      const camX = localPlayer.x - screenW / 2;
+      const camY = localPlayer.y - screenH / 2;
+
+      ctx.save();
+      ctx.translate(-camX, -camY);
+
+      // Deep void background
+      ctx.fillStyle = '#06050a';
+      ctx.fillRect(camX, camY, screenW, screenH);
+
+      // 1. Draw Visible Stage Rooms with Beveled Stone Flagstones
+      worldSectors.forEach(sec => {
+        sec.rects.forEach(r => {
+          ctx.fillStyle = '#0e0b14';
+          ctx.fillRect(r.x - 10, r.y - 24, r.w + 20, r.h + 34);
+          ctx.fillStyle = floorPatterns[sec.floor] || '#283244';
+          ctx.fillRect(r.x, r.y, r.w, r.h);
+
+          if (r.isMain) {
+            ctx.strokeStyle = sec.safe ? 'rgba(212, 167, 85, 0.65)' : (sec.isBossRoom ? 'rgba(239, 68, 68, 0.75)' : 'rgba(99, 115, 140, 0.55)');
+            ctx.lineWidth = 3.5;
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+          }
+        });
+
+        const scx = sec.gx * TILE_SIZE + 500;
+        const scy = sec.gy * TILE_SIZE + 145;
+        ctx.font = '900 13px Cinzel, serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = sec.safe ? 'rgba(250, 232, 184, 0.75)' : (sec.isBossRoom ? 'rgba(252, 165, 165, 0.85)' : 'rgba(226, 232, 240, 0.65)');
+        ctx.fillText(sec.name.toUpperCase(), scx, scy);
+      });
+
+      // 2. Draw Environmental Hazards
+      activeHazards.forEach(hz => {
+        if (hz.type === 'lava') {
+          const flick = Math.sin(timeSec * 8 + hz.x) * 6;
+          const grad = ctx.createRadialGradient(hz.x, hz.y, 10, hz.x, hz.y, hz.r + flick);
+          grad.addColorStop(0, '#f97316'); grad.addColorStop(0.7, '#dc2626'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.arc(hz.x, hz.y, hz.r + flick, 0, Math.PI * 2); ctx.fill();
+        } else if (hz.type === 'acid') {
+          ctx.fillStyle = 'rgba(132, 204, 22, 0.45)';
+          ctx.strokeStyle = '#84cc16'; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(hz.x, hz.y, hz.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        } else if (hz.type === 'spikes') {
+          const spikesActive = (spikeTrapTick > 1.4);
+          ctx.fillStyle = spikesActive ? 'rgba(220, 38, 38, 0.4)' : 'rgba(40, 50, 70, 0.55)';
+          ctx.strokeStyle = spikesActive ? '#ef4444' : '#64748b';
+          ctx.lineWidth = 2;
+          ctx.fillRect(hz.x - hz.w/2, hz.y - hz.h/2, hz.w, hz.h);
+          ctx.strokeRect(hz.x - hz.w/2, hz.y - hz.h/2, hz.w, hz.h);
+          if (spikesActive) {
+            ctx.fillStyle = '#f8fafc';
+            for (let sx = hz.x - hz.w/2 + 20; sx < hz.x + hz.w/2; sx += 35) {
+              for (let sy = hz.y - hz.h/2 + 20; sy < hz.y + hz.h/2; sy += 35) {
+                ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI * 2); ctx.fill();
+              }
+            }
+          }
+        }
+      });
+
+      // 3. Draw Stage 2 Descent Portal in (-1, -1) when Boss is Defeated
+      if (bossDefeated) {
+        ctx.save();
+        ctx.translate(stage2PortalPos.x, stage2PortalPos.y);
+        ctx.rotate(timeSec * 3);
+        const pGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, stage2PortalPos.radius);
+        pGrad.addColorStop(0, '#fde047'); pGrad.addColorStop(0.5, '#38bdf8'); pGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = pGrad;
+        ctx.beginPath(); ctx.arc(0, 0, stage2PortalPos.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '900 11px Cinzel, serif'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+        ctx.fillText('STAGE 2 DESCENT', 0, 4);
+        ctx.restore();
+      }
+
+      // 4. Draw Central Firepit with Active Bonfire & Coiled Steel Sword
+      ctx.save();
+      ctx.strokeStyle = 'rgba(74, 222, 128, 0.4)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.safeRadius, 0, Math.PI * 2); ctx.stroke();
+
+      const flicker = Math.sin(timeSec * 9) * 16;
+      const fireGrad = ctx.createRadialGradient(FIREPIT_POS.x, FIREPIT_POS.y, 16, FIREPIT_POS.x, FIREPIT_POS.y, 350 + flicker);
+      fireGrad.addColorStop(0, 'rgba(251, 146, 60, 0.65)'); fireGrad.addColorStop(0.5, 'rgba(220, 38, 38, 0.28)'); fireGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = fireGrad; ctx.beginPath(); ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, 350 + flicker, 0, Math.PI * 2); ctx.fill();
+
+      // Stone Basin & Coals
+      ctx.fillStyle = '#1c1626'; ctx.strokeStyle = '#cfa354'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(FIREPIT_POS.x, FIREPIT_POS.y, FIREPIT_POS.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      for (let f = 0; f < 7; f++) {
+        const ang = (f / 7) * Math.PI * 2 + timeSec * 2;
+        const r = 24 + Math.sin(timeSec * 8 + f) * 10;
+        ctx.fillStyle = f % 2 === 0 ? '#f97316' : '#facc15';
+        ctx.beginPath(); ctx.arc(FIREPIT_POS.x + Math.cos(ang) * r * 0.5, FIREPIT_POS.y + Math.sin(ang) * r * 0.5, 14, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(FIREPIT_POS.x, FIREPIT_POS.y + 8); ctx.lineTo(FIREPIT_POS.x + 6, FIREPIT_POS.y - 48); ctx.stroke();
+      ctx.restore();
+
+      // 5. Draw Wall Torches with Radiating Light Pools
+      WALL_TORCHES.forEach((wt, idx) => {
+        const flick = Math.sin(timeSec * 10 + idx) * 12;
+        const grad = ctx.createRadialGradient(wt.x, wt.y, 6, wt.x, wt.y, 180 + flick);
+        grad.addColorStop(0, 'rgba(251, 146, 60, 0.42)'); grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(wt.x, wt.y, 180 + flick, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.arc(wt.x, wt.y, 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(wt.x, wt.y, 3, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // 6. Draw Portcullis Gates
+      GATES.forEach(g => {
+        ctx.save();
+        ctx.translate(g.x, g.y);
+        const openRatio = g.openAnim || 0;
+        ctx.fillStyle = '#3a4454'; ctx.strokeStyle = '#040306'; ctx.lineWidth = 3;
+        if (g.horiz) {
+          ctx.fillRect(-140, -18, 28, 36); ctx.fillRect(112, -18, 28, 36);
+          if (openRatio < 0.8) {
+            ctx.fillStyle = g.isBossGate ? 'rgba(220,38,38,0.7)' : 'rgba(15,23,42,0.88)';
+            ctx.fillRect(-110, -10, 220 * (1 - openRatio), 20);
+          } else {
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.25)';
+            ctx.fillRect(-110, -14, 220, 28);
+          }
+        } else {
+          ctx.fillRect(-18, -140, 36, 28); ctx.fillRect(-18, 112, 36, 28);
+          if (openRatio < 0.8) {
+            ctx.fillStyle = g.isBossGate ? 'rgba(220,38,38,0.7)' : 'rgba(15,23,42,0.88)';
+            ctx.fillRect(-10, -110, 20, 220 * (1 - openRatio));
+          } else {
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.25)';
+            ctx.fillRect(-14, -110, 28, 220);
+          }
+        }
+        ctx.font = '800 9px Cinzel, serif'; ctx.textAlign = 'center';
+        ctx.fillStyle = g.isOpen ? '#4ade80' : (g.isBossGate ? '#f87171' : '#facc15');
+        ctx.fillText(g.label, 0, -24);
+        ctx.restore();
+      });
+
+      // 7. Draw Pillars
+      SOLID_PILLARS.forEach(pil => {
+        ctx.fillStyle = '#263147'; ctx.strokeStyle = '#040306'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(pil.x, pil.y, pil.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      });
+
+      // 8. Draw Chests
+      lootChests.forEach(ch => {
+        ctx.save();
+        ctx.translate(ch.x, ch.y);
+        ctx.fillStyle = ch.isSealChest ? '#b45309' : '#5c3a18';
+        ctx.strokeStyle = ch.isSealChest ? '#fde047' : '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.fillRect(-16, -12, 32, 24); ctx.strokeRect(-16, -12, 32, 24);
+        ctx.font = '800 10px Cinzel, serif'; ctx.textAlign = 'center';
+        ctx.fillStyle = ch.isSealChest ? '#f
